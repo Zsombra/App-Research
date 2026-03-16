@@ -34,13 +34,15 @@
 | Advanced Features | `research/sprint-5-advanced/advanced-features-research.md` |
 | Gap: Filtered Footprints + Bucketed Trades | `research/sprint-7-gap-features/filtered-footprints-bucketed-trades.md` |
 | Gap: Volume Bubbles + SL/TP Heatmaps | `research/sprint-7-gap-features/volume-bubbles-sl-tp-theory.md` |
+| Gap: Net Longs/Shorts + Aggregated OI | `research/sprint-7-gap-features/net-longs-shorts-aggregated-oi.md` |
+| Gap: Custom Session TPO + Community Marketplace | `research/sprint-7-gap-features/custom-session-tpo-community-marketplace.md` |
 
 ### Feature Gap Summary (26 Features)
 - **13 COVERED** by existing OSS (TPO, MBO, Footprints, Dual Cluster, CVD, Scripting, Orderbooks, DOM, Imbalances, 1s/Custom Timeframes)
 - **3 PARTIAL** (Aggregated Heatmaps, Liquidation Heatmap, Hyperliquid Liq Heatmap)
-- **4 MUST BUILD** (Net Longs/Shorts, Aggregated OI, Custom Session TPO, Orderbook Depth Overlay, Community Marketplace)
-- **4 PARTIALLY COVERED** after Sprint 7 (Volume Bubbles — Elenchev 496★ + srlcarlg plot_bubbles(); Filtered Footprints — gbzenobi VolumeFilter.cs 314★; Bucketed Trade Size Groups — no full OSS, closest OctopusTakopi K-Means; SL/TP Heatmaps — 6 algorithmic approaches documented, liquidation repos exist)
-- **2 IMPOSSIBLE** without estimation (Hyperliquid SL/TP Heatmaps — trigger orders hidden)
+- **1 MUST BUILD** (Community Indicator Marketplace — no OSS trading marketplace UI exists)
+- **9 PARTIALLY COVERED** after Sprint 7 (Volume Bubbles, Filtered Footprints, Bucketed Trades, Net Longs/Shorts, Aggregated OI, Custom Session TPO, HD Heatmaps, Aggregated Heatmaps, Hyperliquid Liq Heatmap)
+- **2 ESTIMABLE** (Hyperliquid SL/TP Heatmaps — 6 algorithmic approaches documented, trigger orders hidden)
 
 ### Top Reference Projects (by relevance)
 1. **aggr.trade** (1,092★) — 27 exchanges, best aggregation, CVD, liquidations, custom scripting

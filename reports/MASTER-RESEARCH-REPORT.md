@@ -170,7 +170,7 @@ Dexie + protobuf + pako for compressed local trade data caching.
 | # | Feature | OSS Exists? | Best Reference | Status |
 |---|---------|-------------|---------------|--------|
 | 1 | Market Profile / TPO | YES | beinghorizontal/tpo_project (130★) | **COVERED** |
-| 2 | Custom Session TPO | NO | tpo_project has basic sessions only | **MUST BUILD** |
+| 2 | Custom Session TPO | **PARTIAL** | beinghorizontal/tpo_project (130★) + chart-patterns npm (TPO engine) + EarnForex/MarketProfile (177★, MQL, most configurable sessions) | **PARTIALLY COVERED** (TPO calculation exists, custom session UI needs building) |
 | 3 | Hyperliquid MBO Profile | YES | hyperliquid-dex/order_book_server (L4 data) | **COVERED** (infra needed) |
 | 4 | Aggregated Heatmaps | PARTIAL | flowsurface (single exchange only) | **PARTIAL** |
 | 5 | HD Heatmaps | PARTIAL | flowsurface (desktop), Elenchev/order-book-heatmap (SVG, not HD perf) | **MUST BUILD WebGL** |
@@ -183,12 +183,12 @@ Dexie + protobuf + pako for compressed local trade data caching.
 | 12 | Dual Cluster Modes | YES | flowsurface (multiple clustering methods) | **COVERED** |
 | 13 | Bucketed Trade Size Groups | **PARTIAL** | OctopusTakopi/binance_l3_est K-Means clustering (208★) + TradingView 3-tier sizing scripts | **MUST BUILD** (no full OSS: bucket→CVD pipeline) |
 | 14 | Aggregated CVD | YES | aggr.trade (27 exchanges) | **COVERED** |
-| 15 | Aggregated Open Interest | PARTIAL | **ianfigueroa/TapeFlow** (OI delta tracking, single exchange) | **PARTIAL** (need aggregation) |
-| 16 | Net Longs/Shorts | NO | Pine Script only, no OSS repo | **MUST BUILD** |
+| 15 | Aggregated Open Interest | **PARTIAL** | TapeFlow (single exchange) + cryptofeed (multi-exchange OI WebSocket) + coinglass-api + Laevitas SDK + Binance/Bybit/OKX native APIs | **PARTIALLY COVERED** (per-exchange data readily available, aggregation logic needed) |
+| 16 | Net Longs/Shorts | **PARTIAL** | maxisoft/binance-dumper (data dump) + cryptofeed (WebSocket) + coinglass-api (PyPI) + exchange APIs (Binance/Bybit/OKX all expose L/S ratio) | **PARTIALLY COVERED** (data available, aggregation layer needed) |
 | 17 | VWAP Suite | YES | **ianfigueroa/TapeFlow** (session VWAP) + ianfigueroa/Titan (computation) | **COVERED** |
 | 18 | Volume Bubbles | **YES** | Elenchev/order-book-heatmap (496★, JS) + srlcarlg/srl-python-indicators plot_bubbles() + 7 TradingView Pine Scripts | **PARTIALLY COVERED** (multiple refs, need unified web impl) |
 | 19 | Custom Scripting | YES | aggr.trade (Monaco Editor + JS) | **COVERED** |
-| 20 | Community Indicators | PARTIAL | aggr-lib (GitHub-backed, no browse/rate UI) | **MUST BUILD marketplace** |
+| 20 | Community Indicators | **PARTIAL** | aggr-lib (GitHub-backed repo pattern) + Open VSX (Eclipse marketplace, open-source browse/rate UI) + react-pluggable (plugin lifecycle) | **MUST BUILD** (marketplace UI, but strong OSS patterns exist: aggr-lib for indicator format, Open VSX for marketplace architecture) |
 | 21 | Aggregated Orderbooks | YES | jose-donato/crypto-orderbook (9 exchanges) | **COVERED** |
 | 22 | Aggregated DOM | YES | tiagosiebler/orderbooks (162★) | **COVERED** |
 | 23 | Orderbook Imbalances | YES | VisualHFT (1,100★) + flowsurface | **COVERED** |
@@ -196,7 +196,7 @@ Dexie + protobuf + pako for compressed local trade data caching.
 | 25 | 1s Timeframes | YES | valamidev/candlestick-convert (55★) | **COVERED** |
 | 26 | Custom Timeframes | YES | aggr.trade + candlestick-convert | **COVERED** |
 
-### Summary: 15 COVERED, 6 PARTIAL, 3 MUST BUILD, 2 ESTIMABLE (Sprint 7 upgraded 4 features)
+### Summary: 15 COVERED, 9 PARTIAL, 1 MUST BUILD (Community Marketplace UI), 2 ESTIMABLE (Sprint 7 complete)
 
 **UPDATE (Deep Crawl Round 2):** TapeFlow discovery upgraded Liquidation Heatmap → COVERED, VWAP → COVERED, OI → PARTIAL, Orderbook Depth Overlay → COVERED. OpenBook upgraded Volume Bubbles → PARTIAL.
 
@@ -289,16 +289,19 @@ Dexie + protobuf + pako for compressed local trade data caching.
 
 ## WHAT MAKES THIS APP UNIQUE
 
-**Of the 26 target features, 8 have ZERO production-quality open-source implementations and 2 are technically impossible without estimation:**
+**After Sprint 7 deep research, nearly all 26 features have OSS foundations. Only 1 feature is truly greenfield:**
 
-Features that would be **FIRST in open-source** (as production web app):
-1. **Volume Bubbles** — OpenBook is closest but not a dedicated bubble renderer
-2. **Filtered Footprints** — No filtering capability in any OSS footprint tool
-3. **Net Longs/Shorts decomposition** — Only exists in Pine Script
-4. **Custom Session TPO** — beinghorizontal has basic sessions but not fully configurable web UI
-5. **Community Indicator Marketplace** — No browse/rate/install UI
-6. **Bucketed Trade Size Groups** — binance_l3_est has K-Means clustering but no dedicated visualization
-7. **Hyperliquid SL/TP Heatmaps** — Must estimate statistically (trigger orders hidden)
+**TRUE GREENFIELD (no OSS equivalent):**
+1. **Community Indicator Marketplace** — No OSS trading platform has a browse/rate/install marketplace UI (Open VSX provides architecture patterns)
+
+**FIRST-IN-CLASS for web (OSS exists but not as production web app):**
+1. **Volume Bubbles** — Elenchev (496★) has SVG bubbles, srlcarlg has plot_bubbles(), but no unified web lib
+2. **Filtered Footprints** — gbzenobi VolumeFilter.cs (314★) is C# only, needs TS port
+3. **Bucketed Trade Size Groups** — OctopusTakopi K-Means (208★) closest, no bucket→CVD pipeline
+4. **Hyperliquid SL/TP Heatmaps** — 6 estimation algorithms documented, no combined tool exists
+5. **Custom Session TPO** — chart-patterns npm + EarnForex logic exists, but no web UI
+6. **Net Longs/Shorts** — Exchange APIs all provide data, aggregation layer needs building
+7. **Aggregated OI** — cryptofeed + exchange APIs provide data, cross-exchange normalization needed
 
 **Previously "MUST BUILD" now has references:**
 - **Orderbook Depth Overlay** → nssanta/quant-order-book has it!
@@ -342,3 +345,5 @@ Features that would be **FIRST in open-source** (as production web app):
 | Advanced Features | `research/sprint-5-advanced/advanced-features-research.md` | VWAP, Volume Bubbles, Scripting, Timeframes |
 | Gap: Filtered Footprints + Bucketed Trades | `research/sprint-7-gap-features/filtered-footprints-bucketed-trades.md` | gbzenobi VolumeFilter, ATAS ClusterSearch, K-Means clustering, commercial refs |
 | Gap: Volume Bubbles + SL/TP Heatmaps | `research/sprint-7-gap-features/volume-bubbles-sl-tp-theory.md` | Elenchev (496★), srlcarlg plot_bubbles, 7 Pine Scripts, 6 SL/TP estimation algorithms |
+| Gap: Net Longs/Shorts + Aggregated OI | `research/sprint-7-gap-features/net-longs-shorts-aggregated-oi.md` | Exchange APIs, cryptofeed, coinglass-api, aggregation patterns |
+| Gap: Custom Session TPO + Community Marketplace | `research/sprint-7-gap-features/custom-session-tpo-community-marketplace.md` | chart-patterns npm, EarnForex, Open VSX marketplace architecture |
