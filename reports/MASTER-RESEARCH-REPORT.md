@@ -338,4 +338,5 @@ Features that would be **FIRST in open-source** (as production web app):
 | Deep crawl: Feature gap analysis | `research/sprint-4-github-network/deep-crawl-feature-gap-analysis.md` | 15 covered, 4 partial, 5 open gaps |
 | Deep crawl: Targeted feature search | `research/sprint-4-github-network/deep-crawl-targeted-feature-search.md` | 10 hardest features, zero OSS status |
 | Deep crawl: OctopusTakopi/focus/beinh | `research/sprint-4-github-network/deep-crawl-octopus-focus-beinh-network.md` | TapeFlow discovery, Rust TPO, depth overlay |
+| Deep crawl: tiagosiebler network | `research/sprint-4-github-network/deep-crawl-tiagosiebler-network.md` | 8 exchange SDKs, VWAP refs, liquidation logic |
 | Advanced Features | `research/sprint-5-advanced/advanced-features-research.md` | VWAP, Volume Bubbles, Scripting, Timeframes |

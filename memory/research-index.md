@@ -10,7 +10,7 @@
 | 3 | Orderbook & DOM Features | COMPLETE | 2026-03-16 |
 | 4 | GitHub Network Crawl (jose-donato + multi-hop spider web) | COMPLETE | 2026-03-16 |
 | 5 | Advanced Features (VWAP, Bubbles, Scripting, Timeframes) | COMPLETE | 2026-03-16 |
-| 6 | Deep Crawl (3rd/4th hop, targeted feature search) | IN PROGRESS | 2026-03-16 |
+| 6 | Deep Crawl (3rd/4th hop, targeted feature search) | COMPLETE | 2026-03-16 |
 
 ### Research Files
 | File | Location |
@@ -28,6 +28,8 @@
 | Second-hop: liihuu/azidyn/LevBeta | `research/sprint-4-github-network/second-hop-liihuu-matt-azidyn-levbeta.md` |
 | Deep crawl: Feature gap analysis | `research/sprint-4-github-network/deep-crawl-feature-gap-analysis.md` |
 | Deep crawl: Targeted feature search | `research/sprint-4-github-network/deep-crawl-targeted-feature-search.md` |
+| Deep crawl: OctopusTakopi/focus/beinh | `research/sprint-4-github-network/deep-crawl-octopus-focus-beinh-network.md` |
+| Deep crawl: tiagosiebler network | `research/sprint-4-github-network/deep-crawl-tiagosiebler-network.md` |
 | Advanced Features | `research/sprint-5-advanced/advanced-features-research.md` |
 
 ### Feature Gap Summary (26 Features)
@@ -63,7 +65,7 @@
 - Net longs/shorts derivable from position data
 
 ### Next Steps
-- [ ] Wait for deep-crawl agents (tiagosiebler network, OctopusTakopi/focus1691/beinghorizontal)
+- [x] Deep-crawl agents complete (tiagosiebler, OctopusTakopi/focus1691/beinghorizontal)
 - [ ] Technology stack decision (React vs Vue vs Svelte)
 - [ ] Prototype: aggregated orderbook + basic candlestick chart
 - [ ] Data layer design: exchange WebSocket abstraction
