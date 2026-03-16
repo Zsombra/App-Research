@@ -1,5 +1,5 @@
 # Master Research Report: TradingView Alternative Web App
-## Date: 2026-03-16 | Sprint 1 Complete
+## Date: 2026-03-16 | All Sprints Complete + Deep Crawl
 
 ---
 
@@ -152,13 +152,149 @@ Dexie + protobuf + pako for compressed local trade data caching.
 
 ---
 
-## Next Steps (Future Sprints)
-- [ ] Sprint 3: Deep dive on orderbook/DOM implementation patterns
-- [ ] Sprint 5: VWAP, Volume Bubbles, Custom Scripting, 1s timeframes
-- [ ] Second-hop GitHub crawl: follow users that jose-donato's network follows
+---
+
+## DEFINITIVE FEATURE GAP ANALYSIS (from Deep Crawl)
+
+### All 26 Features — Final Status
+
+| # | Feature | OSS Exists? | Best Reference | Status |
+|---|---------|-------------|---------------|--------|
+| 1 | Market Profile / TPO | YES | beinghorizontal/tpo_project (130★) | **COVERED** |
+| 2 | Custom Session TPO | NO | tpo_project has basic sessions only | **MUST BUILD** |
+| 3 | Hyperliquid MBO Profile | YES | hyperliquid-dex/order_book_server (L4 data) | **COVERED** (infra needed) |
+| 4 | Aggregated Heatmaps | PARTIAL | flowsurface (single exchange only) | **PARTIAL** |
+| 5 | HD Heatmaps | PARTIAL | flowsurface (desktop), Elenchev/order-book-heatmap (SVG, not HD perf) | **MUST BUILD WebGL** |
+| 6 | Liquidation Heatmap | PARTIAL | aoki-h-jp/py-liquidation-map (119★, historical only) | **PARTIAL** (no real-time) |
+| 7 | Hyperliquid Liquidation Heatmap | PARTIAL | moondevonyt API + Hyperliquid position data | **PARTIAL** (API only, no viz) |
+| 8 | Hyperliquid SL Heatmap | NO | SL orders hidden by protocol | **IMPOSSIBLE** (must estimate) |
+| 9 | Hyperliquid TP Heatmap | NO | Same as above | **IMPOSSIBLE** (must estimate) |
+| 10 | Aggregated Footprints | YES | tiagosiebler/orderflow (65★, 5 exchanges) | **COVERED** |
+| 11 | Filtered Footprints | NO | flowsurface has footprints but no filtering | **MUST BUILD** |
+| 12 | Dual Cluster Modes | YES | flowsurface (multiple clustering methods) | **COVERED** |
+| 13 | Bucketed Trade Size Groups | NO | beatzxbt/mm-toolbox has data structures only | **MUST BUILD** |
+| 14 | Aggregated CVD | YES | aggr.trade (27 exchanges) | **COVERED** |
+| 15 | Aggregated Open Interest | NO | cryptofeed provides data pipes only | **MUST BUILD** |
+| 16 | Net Longs/Shorts | NO | Pine Script only, no OSS repo | **MUST BUILD** |
+| 17 | VWAP Suite | PARTIAL | Standard formula, no dedicated suite | **MUST BUILD** |
+| 18 | Volume Bubbles | NO | Zero dedicated OSS anywhere | **MUST BUILD FROM SCRATCH** |
+| 19 | Custom Scripting | YES | aggr.trade (Monaco Editor + JS) | **COVERED** |
+| 20 | Community Indicators | PARTIAL | aggr-lib (GitHub-backed, no browse/rate UI) | **MUST BUILD marketplace** |
+| 21 | Aggregated Orderbooks | YES | jose-donato/crypto-orderbook (9 exchanges) | **COVERED** |
+| 22 | Aggregated DOM | YES | tiagosiebler/orderbooks (162★) | **COVERED** |
+| 23 | Orderbook Imbalances | YES | VisualHFT (1,100★) + flowsurface | **COVERED** |
+| 24 | Orderbook Depth Overlay | NO | No OSS overlay on candlestick chart | **MUST BUILD** |
+| 25 | 1s Timeframes | YES | valamidev/candlestick-convert (55★) | **COVERED** |
+| 26 | Custom Timeframes | YES | aggr.trade + candlestick-convert | **COVERED** |
+
+### Summary: 13 COVERED, 3 PARTIAL, 8 MUST BUILD, 2 IMPOSSIBLE (estimate only)
+
+---
+
+## COMPLETE REPO CATALOG (from Multi-Hop Crawl)
+
+### Tier 1 — Direct Architecture References
+| Repo | Stars | Lang | Why It Matters |
+|------|-------|------|---------------|
+| Tucsky/aggr | 1,092 | Vue/TS | Best multi-exchange aggregation (27 exchanges), CVD, custom scripting |
+| flowsurface-rs/flowsurface | 1,400 | Rust/Iced | Most complete order flow visualization (footprints, heatmaps, DOM) |
+| jose-donato/cryexc-backend | 51 | Python/FastAPI | Most feature-complete trading backend |
+| VisualHFT (silahian) | 1,100 | C#/WPF | Closest OSS to our target — LOB viz, VPIN, imbalance, multi-exchange |
+
+### Tier 2 — Order Flow & Footprints
+| Repo | Stars | Lang | Component |
+|------|-------|------|-----------|
+| tiagosiebler/orderflow | 65 | TS/NestJS | Production footprint candle builder (5 exchanges, TimescaleDB) |
+| gbzenobi/CSharp-NT8-OrderFlowKit | 312 | C# | Most complete footprint (NinjaTrader-only) |
+| tysonwu/stack-orderflow | 131 | Python | Orderflow + market profile desktop GUI |
+| AndreaFerrante/Orderflow | 117 | Python | Imbalances as core feature |
+| andrewlfc7/BFX-BSI | 22 | Python | Order flow BSI imbalance detection |
+| g-tejas/toxic-flow | 12 | Rust | VPIN calculator + gRPC orderbook stream |
+
+### Tier 3 — Orderbook & DOM
+| Repo | Stars | Lang | Component |
+|------|-------|------|-----------|
+| OctopusTakopi/binance_l3_est | 208 | Rust | L3 orderbook reconstruction + heatmap + whale detection |
+| OctopusTakopi/glass-rs | 24 | Rust | Ultra-fast orderbook data structure (radix trie, 24x faster) |
+| tiagosiebler/orderbooks | 162 | TypeScript | Zero-dep orderbook management |
+| ninja-quant/ninjabook | 186 | Rust | High-perf L2 orderbook + trades processor |
+| jose-donato/crypto-orderbook | 110 | Go/React | Multi-exchange aggregated orderbook (9 exchanges) |
+| beatzxbt/mm-toolbox | 230 | Python | HFT orderbook implementations, Numba-optimized |
+| Elenchev/order-book-heatmap | 496 | JS/D3 | Live browser-based LOB heatmap |
+| DegenSugarBoo/OpenBook | 122 | Rust | Bookmap-style depth heatmap |
+
+### Tier 4 — Market Profile / TPO
+| Repo | Stars | Lang | Component |
+|------|-------|------|-----------|
+| beinghorizontal/tpo_project | 130 | Python | ONLY OSS TPO/Market Profile (POC, VAH, IB) |
+| EarnForex/MarketProfile | 177 | MQL | Most configurable TPO (custom sessions, custom VA%) |
+| sivamgr/tpo_market_profile | low | Python | Basic TPO from 1-min candles |
+
+### Tier 5 — Liquidation & Heatmaps
+| Repo | Stars | Lang | Component |
+|------|-------|------|-----------|
+| aoki-h-jp/py-liquidation-map | 119 | Python | Actual liquidation heatmap images (Binance + Bybit) |
+| StephanAkkerman/liquidations-chart | 41 | Python | CoinGlass-style liquidation bar charts |
+| moondevonyt/Hyperliquid-Data-Layer-API | 93-128 | Python | Liquidation data + whale tracking API |
+| thunderhead-labs/hyperliquid-stats | — | Python | Cumulative liquidated notional, daily liquidations |
+| itay747/perspective-hyperliquid | — | JS/WASM | Orderbook heatmap demo using Perspective |
+
+### Tier 6 — Exchange SDKs & Data Infrastructure
+| Repo | Stars | Lang | Component |
+|------|-------|------|-----------|
+| ccxt/ccxt | 41,400 | Multi | 100+ exchange unified API |
+| cryptofeed/cryptofeed | 2,800 | Python | Multi-exchange WebSocket feed handler |
+| crypto-crawler/crypto-crawler-rs | 260 | Rust | Multi-exchange data crawler |
+| tiagosiebler/binance | 910 | TypeScript | Binance SDK (browser support) |
+| tiagosiebler/bybit-api | 332 | TypeScript | Bybit SDK |
+| tiagosiebler/okx-api | 164 | TypeScript | OKX SDK |
+| kanekoshoyu/exchange-collection | 22 | Rust | OpenAPI specs for 13+ exchanges |
+| nautechsystems/nautilus_trader | 21,200 | Rust/Python | Production trading engine, nanosecond resolution |
+
+### Tier 7 — Rendering & Infrastructure
+| Repo | Stars | Lang | Component |
+|------|-------|------|-----------|
+| iced-rs/iced | 29,800 | Rust | GPU cross-platform GUI (powers flowsurface) |
+| gfx-rs/wgpu | 16,700 | Rust | WebGPU rendering backend |
+| ecomfe/zrender | 6,300 | TypeScript | 2D Canvas engine (powers ECharts) |
+| pissang/claygl | 2,900 | JavaScript | WebGL graphics library |
+| valamidev/candlestick-convert | 55 | TypeScript | OHLCV batcher with 1s base interval |
+
+### Tier 8 — Trading Frameworks
+| Repo | Stars | Lang | Component |
+|------|-------|------|-----------|
+| freqtrade/freqtrade | 47,700 | Python | Trading bot, massive ecosystem |
+| barter-rs/barter-rs | 2,000 | Rust | Event-driven live-trading + backtesting |
+| yutiansut/QUANTAXIS | 10,100 | Python | Full quant platform with L2/tick data |
+| LevBeta/ferrofluid | 0 | Rust | High-perf Hyperliquid SDK (simd-json, zero-copy) |
+
+---
+
+## WHAT MAKES THIS APP UNIQUE
+
+**Of the 26 target features, 8 have ZERO production-quality open-source implementations and 2 are technically impossible without estimation:**
+
+Features that would be **FIRST in open-source**:
+1. **Volume Bubbles** — No dedicated implementation anywhere on GitHub
+2. **Filtered Footprints** — No filtering capability in any OSS footprint tool
+3. **Net Longs/Shorts decomposition** — Only exists in Pine Script
+4. **Aggregated Open Interest** — No dedicated aggregation tool
+5. **Custom Session TPO** — No web-based configurable TPO
+6. **Orderbook Depth Overlay** — No overlay-on-candlestick implementation
+7. **Community Indicator Marketplace** — No browse/rate/install UI
+8. **Bucketed Trade Size Groups** — Concept exists but no visualization
+
+**flowsurface** (1,400 stars, Rust) is the closest competitor but is desktop-only and doesn't cover most of these.
+
+---
+
+## Next Steps
 - [ ] Technology stack decision: React vs Vue vs Svelte, Canvas vs WebGL, backend language
 - [ ] Prototype: Start with aggregated orderbook + basic candlestick chart
 - [ ] Data layer design: Exchange WebSocket abstraction, normalization, storage
+- [ ] Evaluate tiagosiebler/orderflow as footprint starting point
+- [ ] Evaluate flowsurface's rendering approach for WebGL heatmap design
+- [ ] Build Volume Bubbles proof-of-concept (first-ever OSS implementation)
 
 ---
 
@@ -170,6 +306,13 @@ Dexie + protobuf + pako for compressed local trade data caching.
 | Trading Concepts Deep Dive | `research/sprint-1-core-concepts/trading-concepts-deep-dive.md` | TPO, Footprints, CVD, Heatmaps, Volume Profile (522 lines) |
 | KLineChart Evaluation | `research/sprint-1-core-concepts/klinechart-evaluation.md` | Library assessment + gap analysis |
 | Hyperliquid API Research | `research/sprint-2-heatmaps/hyperliquid-data-capabilities-research.md` | Full API documentation + data availability (302 lines) |
+| Orderbook/DOM Research | `research/sprint-3-orderbook/orderbook-dom-research.md` | Aggregation, imbalance detection, rendering |
 | aggr.trade Research | `research/sprint-4-github-network/tucsky-aggr-trade.md` | Architecture, features, 27 exchanges |
-| akenshaw/flowsurface Research | `research/sprint-4-github-network/akenshaw-beatzxbt-rootquant-brunopittini.md` | Order flow visualization reference |
+| flowsurface/akenshaw Research | `research/sprint-4-github-network/akenshaw-beatzxbt-rootquant-brunopittini.md` | Order flow visualization reference |
 | jose-donato/OpenBB Network | `research/sprint-4-github-network/jose-donato-didier-wshobson-levbeta.md` | Feature coverage matrix |
+| Second-hop: akenshaw network | `research/sprint-4-github-network/second-hop-akenshaw-network.md` | nautilus_trader, ninjabook, toxic-flow |
+| Second-hop: beatzxbt network | `research/sprint-4-github-network/second-hop-beatzxbt-network.md` | VisualHFT, binance_l3_est, glass-rs, 37 repos |
+| Second-hop: liihuu/azidyn/LevBeta | `research/sprint-4-github-network/second-hop-liihuu-matt-azidyn-levbeta.md` | tpo_project, tiagosiebler orderflow/SDKs |
+| Deep crawl: Feature gap analysis | `research/sprint-4-github-network/deep-crawl-feature-gap-analysis.md` | 15 covered, 4 partial, 5 open gaps |
+| Deep crawl: Targeted feature search | `research/sprint-4-github-network/deep-crawl-targeted-feature-search.md` | 10 hardest features, zero OSS status |
+| Advanced Features | `research/sprint-5-advanced/advanced-features-research.md` | VWAP, Volume Bubbles, Scripting, Timeframes |
