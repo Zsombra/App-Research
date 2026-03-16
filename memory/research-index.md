@@ -11,6 +11,7 @@
 | 4 | GitHub Network Crawl (jose-donato + multi-hop spider web) | COMPLETE | 2026-03-16 |
 | 5 | Advanced Features (VWAP, Bubbles, Scripting, Timeframes) | COMPLETE | 2026-03-16 |
 | 6 | Deep Crawl (3rd/4th hop, targeted feature search) | COMPLETE | 2026-03-16 |
+| 7 | Gap Feature Deep Research (Filtered Footprints, Bucketed Trades, Volume Bubbles, SL/TP Heatmaps) | COMPLETE | 2026-03-16 |
 
 ### Research Files
 | File | Location |
@@ -31,11 +32,14 @@
 | Deep crawl: OctopusTakopi/focus/beinh | `research/sprint-4-github-network/deep-crawl-octopus-focus-beinh-network.md` |
 | Deep crawl: tiagosiebler network | `research/sprint-4-github-network/deep-crawl-tiagosiebler-network.md` |
 | Advanced Features | `research/sprint-5-advanced/advanced-features-research.md` |
+| Gap: Filtered Footprints + Bucketed Trades | `research/sprint-7-gap-features/filtered-footprints-bucketed-trades.md` |
+| Gap: Volume Bubbles + SL/TP Heatmaps | `research/sprint-7-gap-features/volume-bubbles-sl-tp-theory.md` |
 
 ### Feature Gap Summary (26 Features)
 - **13 COVERED** by existing OSS (TPO, MBO, Footprints, Dual Cluster, CVD, Scripting, Orderbooks, DOM, Imbalances, 1s/Custom Timeframes)
 - **3 PARTIAL** (Aggregated Heatmaps, Liquidation Heatmap, Hyperliquid Liq Heatmap)
-- **8 MUST BUILD** (Volume Bubbles, Filtered Footprints, Net Longs/Shorts, Aggregated OI, Custom Session TPO, Orderbook Depth Overlay, Community Marketplace, Bucketed Trade Size Groups)
+- **4 MUST BUILD** (Net Longs/Shorts, Aggregated OI, Custom Session TPO, Orderbook Depth Overlay, Community Marketplace)
+- **4 PARTIALLY COVERED** after Sprint 7 (Volume Bubbles — Elenchev 496★ + srlcarlg plot_bubbles(); Filtered Footprints — gbzenobi VolumeFilter.cs 314★; Bucketed Trade Size Groups — no full OSS, closest OctopusTakopi K-Means; SL/TP Heatmaps — 6 algorithmic approaches documented, liquidation repos exist)
 - **2 IMPOSSIBLE** without estimation (Hyperliquid SL/TP Heatmaps — trigger orders hidden)
 
 ### Top Reference Projects (by relevance)

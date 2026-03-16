@@ -1,5 +1,5 @@
 # Master Research Report: TradingView Alternative Web App
-## Date: 2026-03-16 | All Sprints Complete + Deep Crawl
+## Date: 2026-03-16 | All Sprints Complete + Deep Crawl + Sprint 7 Gap Features
 
 ---
 
@@ -176,17 +176,17 @@ Dexie + protobuf + pako for compressed local trade data caching.
 | 5 | HD Heatmaps | PARTIAL | flowsurface (desktop), Elenchev/order-book-heatmap (SVG, not HD perf) | **MUST BUILD WebGL** |
 | 6 | Liquidation Heatmap | YES | **ianfigueroa/TapeFlow** + Senior-Architecture/Cryptocurrency-Liquidation-Heatmap + aoki-h-jp/py-liquidation-map | **COVERED** |
 | 7 | Hyperliquid Liquidation Heatmap | PARTIAL | moondevonyt API + Hyperliquid position data | **PARTIAL** (API only, no viz) |
-| 8 | Hyperliquid SL Heatmap | NO | SL orders hidden by protocol | **IMPOSSIBLE** (must estimate) |
-| 9 | Hyperliquid TP Heatmap | NO | Same as above | **IMPOSSIBLE** (must estimate) |
+| 8 | Hyperliquid SL Heatmap | **ESTIMABLE** | 6 algorithmic approaches documented (liquidation math, swing clustering, round numbers, sweep analysis, DBSCAN, ML); joshyattridge/smart-money-concepts (1.4K★), vsching/liquidation-heatmap, gptcompany/liquidations (DBSCAN) | **MUST BUILD** (estimation framework) |
+| 9 | Hyperliquid TP Heatmap | **ESTIMABLE** | Same approaches as SL; Osler (2002) research: TPs cluster AT round numbers, SLs JUST BEYOND | **MUST BUILD** (estimation framework) |
 | 10 | Aggregated Footprints | YES | tiagosiebler/orderflow (65★, 5 exchanges) | **COVERED** |
-| 11 | Filtered Footprints | NO | flowsurface has footprints but no filtering | **MUST BUILD** |
+| 11 | Filtered Footprints | **YES (C#)** | gbzenobi/CSharp-NT8-OrderFlowKit VolumeFilter.cs (314★) + AtasPlatform ClusterSearch.cs | **PARTIALLY COVERED** (need TS port) |
 | 12 | Dual Cluster Modes | YES | flowsurface (multiple clustering methods) | **COVERED** |
-| 13 | Bucketed Trade Size Groups | NO | beatzxbt/mm-toolbox has data structures only | **MUST BUILD** |
+| 13 | Bucketed Trade Size Groups | **PARTIAL** | OctopusTakopi/binance_l3_est K-Means clustering (208★) + TradingView 3-tier sizing scripts | **MUST BUILD** (no full OSS: bucket→CVD pipeline) |
 | 14 | Aggregated CVD | YES | aggr.trade (27 exchanges) | **COVERED** |
 | 15 | Aggregated Open Interest | PARTIAL | **ianfigueroa/TapeFlow** (OI delta tracking, single exchange) | **PARTIAL** (need aggregation) |
 | 16 | Net Longs/Shorts | NO | Pine Script only, no OSS repo | **MUST BUILD** |
 | 17 | VWAP Suite | YES | **ianfigueroa/TapeFlow** (session VWAP) + ianfigueroa/Titan (computation) | **COVERED** |
-| 18 | Volume Bubbles | PARTIAL | DegenSugarBoo/OpenBook (Bookmap-style) + cli_ob (bubble markers) | **PARTIAL** (need dedicated impl) |
+| 18 | Volume Bubbles | **YES** | Elenchev/order-book-heatmap (496★, JS) + srlcarlg/srl-python-indicators plot_bubbles() + 7 TradingView Pine Scripts | **PARTIALLY COVERED** (multiple refs, need unified web impl) |
 | 19 | Custom Scripting | YES | aggr.trade (Monaco Editor + JS) | **COVERED** |
 | 20 | Community Indicators | PARTIAL | aggr-lib (GitHub-backed, no browse/rate UI) | **MUST BUILD marketplace** |
 | 21 | Aggregated Orderbooks | YES | jose-donato/crypto-orderbook (9 exchanges) | **COVERED** |
@@ -196,7 +196,7 @@ Dexie + protobuf + pako for compressed local trade data caching.
 | 25 | 1s Timeframes | YES | valamidev/candlestick-convert (55★) | **COVERED** |
 | 26 | Custom Timeframes | YES | aggr.trade + candlestick-convert | **COVERED** |
 
-### Summary: 15 COVERED, 4 PARTIAL, 5 MUST BUILD, 2 IMPOSSIBLE (estimate only)
+### Summary: 15 COVERED, 6 PARTIAL, 3 MUST BUILD, 2 ESTIMABLE (Sprint 7 upgraded 4 features)
 
 **UPDATE (Deep Crawl Round 2):** TapeFlow discovery upgraded Liquidation Heatmap → COVERED, VWAP → COVERED, OI → PARTIAL, Orderbook Depth Overlay → COVERED. OpenBook upgraded Volume Bubbles → PARTIAL.
 
@@ -340,3 +340,5 @@ Features that would be **FIRST in open-source** (as production web app):
 | Deep crawl: OctopusTakopi/focus/beinh | `research/sprint-4-github-network/deep-crawl-octopus-focus-beinh-network.md` | TapeFlow discovery, Rust TPO, depth overlay |
 | Deep crawl: tiagosiebler network | `research/sprint-4-github-network/deep-crawl-tiagosiebler-network.md` | 8 exchange SDKs, VWAP refs, liquidation logic |
 | Advanced Features | `research/sprint-5-advanced/advanced-features-research.md` | VWAP, Volume Bubbles, Scripting, Timeframes |
+| Gap: Filtered Footprints + Bucketed Trades | `research/sprint-7-gap-features/filtered-footprints-bucketed-trades.md` | gbzenobi VolumeFilter, ATAS ClusterSearch, K-Means clustering, commercial refs |
+| Gap: Volume Bubbles + SL/TP Heatmaps | `research/sprint-7-gap-features/volume-bubbles-sl-tp-theory.md` | Elenchev (496★), srlcarlg plot_bubbles, 7 Pine Scripts, 6 SL/TP estimation algorithms |
