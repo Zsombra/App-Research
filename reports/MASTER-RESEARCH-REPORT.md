@@ -83,20 +83,29 @@ This report consolidates research from 6 parallel research agents covering tradi
 
 ## Top GitHub Repos Discovered
 
-### Tier 1 — Direct References
+### Tier 0 — NEW: Most Feature-Complete OSS Trading Terminal
+| Repo | Stars | Why It Matters |
+|------|-------|---------------|
+| **ianfigueroa/TapeFlow** | 11 | **Covers 12+ of our 26 features in ONE repo**: Footprints, DOM, CVD, Volume Profile, OI, Liquidation Heatmap, VWAP, Trade Tape, Algo Detection (whales, spoofing, icebergs), Paper Trading |
+| **ianfigueroa/Titan** | — | C++ companion: real-time orderbook, VWAP, imbalance, whale alerts via WebSocket |
+
+### Tier 1 — Direct Architecture References
 | Repo | Stars | Why It Matters |
 |------|-------|---------------|
 | [Tucsky/aggr](https://github.com/Tucsky/aggr) | 1,092 | Best multi-exchange aggregation architecture |
-| [flowsurface-rs/flowsurface](https://github.com/flowsurface-rs/flowsurface) | 1,400 | Most complete order flow visualization |
+| [flowsurface-rs/flowsurface](https://github.com/flowsurface-rs/flowsurface) | 1,400 | Most complete order flow visualization (desktop) |
 | [jose-donato/cryexc-backend](https://github.com/jose-donato/cryexc-backend) | 51 | Most feature-complete trading backend |
-| [jose-donato/crypto-orderbook](https://github.com/jose-donato/crypto-orderbook) | 110 | Multi-exchange aggregated orderbook (Go+React) |
+| [VisualHFT](https://github.com/silahian/VisualHFT) | 1,100 | LOB viz, VPIN, imbalance, multi-exchange plugins |
 
 ### Tier 2 — Specific Components
 | Repo | Stars | Component |
 |------|-------|-----------|
-| [klinecharts/KLineChart](https://github.com/klinecharts/KLineChart) | 3,625 | Standard candlestick charting (28 indicators) |
 | [beatzxbt/mm-toolbox](https://github.com/beatzxbt/mm-toolbox) | 230 | High-perf orderbook data structures |
-| [jose-donato/binancef_l3_estimate_go](https://github.com/jose-donato/binancef_l3_estimate_go) | 27 | L3 reconstruction from L2 with clustering |
+| [nssanta/quant-order-book](https://github.com/nssanta/quant-order-book) | 4 | **Orderbook depth overlay on candlestick chart** + DOM + CVD (Binance/OKX/Bybit) |
+| [DegenSugarBoo/OpenBook](https://github.com/DegenSugarBoo/OpenBook) | 122 | **Bookmap-style heatmap** + trade tape (closest to Volume Bubbles) |
+| [sagartarar/Trading](https://github.com/sagartarar/Trading) | 0 | **Rust-accelerated Market Profile** (102x faster via PyO3) |
+| [0xSmartCrypto/hyperfootprint](https://github.com/0xSmartCrypto/hyperfootprint) | 1 | **Only Hyperliquid-specific footprint** (SUI, with absorption/divergence detection) |
+| [Senior-Architecture/Cryptocurrency-Liquidation-Heatmap](https://github.com/Senior-Architecture/Cryptocurrency-Liquidation-Heatmap) | 4 | Multi-exchange liquidation heatmap (5x-125x leverage) |
 | [Tucsky/aggr-server](https://github.com/Tucsky/aggr-server) | 203 | InfluxDB trade collection + resampling |
 | [Tucsky/aggr-lib](https://github.com/Tucsky/aggr-lib) | 49 | Community indicator library pattern |
 
@@ -165,7 +174,7 @@ Dexie + protobuf + pako for compressed local trade data caching.
 | 3 | Hyperliquid MBO Profile | YES | hyperliquid-dex/order_book_server (L4 data) | **COVERED** (infra needed) |
 | 4 | Aggregated Heatmaps | PARTIAL | flowsurface (single exchange only) | **PARTIAL** |
 | 5 | HD Heatmaps | PARTIAL | flowsurface (desktop), Elenchev/order-book-heatmap (SVG, not HD perf) | **MUST BUILD WebGL** |
-| 6 | Liquidation Heatmap | PARTIAL | aoki-h-jp/py-liquidation-map (119★, historical only) | **PARTIAL** (no real-time) |
+| 6 | Liquidation Heatmap | YES | **ianfigueroa/TapeFlow** + Senior-Architecture/Cryptocurrency-Liquidation-Heatmap + aoki-h-jp/py-liquidation-map | **COVERED** |
 | 7 | Hyperliquid Liquidation Heatmap | PARTIAL | moondevonyt API + Hyperliquid position data | **PARTIAL** (API only, no viz) |
 | 8 | Hyperliquid SL Heatmap | NO | SL orders hidden by protocol | **IMPOSSIBLE** (must estimate) |
 | 9 | Hyperliquid TP Heatmap | NO | Same as above | **IMPOSSIBLE** (must estimate) |
@@ -174,24 +183,32 @@ Dexie + protobuf + pako for compressed local trade data caching.
 | 12 | Dual Cluster Modes | YES | flowsurface (multiple clustering methods) | **COVERED** |
 | 13 | Bucketed Trade Size Groups | NO | beatzxbt/mm-toolbox has data structures only | **MUST BUILD** |
 | 14 | Aggregated CVD | YES | aggr.trade (27 exchanges) | **COVERED** |
-| 15 | Aggregated Open Interest | NO | cryptofeed provides data pipes only | **MUST BUILD** |
+| 15 | Aggregated Open Interest | PARTIAL | **ianfigueroa/TapeFlow** (OI delta tracking, single exchange) | **PARTIAL** (need aggregation) |
 | 16 | Net Longs/Shorts | NO | Pine Script only, no OSS repo | **MUST BUILD** |
-| 17 | VWAP Suite | PARTIAL | Standard formula, no dedicated suite | **MUST BUILD** |
-| 18 | Volume Bubbles | NO | Zero dedicated OSS anywhere | **MUST BUILD FROM SCRATCH** |
+| 17 | VWAP Suite | YES | **ianfigueroa/TapeFlow** (session VWAP) + ianfigueroa/Titan (computation) | **COVERED** |
+| 18 | Volume Bubbles | PARTIAL | DegenSugarBoo/OpenBook (Bookmap-style) + cli_ob (bubble markers) | **PARTIAL** (need dedicated impl) |
 | 19 | Custom Scripting | YES | aggr.trade (Monaco Editor + JS) | **COVERED** |
 | 20 | Community Indicators | PARTIAL | aggr-lib (GitHub-backed, no browse/rate UI) | **MUST BUILD marketplace** |
 | 21 | Aggregated Orderbooks | YES | jose-donato/crypto-orderbook (9 exchanges) | **COVERED** |
 | 22 | Aggregated DOM | YES | tiagosiebler/orderbooks (162★) | **COVERED** |
 | 23 | Orderbook Imbalances | YES | VisualHFT (1,100★) + flowsurface | **COVERED** |
-| 24 | Orderbook Depth Overlay | NO | No OSS overlay on candlestick chart | **MUST BUILD** |
+| 24 | Orderbook Depth Overlay | YES | **nssanta/quant-order-book** (depth overlaid on candlestick chart!) | **COVERED** |
 | 25 | 1s Timeframes | YES | valamidev/candlestick-convert (55★) | **COVERED** |
 | 26 | Custom Timeframes | YES | aggr.trade + candlestick-convert | **COVERED** |
 
-### Summary: 13 COVERED, 3 PARTIAL, 8 MUST BUILD, 2 IMPOSSIBLE (estimate only)
+### Summary: 15 COVERED, 4 PARTIAL, 5 MUST BUILD, 2 IMPOSSIBLE (estimate only)
+
+**UPDATE (Deep Crawl Round 2):** TapeFlow discovery upgraded Liquidation Heatmap → COVERED, VWAP → COVERED, OI → PARTIAL, Orderbook Depth Overlay → COVERED. OpenBook upgraded Volume Bubbles → PARTIAL.
 
 ---
 
 ## COMPLETE REPO CATALOG (from Multi-Hop Crawl)
+
+### Tier 0 — CRITICAL: Most Feature-Complete OSS Trading Terminal
+| Repo | Stars | Lang | Why It Matters |
+|------|-------|------|---------------|
+| **ianfigueroa/TapeFlow** | 11 | TypeScript | **Covers 12+ features**: Footprints, DOM, CVD, Volume Profile, OI, Liquidation Heatmap, VWAP, Trade Tape, Algo Detection, Paper Trading |
+| **ianfigueroa/Titan** | — | C++ | Companion: real-time orderbook, VWAP computation, whale alerts via WebSocket |
 
 ### Tier 1 — Direct Architecture References
 | Repo | Stars | Lang | Why It Matters |
@@ -199,7 +216,7 @@ Dexie + protobuf + pako for compressed local trade data caching.
 | Tucsky/aggr | 1,092 | Vue/TS | Best multi-exchange aggregation (27 exchanges), CVD, custom scripting |
 | flowsurface-rs/flowsurface | 1,400 | Rust/Iced | Most complete order flow visualization (footprints, heatmaps, DOM) |
 | jose-donato/cryexc-backend | 51 | Python/FastAPI | Most feature-complete trading backend |
-| VisualHFT (silahian) | 1,100 | C#/WPF | Closest OSS to our target — LOB viz, VPIN, imbalance, multi-exchange |
+| VisualHFT (silahian) | 1,100 | C#/WPF | LOB viz, VPIN, imbalance, multi-exchange plugins |
 
 ### Tier 2 — Order Flow & Footprints
 | Repo | Stars | Lang | Component |
@@ -274,15 +291,20 @@ Dexie + protobuf + pako for compressed local trade data caching.
 
 **Of the 26 target features, 8 have ZERO production-quality open-source implementations and 2 are technically impossible without estimation:**
 
-Features that would be **FIRST in open-source**:
-1. **Volume Bubbles** — No dedicated implementation anywhere on GitHub
+Features that would be **FIRST in open-source** (as production web app):
+1. **Volume Bubbles** — OpenBook is closest but not a dedicated bubble renderer
 2. **Filtered Footprints** — No filtering capability in any OSS footprint tool
 3. **Net Longs/Shorts decomposition** — Only exists in Pine Script
-4. **Aggregated Open Interest** — No dedicated aggregation tool
-5. **Custom Session TPO** — No web-based configurable TPO
-6. **Orderbook Depth Overlay** — No overlay-on-candlestick implementation
-7. **Community Indicator Marketplace** — No browse/rate/install UI
-8. **Bucketed Trade Size Groups** — Concept exists but no visualization
+4. **Custom Session TPO** — beinghorizontal has basic sessions but not fully configurable web UI
+5. **Community Indicator Marketplace** — No browse/rate/install UI
+6. **Bucketed Trade Size Groups** — binance_l3_est has K-Means clustering but no dedicated visualization
+7. **Hyperliquid SL/TP Heatmaps** — Must estimate statistically (trigger orders hidden)
+
+**Previously "MUST BUILD" now has references:**
+- **Orderbook Depth Overlay** → nssanta/quant-order-book has it!
+- **VWAP Suite** → TapeFlow + Titan have full implementations
+- **Liquidation Heatmap** → TapeFlow + Senior-Architecture repo cover this
+- **Aggregated OI** → TapeFlow has single-exchange OI tracking (need to add aggregation)
 
 **flowsurface** (1,400 stars, Rust) is the closest competitor but is desktop-only and doesn't cover most of these.
 
@@ -315,4 +337,5 @@ Features that would be **FIRST in open-source**:
 | Second-hop: liihuu/azidyn/LevBeta | `research/sprint-4-github-network/second-hop-liihuu-matt-azidyn-levbeta.md` | tpo_project, tiagosiebler orderflow/SDKs |
 | Deep crawl: Feature gap analysis | `research/sprint-4-github-network/deep-crawl-feature-gap-analysis.md` | 15 covered, 4 partial, 5 open gaps |
 | Deep crawl: Targeted feature search | `research/sprint-4-github-network/deep-crawl-targeted-feature-search.md` | 10 hardest features, zero OSS status |
+| Deep crawl: OctopusTakopi/focus/beinh | `research/sprint-4-github-network/deep-crawl-octopus-focus-beinh-network.md` | TapeFlow discovery, Rust TPO, depth overlay |
 | Advanced Features | `research/sprint-5-advanced/advanced-features-research.md` | VWAP, Volume Bubbles, Scripting, Timeframes |
