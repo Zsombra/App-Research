@@ -1,11 +1,11 @@
 # Project Progress
 
 ## Current State
-- **Phase:** 0 - Bootstrap
-- **Stage:** COMPLETE
+- **Phase:** 1 - Foundation (Session 2 complete)
+- **Stage:** COMPLETE for Session 2
 - **Active Worktrees:** none
-- **Last Completed:** Phase 0 — Full pipeline executed (Spec→Design→Scaffold→Implement→Audit→Integrate)
-- **Next Up:** Phase 1, Session 2: Exchange Connector Framework + WebGL Rendering Engine
+- **Last Completed:** Exchange Connector Framework + WebGL Rendering Engine
+- **Next Up:** Phase 1, Session 3: Data Worker Pipeline + Dockview Layout Shell
 
 ## Pipeline Status
 ```
@@ -77,5 +77,27 @@
 - `PanelConfig` — Dockview panel configuration
 - `ConnectionStatus` — exchange connection lifecycle states
 
+## Phase 1 Pipeline Status
+```
+[Phase 1a: Exchange Connector Framework] ✅ COMPLETE
+  Stage 1: Spec        ✅ specs/phase-1a-exchange-connectors.spec.md
+  Stage 2: Design      ✅ designs/phase-1a-exchange-connectors.design.md
+  Stage 3+4: Implement ✅ 11 new files, 53 new tests
+  Stage 5: Audit       ✅ 2 Critical fixed (depth routing, sequence gaps), 6 High tracked
+  Stage 7: Integrate   ✅ committed and pushed
+
+[Phase 1c: WebGL Rendering Engine] ✅ COMPLETE
+  Stage 1: Spec        ✅ specs/phase-1c-webgl-engine.spec.md
+  Stage 2: Design      ✅ designs/phase-1c-webgl-engine.design.md
+  Stage 3+4: Implement ✅ 10 new files, 31 new tests
+  Stage 5: Audit       ✅ 0 Critical, 6 High tracked for optimization
+  Stage 7: Integrate   ✅ committed and pushed
+```
+
+## Session 2 Build Stats
+- `pnpm -r build` ✅ — 5 packages (42 Vite modules, 287KB UI bundle)
+- `pnpm test` ✅ — 106 tests pass across 12 test suites (up from 22)
+- `pnpm lint` ✅ — zero violations
+
 ## Next Session Focus
-- Phase 1, Session 2: Exchange Connector Framework + WebGL Rendering Engine (parallel worktrees)
+- Phase 1, Session 3: Data Worker Pipeline + Dockview Layout Shell

@@ -41,9 +41,6 @@ importers:
 
   packages/core:
     dependencies:
-      '@terminal/shared':
-        specifier: workspace:*
-        version: link:../shared
       '@terminal/types':
         specifier: workspace:*
         version: link:../types
@@ -82,6 +79,9 @@ importers:
       react-dom:
         specifier: ^18.3.1
         version: 18.3.1(react@18.3.1)
+      regl:
+        specifier: ^2.1.1
+        version: 2.1.1
     devDependencies:
       '@types/react':
         specifier: ^18.3.1
@@ -1437,6 +1437,9 @@ packages:
   real-require@0.2.0:
     resolution: {integrity: sha512-57frrGM/OCTLqLOAh0mhVA9VBMHd+9U7Zb2THMGdBUoZVOtGbJzjxsYGDJ3A9AYYCP4hn6y1TVbaOfzWtm5GFg==}
     engines: {node: '>= 12.13.0'}
+
+  regl@2.1.1:
+    resolution: {integrity: sha512-+IOGrxl3FZ8ZM9ixCWQZzFRiRn7Rzn9bu3iFHwg/yz4tlOUQgbO4PHLgG+1ZT60zcIV8tief6Qrmyl8qcoJP0g==}
 
   require-from-string@2.0.2:
     resolution: {integrity: sha512-Xf0nWe6RseziFMu+Ap9biiUbmplq6S9/p+7w7YXP/JBHhrUDDUhwa+vANyubuqfZWTveU//DYVGsDG7RKL/vEw==}
@@ -3102,6 +3105,8 @@ snapshots:
       loose-envify: 1.4.0
 
   real-require@0.2.0: {}
+
+  regl@2.1.1: {}
 
   require-from-string@2.0.2: {}
 

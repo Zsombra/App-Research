@@ -1,5 +1,40 @@
 # Session Log
 
+## Session 2 — 2026-03-17 — Phase 1: Foundation (Exchange Connectors + WebGL Engine)
+
+### Objective
+Implement the first two foundation modules in parallel worktrees.
+
+### Pipeline Execution
+- **Stage 1+2 (Spec+Design):** 4 agents in parallel → 2 specs + 2 designs
+- **Stage 3+4 (Implement):** 2 agents in parallel worktrees:
+  - Exchange Connectors: 11 files, 53 tests (BinanceAdapter, BybitAdapter, WSManager, OrderbookManager, FlushScheduler, DataWorker)
+  - WebGL Engine: 10 files, 31 tests (ViewportTransform, RenderingContext, CandlestickRenderer, GridRenderer, CrosshairRenderer, ChartManager, ChartPanel)
+- **Stage 5 (Audit):** code-reviewer + security-auditor (parallel):
+  - CRIT-01: Fixed Binance depth snapshot symbol routing (multi-symbol safe now)
+  - CRIT-02: Added sequence gap detection to OrderbookManager
+  - 6 High findings tracked for optimization
+  - 0 security vulnerabilities (except pre-existing Fastify CVE)
+- **Stage 7 (Integrate):** Committed and pushed
+
+### Stats
+- Total tests: 106 (up from 22)
+- Total source files: ~30 new files
+- UI bundle: 287KB (42 modules)
+- Build time: ~2s
+
+### Deferred Items
+- HIGH-01: baseDelay discrepancy (1000ms vs 100ms) — leave as 1000ms, more robust
+- HIGH-03: Bybit ticker percent calculation — verify with live data
+- HIGH-04: ViewportTransform immutability — not needed for Phase 1
+- HIGH-05: useChart stale ref — fix when adding real panel lifecycle
+- HIGH-06: Candlestick buffer layout — verify with real rendering
+
+### Next Session
+Phase 1, Session 3: Data Worker Pipeline + Dockview Layout Shell
+
+---
+
 ## Session 1 — 2026-03-17 — Phase 0: Bootstrap
 
 ### Objective

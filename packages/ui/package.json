@@ -12,10 +12,11 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@terminal/types": "workspace:*",
     "@terminal/shared": "workspace:*",
+    "@terminal/types": "workspace:*",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "regl": "^2.1.1"
   },
   "devDependencies": {
     "@types/react": "^18.3.1",
