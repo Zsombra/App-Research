@@ -7,6 +7,7 @@ import type { BaseExchangeAdapter } from '../adapters/base-adapter.js';
 import { FlushScheduler } from './flush-scheduler.js';
 import { BinanceAdapter } from '../adapters/binance/binance-adapter.js';
 import { BybitAdapter } from '../adapters/bybit/bybit-adapter.js';
+import { SimulatedAdapter } from '../adapters/simulated/simulated-adapter.js';
 
 /**
  * Creates an adapter instance for the given exchange ID.
@@ -18,6 +19,8 @@ function createAdapter(exchangeId: ExchangeId): BaseExchangeAdapter | null {
       return new BinanceAdapter();
     case 'bybit':
       return new BybitAdapter();
+    case 'simulated':
+      return new SimulatedAdapter();
     default:
       return null;
   }

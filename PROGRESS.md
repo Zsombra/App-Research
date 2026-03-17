@@ -115,5 +115,20 @@
 | `packages/ui/src/panels/` | TradesPanel.tsx, OrderbookPanel.tsx, TickerBar.tsx | Panel components |
 | `packages/ui/src/__tests__/` | worker-bridge.test.ts, market-store.test.ts, layout-store.test.ts | Tests |
 
+## Phase 2: Simulated Data Pipeline (Session 3 continued)
+```
+[Phase 2: Simulated Data Feed + End-to-End Pipeline] ✅ COMPLETE
+  SimulatedAdapter     ✅ generates realistic BTC/ETH/SOL trades, orderbook, ticker
+  Candle Aggregation   ✅ trades → OHLCV candles in market store
+  Live Chart           ✅ ChartPanel reads candles from store (no more demo data)
+  Full Pipeline        ✅ Worker → Bridge → Store → React panels
+  Tests                ✅ 18 new tests (161 total)
+```
+
+## Session 3 Final Build Stats
+- `pnpm -r build` ✅ — 5 packages (62 Vite modules, 642KB UI + 22KB worker chunk)
+- `pnpm test` ✅ — 161 tests pass across 17 test suites
+- `pnpm lint` ✅ — zero violations
+
 ## Next Session Focus
-- Phase 2: Live Exchange Data Integration
+- Phase 3: Polish panels (live trades list, live orderbook depth), volume profile, footprint chart

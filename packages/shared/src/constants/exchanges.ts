@@ -14,6 +14,7 @@ export const SUPPORTED_EXCHANGES: readonly ExchangeId[] = [
   'bitmex',
   'gate',
   'kucoin',
+  'simulated',
 ] as const;
 
 /**
@@ -30,4 +31,5 @@ export const EXCHANGE_DISPLAY_NAMES: Readonly<Record<ExchangeId, string>> = {
   bitmex: 'BitMEX',
   gate: 'Gate.io',
   kucoin: 'KuCoin',
+  simulated: 'Simulated',
 };

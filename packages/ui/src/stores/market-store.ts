@@ -3,14 +3,18 @@ import type {
   NormalizedTrade,
   OrderbookSnapshot,
   Ticker,
+  OHLCVCandle,
   ExchangeId,
   ConnectionStatus,
+  CandleTimeframe,
   SubscriptionTopic,
   WorkerOutboundMessage,
 } from '@terminal/types';
 import { getWorkerBridge } from '../worker/worker-bridge.js';
+import { aggregateTrade } from './candle-aggregator.js';
 
 const MAX_TRADES = 500;
+const DEFAULT_TIMEFRAME: CandleTimeframe = '1m';
 
 export interface MarketState {
   /** Recent trades per symbol, newest first */
@@ -19,6 +23,10 @@ export interface MarketState {
   orderbooks: Map<string, OrderbookSnapshot>;
   /** Latest ticker per symbol */
   tickers: Map<string, Ticker>;
+  /** OHLCV candles per symbol (oldest first) */
+  candles: Map<string, OHLCVCandle[]>;
+  /** Active timeframe per symbol */
+  timeframes: Map<string, CandleTimeframe>;
   /** Connection status per exchange */
   connectionStatuses: Map<ExchangeId, ConnectionStatus>;
   /** Currently subscribed symbols */
@@ -37,6 +45,8 @@ export const useMarketStore = create<MarketState>((set) => ({
   trades: new Map(),
   orderbooks: new Map(),
   tickers: new Map(),
+  candles: new Map(),
+  timeframes: new Map(),
   connectionStatuses: new Map(),
   subscriptions: new Set(),
 
@@ -46,7 +56,17 @@ export const useMarketStore = create<MarketState>((set) => ({
       const existing = trades.get(symbol) ?? [];
       const merged = [...newTrades, ...existing].slice(0, MAX_TRADES);
       trades.set(symbol, merged);
-      return { trades };
+
+      // Aggregate trades into candles
+      const candles = new Map(state.candles);
+      const timeframe = state.timeframes.get(symbol) ?? DEFAULT_TIMEFRAME;
+      const candleArray = [...(candles.get(symbol) ?? [])];
+      for (const trade of newTrades) {
+        aggregateTrade(candleArray, trade, timeframe);
+      }
+      candles.set(symbol, candleArray);
+
+      return { trades, candles };
     });
   },
 
@@ -80,7 +100,11 @@ export const useMarketStore = create<MarketState>((set) => ({
     set((state) => {
       const subscriptions = new Set(state.subscriptions);
       subscriptions.add(symbol);
-      return { subscriptions };
+      const timeframes = new Map(state.timeframes);
+      if (!timeframes.has(symbol)) {
+        timeframes.set(symbol, DEFAULT_TIMEFRAME);
+      }
+      return { subscriptions, timeframes };
     });
   },
 
@@ -96,7 +120,9 @@ export const useMarketStore = create<MarketState>((set) => ({
       orderbooks.delete(symbol);
       const tickers = new Map(state.tickers);
       tickers.delete(symbol);
-      return { subscriptions, trades, orderbooks, tickers };
+      const candles = new Map(state.candles);
+      candles.delete(symbol);
+      return { subscriptions, trades, orderbooks, tickers, candles };
     });
   },
 }));
@@ -124,7 +150,7 @@ export function routeWorkerMessage(message: WorkerOutboundMessage): void {
       console.error(`[DataWorker] ${message.code}: ${message.message}`);
       break;
     case 'candle-update':
-      // Future phase
+      // Handled server-side in future; client aggregates from trades for now
       break;
   }
 }
@@ -141,6 +167,10 @@ export function useOrderbook(symbol: string): OrderbookSnapshot | undefined {
 
 export function useTicker(symbol: string): Ticker | undefined {
   return useMarketStore((state) => state.tickers.get(symbol));
+}
+
+export function useCandles(symbol: string): OHLCVCandle[] {
+  return useMarketStore((state) => state.candles.get(symbol) ?? []);
 }
 
 export function useConnectionStatus(exchange: ExchangeId): ConnectionStatus {

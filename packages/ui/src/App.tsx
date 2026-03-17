@@ -17,7 +17,7 @@ export function App(): React.JSX.Element {
         color: '#ccc',
       }}
     >
-      <TickerBar symbol="BTC/USDT" exchange="binance" />
+      <TickerBar symbol="BTC/USDT" exchange="simulated" />
       <main style={{ flex: 1, minHeight: 0 }}>
         <TerminalLayout />
       </main>

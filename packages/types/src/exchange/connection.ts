@@ -11,7 +11,8 @@ export type ExchangeId =
   | 'deribit'
   | 'bitmex'
   | 'gate'
-  | 'kucoin';
+  | 'kucoin'
+  | 'simulated';
 
 /**
  * Connection lifecycle states for an exchange adapter.

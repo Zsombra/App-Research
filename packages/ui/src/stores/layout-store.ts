@@ -28,7 +28,7 @@ export function getDefaultPanels(): PanelConfig[] {
       linkColor: 'none',
       symbol: 'BTC/USDT',
       timeframe: '1m',
-      exchanges: ['binance'],
+      exchanges: ['simulated'],
     },
     {
       id: 'orderbook-main',
@@ -36,7 +36,7 @@ export function getDefaultPanels(): PanelConfig[] {
       title: 'Orderbook',
       linkColor: 'none',
       symbol: 'BTC/USDT',
-      exchanges: ['binance'],
+      exchanges: ['simulated'],
     },
     {
       id: 'trades-main',
@@ -44,7 +44,7 @@ export function getDefaultPanels(): PanelConfig[] {
       title: 'Recent Trades',
       linkColor: 'none',
       symbol: 'BTC/USDT',
-      exchanges: ['binance'],
+      exchanges: ['simulated'],
     },
   ];
 }

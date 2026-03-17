@@ -41,11 +41,11 @@ export function TerminalLayout(): React.JSX.Element {
     const bridge = getWorkerBridge();
     bridge.onMessage(routeWorkerMessage);
 
-    // Default subscription
+    // Default subscription using simulated exchange for demo
     bridge.send({
       type: 'subscribe',
       symbol: 'BTC/USDT',
-      exchanges: ['binance', 'bybit'],
+      exchanges: ['simulated'],
       topics: ['trades', 'orderbook', 'ticker'],
     });
 

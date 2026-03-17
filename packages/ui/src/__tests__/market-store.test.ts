@@ -60,6 +60,8 @@ describe('useMarketStore', () => {
       trades: new Map(),
       orderbooks: new Map(),
       tickers: new Map(),
+      candles: new Map(),
+      timeframes: new Map(),
       connectionStatuses: new Map(),
       subscriptions: new Set(),
     });
@@ -158,6 +160,8 @@ describe('routeWorkerMessage', () => {
       trades: new Map(),
       orderbooks: new Map(),
       tickers: new Map(),
+      candles: new Map(),
+      timeframes: new Map(),
       connectionStatuses: new Map(),
       subscriptions: new Set(),
     });

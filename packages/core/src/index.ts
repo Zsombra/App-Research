@@ -2,6 +2,7 @@
 export { BaseExchangeAdapter } from './adapters/base-adapter.js';
 export { BinanceAdapter } from './adapters/binance/binance-adapter.js';
 export { BybitAdapter } from './adapters/bybit/bybit-adapter.js';
+export { SimulatedAdapter } from './adapters/simulated/simulated-adapter.js';
 
 // WebSocket
 export { WebSocketManager } from './ws/ws-manager.js';
