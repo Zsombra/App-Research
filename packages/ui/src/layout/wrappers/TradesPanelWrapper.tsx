@@ -4,7 +4,7 @@ import type { PanelConfig } from '@terminal/types';
 import { TradesPanel } from '../../panels/TradesPanel.js';
 import { useActiveSymbol } from '../../stores/symbol-store.js';
 
-export function TradesPanelWrapper(props: IDockviewPanelProps): React.JSX.Element {
+export default function TradesPanelWrapper(props: IDockviewPanelProps): React.JSX.Element {
   const config = props.params as unknown as PanelConfig;
   const activeSymbol = useActiveSymbol();
   const effectiveConfig = useMemo(

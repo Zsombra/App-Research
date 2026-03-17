@@ -1,11 +1,11 @@
 # Project Progress
 
 ## Current State
-- **Phase:** 6 - Multi-Symbol Support (Session 3 continued)
-- **Stage:** COMPLETE through Phase 6
+- **Phase:** 8 - Performance Optimization (Session 3 continued)
+- **Stage:** COMPLETE through Phase 8
 - **Active Worktrees:** none
-- **Last Completed:** Phase 6 — Watchlist, symbol store, multi-symbol subscriptions
-- **Next Up:** Phase 7 — Code splitting, settings panel, alert system
+- **Last Completed:** Phase 8 — Code splitting, lazy panels, ErrorBoundary, vendor chunks
+- **Next Up:** Phase 9 — Real exchange adapters, WebSocket connections
 
 ## Pipeline Status
 ```
@@ -176,10 +176,31 @@
   New Tests            ✅ symbol-store (9 tests), alert-store (8 tests)
 ```
 
+## Phase 8: Performance Optimization (Session 3 continued)
+```
+[Phase 8: Code Splitting + Performance] ✅ COMPLETE
+  React.lazy Panels    ✅ All 9 panels lazy-loaded via dynamic import()
+  Suspense Fallback    ✅ Loading spinner while panel chunks fetch
+  ErrorBoundary        ✅ Panel crash isolation with retry button
+  Vendor Chunks        ✅ react, dockview, zustand split into separate cacheable chunks
+  Perf Hooks           ✅ useRenderPerf (slow render warnings), startFpsMonitor
+  Bundle Reduction     ✅ Core shell: 20KB (was 679KB), panels: 0.4-152KB lazy chunks
+```
+
 ## Session 3 Final Build Stats
-- `pnpm -r build` ✅ — 5 packages (679KB UI + 22KB worker chunk)
+```
+Build Output (code-split):
+  index.js               20.22 KB  (core shell)
+  vendor-dockview.js    485.23 KB  (cached vendor)
+  ChartPanelWrapper.js  151.62 KB  (WebGL chart, lazy)
+  data-worker-entry.js   22.00 KB  (Web Worker)
+  9 panel chunks          0.4-4.5KB each (lazy)
+  vendor-zustand.js       0.66 KB
+  index.css              39.67 KB
+```
+- `pnpm -r build` ✅ — code-split into 15 chunks
 - `pnpm test` ✅ — 178 tests pass across 19 test suites
 - `pnpm lint` ✅ — zero violations
 
 ## Next Session Focus
-- Phase 8: Performance (code splitting, lazy panel loading, bundle optimization)
+- Phase 9: Real exchange adapters (Binance/Coinbase WebSocket connections)

@@ -4,7 +4,7 @@ import type { PanelConfig } from '@terminal/types';
 import { OrderEntryPanel } from '../../panels/OrderEntryPanel.js';
 import { useActiveSymbol } from '../../stores/symbol-store.js';
 
-export function OrderEntryPanelWrapper(props: IDockviewPanelProps): React.JSX.Element {
+export default function OrderEntryPanelWrapper(props: IDockviewPanelProps): React.JSX.Element {
   const config = props.params as unknown as PanelConfig;
   const activeSymbol = useActiveSymbol();
   const effectiveConfig = useMemo(

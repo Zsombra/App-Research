@@ -4,7 +4,7 @@ import type { IDockviewPanelProps } from 'dockview-react';
 /**
  * Placeholder panel for types not yet implemented.
  */
-export function PlaceholderPanelWrapper(props: IDockviewPanelProps): React.JSX.Element {
+export default function PlaceholderPanelWrapper(props: IDockviewPanelProps): React.JSX.Element {
   return (
     <div
       style={{
