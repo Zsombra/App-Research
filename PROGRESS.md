@@ -1,11 +1,11 @@
 # Project Progress
 
 ## Current State
-- **Phase:** 3 - Panel Polish (Session 3 continued)
-- **Stage:** COMPLETE through Phase 3
+- **Phase:** 4 - Advanced Chart Features (Session 3 continued)
+- **Stage:** COMPLETE through Phase 4
 - **Active Worktrees:** none
-- **Last Completed:** Phase 3 — Panel polish, axis labels, depth bars, terminal theme
-- **Next Up:** Phase 4 — Volume bars on chart, footprint chart, performance tuning
+- **Last Completed:** Phase 4 — Volume bars, volume profile, incremental chart updates
+- **Next Up:** Phase 5 — Order entry panel, position management, keyboard shortcuts
 
 ## Pipeline Status
 ```
@@ -134,10 +134,19 @@
   Terminal Theme CSS   ✅ CSS custom properties, Dockview overrides, custom scrollbars
 ```
 
+## Phase 4: Advanced Chart Features (Session 3 continued)
+```
+[Phase 4: Volume + Performance] ✅ COMPLETE
+  Volume Bars          ✅ WebGL instanced rendering, bottom 20% pane, bullish/bearish coloring
+  Volume Profile       ✅ Session VP with buy/sell split, horizontal bars at right edge
+  Incremental Updates  ✅ appendCandle/updateLastCandle instead of full setCandles per tick
+  User Interaction     ✅ pan/zoom disables auto-fit; fitToData() re-enables
+```
+
 ## Session 3 Final Build Stats
-- `pnpm -r build` ✅ — 5 packages (63 Vite modules, 645KB UI + 22KB worker chunk)
+- `pnpm -r build` ✅ — 5 packages (65 Vite modules, 654KB UI + 22KB worker chunk)
 - `pnpm test` ✅ — 161 tests pass across 17 test suites
 - `pnpm lint` ✅ — zero violations
 
 ## Next Session Focus
-- Phase 4: Volume bars on chart, footprint chart, performance tuning
+- Phase 5: Order entry panel, position management, keyboard shortcuts

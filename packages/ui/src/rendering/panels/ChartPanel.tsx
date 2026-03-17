@@ -43,6 +43,7 @@ export function ChartPanel({ panelId, candles }: ChartPanelProps): React.JSX.Ele
   const { chartManager, isReady } = useChart(canvasRef);
   const isPanningRef = useRef(false);
   const lastMouseRef = useRef({ x: 0, y: 0 });
+  const prevCandleCountRef = useRef(0);
   const [gridInfo, setGridInfo] = useState<GridInfo>({ horizontalLines: [], verticalLines: [] });
 
   // Wire up grid info callback
@@ -55,11 +56,30 @@ export function ChartPanel({ panelId, candles }: ChartPanelProps): React.JSX.Ele
     }
   }, [chartManager]);
 
-  // Update candles when data changes
+  // Incremental candle updates: only setCandles on reset, otherwise update last candle
   useEffect(() => {
-    if (chartManager && candles && candles.length > 0) {
+    if (!chartManager || !candles || candles.length === 0) return;
+
+    const prevCount = prevCandleCountRef.current;
+
+    if (prevCount === 0 || candles.length < prevCount) {
+      // First load or data reset — full replacement
       chartManager.setCandles(candles);
+    } else if (candles.length === prevCount) {
+      // Same count — just update the last (forming) candle
+      chartManager.updateLastCandle(candles[candles.length - 1]!);
+    } else {
+      // New candle(s) appeared — append new ones and update last
+      for (let i = prevCount; i < candles.length - 1; i++) {
+        chartManager.appendCandle(candles[i]!);
+      }
+      // The very last candle might be forming
+      if (candles.length > prevCount) {
+        chartManager.appendCandle(candles[candles.length - 1]!);
+      }
     }
+
+    prevCandleCountRef.current = candles.length;
   }, [chartManager, candles]);
 
   // Mouse move handler for crosshair and pan

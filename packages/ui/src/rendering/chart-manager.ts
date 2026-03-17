@@ -4,11 +4,13 @@ import { ViewportTransform } from './viewport-transform.js';
 import { GridRenderer } from './renderers/grid-renderer.js';
 import type { GridInfo } from './renderers/grid-renderer.js';
 import { CandlestickRenderer } from './renderers/candlestick-renderer.js';
+import { VolumeBarRenderer } from './renderers/volume-bar-renderer.js';
+import { VolumeProfileRenderer } from './renderers/volume-profile-renderer.js';
 import { CrosshairRenderer } from './renderers/crosshair-renderer.js';
 
 /**
  * Orchestrates all renderers for a single chart panel.
- * Manages the render order: grid -> candles -> crosshair.
+ * Render order: grid -> volume bars -> candles -> crosshair.
  * Provides a high-level API for data updates, navigation, and interaction.
  */
 export class ChartManager {
@@ -16,10 +18,15 @@ export class ChartManager {
   private viewport: ViewportTransform;
   private gridRenderer: GridRenderer;
   private candlestickRenderer: CandlestickRenderer;
+  private volumeBarRenderer: VolumeBarRenderer;
+  private volumeProfileRenderer: VolumeProfileRenderer;
   private crosshairRenderer: CrosshairRenderer;
   private candles: OHLCVCandle[] = [];
   private resizeObserver: ResizeObserver | null = null;
   private readonly canvas: HTMLCanvasElement;
+
+  /** Tracks whether the user has manually panned/zoomed (disables auto-fit). */
+  private userHasInteracted: boolean = false;
 
   /** Optional callback fired after each render with updated grid positions. */
   onGridInfoUpdate: ((info: GridInfo) => void) | null = null;
@@ -49,16 +56,22 @@ export class ChartManager {
     // Create renderers
     this.gridRenderer = new GridRenderer(this.renderingCtx, this.viewport);
     this.candlestickRenderer = new CandlestickRenderer(this.renderingCtx, this.viewport);
+    this.volumeBarRenderer = new VolumeBarRenderer(this.renderingCtx, this.viewport);
+    this.volumeProfileRenderer = new VolumeProfileRenderer(this.renderingCtx, this.viewport);
     this.crosshairRenderer = new CrosshairRenderer(this.renderingCtx, this.viewport);
 
     // Initialize renderers
     this.gridRenderer.init();
     this.candlestickRenderer.init();
+    this.volumeBarRenderer.init();
+    this.volumeProfileRenderer.init();
     this.crosshairRenderer.init();
 
     // Set up render callback
     this.renderingCtx.onRender = () => {
       this.gridRenderer.render();
+      this.volumeProfileRenderer.render();
+      this.volumeBarRenderer.render();
       this.candlestickRenderer.render();
       this.crosshairRenderer.render();
       // Notify React of grid positions for HTML axis labels
@@ -76,13 +89,18 @@ export class ChartManager {
 
   /**
    * Replace all candle data and fit viewport to show all candles.
+   * Only auto-fits if the user hasn't manually panned/zoomed.
    * @param candles - Array of OHLCV candles (should be sorted by timestamp)
    */
   setCandles(candles: OHLCVCandle[]): void {
     this.candles = candles;
     this.candlestickRenderer.setData(candles);
-    this.viewport.fitToData(candles);
-    this.syncViewportToRenderers();
+    this.volumeBarRenderer.setData(candles);
+    this.volumeProfileRenderer.setData(candles);
+    if (!this.userHasInteracted) {
+      this.viewport.fitToData(candles);
+      this.syncViewportToRenderers();
+    }
     this.renderingCtx.markDirty();
   }
 
@@ -93,6 +111,7 @@ export class ChartManager {
   appendCandle(candle: OHLCVCandle): void {
     this.candles.push(candle);
     this.candlestickRenderer.appendCandle(candle);
+    this.volumeBarRenderer.appendCandle(candle);
     this.renderingCtx.markDirty();
   }
 
@@ -104,6 +123,7 @@ export class ChartManager {
     if (this.candles.length > 0) {
       this.candles[this.candles.length - 1] = candle;
       this.candlestickRenderer.updateLastCandle(candle);
+      this.volumeBarRenderer.updateLastCandle(candle);
       this.renderingCtx.markDirty();
     }
   }
@@ -116,6 +136,7 @@ export class ChartManager {
    * @param dy - Vertical pan in pixels
    */
   pan(dx: number, dy: number): void {
+    this.userHasInteracted = true;
     this.viewport.pan(dx, dy);
     this.syncViewportToRenderers();
     this.renderingCtx.markDirty();
@@ -128,6 +149,7 @@ export class ChartManager {
    * @param cy - Y coordinate of zoom center in pixels
    */
   zoom(factor: number, cx: number, cy: number): void {
+    this.userHasInteracted = true;
     this.viewport.zoom(factor, cx, cy);
     this.syncViewportToRenderers();
     this.renderingCtx.markDirty();
@@ -135,8 +157,10 @@ export class ChartManager {
 
   /**
    * Fit the viewport to show all loaded candle data.
+   * Resets the user interaction flag.
    */
   fitToData(): void {
+    this.userHasInteracted = false;
     this.viewport.fitToData(this.candles);
     this.syncViewportToRenderers();
     this.renderingCtx.markDirty();
@@ -196,6 +220,8 @@ export class ChartManager {
     }
     this.gridRenderer.dispose();
     this.candlestickRenderer.dispose();
+    this.volumeBarRenderer.dispose();
+    this.volumeProfileRenderer.dispose();
     this.crosshairRenderer.dispose();
     this.renderingCtx.dispose();
   }
@@ -204,6 +230,8 @@ export class ChartManager {
   private syncViewportToRenderers(): void {
     this.gridRenderer.setViewport(this.viewport);
     this.candlestickRenderer.setViewport(this.viewport);
+    this.volumeBarRenderer.setViewport(this.viewport);
+    this.volumeProfileRenderer.setViewport(this.viewport);
     this.crosshairRenderer.setViewport(this.viewport);
   }
 
