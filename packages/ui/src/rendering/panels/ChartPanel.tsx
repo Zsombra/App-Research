@@ -139,6 +139,27 @@ export function ChartPanel({ panelId, candles }: ChartPanelProps): React.JSX.Ele
           width: 1,
           points: pts.map((p) => ({ timestamp: p.timestamp, value: p.data.lower })),
         });
+      } else if (series.kind === 'vwap') {
+        // VWAP: 3 lines (vwap + upper/lower deviation bands)
+        const pts = series.points;
+        lines.push({
+          id: `${series.id}-upper`,
+          color: [...color.slice(0, 3), 0.3] as [number, number, number, number],
+          width: 1,
+          points: pts.map((p) => ({ timestamp: p.timestamp, value: p.data.upper })),
+        });
+        lines.push({
+          id: `${series.id}-vwap`,
+          color,
+          width: 2,
+          points: pts.map((p) => ({ timestamp: p.timestamp, value: p.data.vwap })),
+        });
+        lines.push({
+          id: `${series.id}-lower`,
+          color: [...color.slice(0, 3), 0.3] as [number, number, number, number],
+          width: 1,
+          points: pts.map((p) => ({ timestamp: p.timestamp, value: p.data.lower })),
+        });
       } else {
         // SMA/EMA: single line
         lines.push({
@@ -187,6 +208,40 @@ export function ChartPanel({ panelId, candles }: ChartPanelProps): React.JSX.Ele
           width: 1.5,
           points: first.points.map((p) => ({ timestamp: p.timestamp, value: p.data.value })),
         }]
+      );
+    } else if (first.kind === 'cvd') {
+      const indicatorConfig = indicators.get(first.id);
+      const color = hexToRGBA(indicatorConfig?.color ?? '#00BCD4');
+
+      // Find Y range from CVD data
+      let yMin = 0;
+      let yMax = 0;
+      const deltaHist: { timestamp: number; value: number }[] = [];
+      for (const pt of first.points) {
+        if (pt.data.value !== null) {
+          yMin = Math.min(yMin, pt.data.value);
+          yMax = Math.max(yMax, pt.data.value);
+        }
+        if (pt.data.delta !== null) {
+          deltaHist.push({ timestamp: pt.timestamp, value: pt.data.delta });
+        }
+      }
+      const padding = (yMax - yMin) * 0.1 || 1;
+
+      chartManager.setOscillatorData(
+        {
+          paneTopFraction: 0.75,
+          paneHeightFraction: 0.25,
+          yMin: yMin - padding,
+          yMax: yMax + padding,
+          referenceLines: [0],
+        },
+        [{
+          color,
+          width: 1.5,
+          points: first.points.map((p) => ({ timestamp: p.timestamp, value: p.data.value })),
+        }],
+        deltaHist
       );
     } else if (first.kind === 'macd') {
       const indicatorConfig = indicators.get(first.id);

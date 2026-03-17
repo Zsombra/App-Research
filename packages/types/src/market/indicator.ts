@@ -1,5 +1,5 @@
 /** Supported indicator kinds. */
-export type IndicatorKind = 'sma' | 'ema' | 'rsi' | 'macd' | 'bollinger';
+export type IndicatorKind = 'sma' | 'ema' | 'rsi' | 'macd' | 'bollinger' | 'cvd' | 'vwap';
 
 /** Whether an indicator renders overlaid on price or in a separate pane. */
 export type IndicatorPlacement = 'overlay' | 'separate';
@@ -11,6 +11,8 @@ export const INDICATOR_PLACEMENT: Record<IndicatorKind, IndicatorPlacement> = {
   rsi: 'separate',
   macd: 'separate',
   bollinger: 'overlay',
+  cvd: 'separate',
+  vwap: 'overlay',
 };
 
 // --- Parameter types ---
@@ -20,6 +22,8 @@ export interface EMAParams { period: number }
 export interface RSIParams { period: number }
 export interface MACDParams { fastPeriod: number; slowPeriod: number; signalPeriod: number }
 export interface BollingerParams { period: number; stdDev: number }
+export interface CVDParams { _placeholder?: number }
+export interface VWAPParams { _placeholder?: number }
 
 /** Default parameters per indicator kind. */
 export const INDICATOR_DEFAULTS: Record<IndicatorKind, Record<string, number>> = {
@@ -28,6 +32,8 @@ export const INDICATOR_DEFAULTS: Record<IndicatorKind, Record<string, number>> =
   rsi: { period: 14 },
   macd: { fastPeriod: 12, slowPeriod: 26, signalPeriod: 9 },
   bollinger: { period: 20, stdDev: 2 },
+  cvd: {},
+  vwap: {},
 };
 
 // --- Output types ---
@@ -37,6 +43,10 @@ export interface EMAOutput { value: number | null }
 export interface RSIOutput { value: number | null }
 export interface MACDOutput { macd: number | null; signal: number | null; histogram: number | null }
 export interface BollingerOutput { upper: number | null; middle: number | null; lower: number | null }
+/** Cumulative Volume Delta: running sum of (buyVolume - sellVolume). */
+export interface CVDOutput { value: number | null; delta: number | null }
+/** Volume Weighted Average Price with standard deviation bands. */
+export interface VWAPOutput { vwap: number | null; upper: number | null; lower: number | null }
 
 /** A single computed indicator data point. */
 export interface IndicatorPoint<T> {
@@ -50,7 +60,9 @@ export type IndicatorSeries =
   | { kind: 'ema'; id: string; params: EMAParams; points: IndicatorPoint<EMAOutput>[] }
   | { kind: 'rsi'; id: string; params: RSIParams; points: IndicatorPoint<RSIOutput>[] }
   | { kind: 'macd'; id: string; params: MACDParams; points: IndicatorPoint<MACDOutput>[] }
-  | { kind: 'bollinger'; id: string; params: BollingerParams; points: IndicatorPoint<BollingerOutput>[] };
+  | { kind: 'bollinger'; id: string; params: BollingerParams; points: IndicatorPoint<BollingerOutput>[] }
+  | { kind: 'cvd'; id: string; params: CVDParams; points: IndicatorPoint<CVDOutput>[] }
+  | { kind: 'vwap'; id: string; params: VWAPParams; points: IndicatorPoint<VWAPOutput>[] };
 
 /** User-facing indicator configuration. */
 export interface IndicatorConfig {

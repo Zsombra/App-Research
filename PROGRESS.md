@@ -1,11 +1,11 @@
 # Project Progress
 
 ## Current State
-- **Phase:** 10 - Technical Indicators & Advanced Charting (Session 3 continued)
-- **Stage:** COMPLETE through Phase 10
+- **Phase:** 11 - Advanced Order Flow (Session 3 continued)
+- **Stage:** COMPLETE through Phase 11
 - **Active Worktrees:** none
-- **Last Completed:** Phase 10 — 5 indicator calculations, WebGL overlay/oscillator renderers, indicator selector UI
-- **Next Up:** Phase 11 — Advanced order flow (CVD, VWAP, volume profile enhancements)
+- **Last Completed:** Phase 11 — CVD + VWAP indicators with rendering and delta histogram
+- **Next Up:** Phase 12 — Timeframe switching, session persistence, settings
 
 ## Pipeline Status
 ```
@@ -232,10 +232,23 @@ Build Output (code-split):
   ChartPanel Wiring     ✅ Indicator series → renderer pipeline, Bollinger 3-line split
 ```
 
+## Phase 11: Advanced Order Flow (Session 3 continued)
+```
+[Phase 11: CVD + VWAP] ✅ COMPLETE
+  CVD Calculation       ✅ Cumulative Volume Delta from buyVolume/sellVolume, 5 tests
+  VWAP Calculation      ✅ Volume-weighted average price with stddev bands, 7 tests
+  VWAP Day Reset        ✅ Resets at UTC midnight boundary
+  CVD Oscillator        ✅ Separate pane with cumulative line + delta histogram bars
+  VWAP Overlay          ✅ 3-line overlay (VWAP + upper/lower deviation bands)
+  Indicator Types       ✅ Extended IndicatorKind with 'cvd' | 'vwap', new output types
+  UI Integration        ✅ CVD/VWAP in IndicatorSelector dropdown
+  7 Indicators Total    ✅ SMA, EMA, RSI, MACD, Bollinger, CVD, VWAP
+```
+
 ## Session 3 Final Build Stats
-- `pnpm -r build` ✅ — code-split, 26KB core shell
-- `pnpm test` ✅ — 215 tests pass across 25 test suites
+- `pnpm -r build` ✅ — code-split, 27KB core shell
+- `pnpm test` ✅ — 227 tests pass across 27 test suites
 - `pnpm lint` ✅ — zero violations
 
 ## Next Session Focus
-- Phase 11: Advanced order flow (CVD, VWAP, volume profile enhancements)
+- Phase 12: Timeframe switching, session persistence, settings

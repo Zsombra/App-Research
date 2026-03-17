@@ -4,12 +4,16 @@ import { computeEMA } from './ema.js';
 import { computeRSI } from './rsi.js';
 import { computeMACD } from './macd.js';
 import { computeBollinger } from './bollinger.js';
+import { computeCVD } from './cvd.js';
+import { computeVWAP } from './vwap.js';
 
 export { computeSMA } from './sma.js';
 export { computeEMA } from './ema.js';
 export { computeRSI } from './rsi.js';
 export { computeMACD } from './macd.js';
 export { computeBollinger } from './bollinger.js';
+export { computeCVD } from './cvd.js';
+export { computeVWAP } from './vwap.js';
 
 /**
  * Dispatch function: compute any indicator by kind.
@@ -40,5 +44,9 @@ export function computeIndicator(
         params['period'] ?? 20,
         params['stdDev'] ?? 2
       );
+    case 'cvd':
+      return computeCVD(candles);
+    case 'vwap':
+      return computeVWAP(candles);
   }
 }

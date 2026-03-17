@@ -92,7 +92,7 @@ export function useOverlaySeries(): IndicatorSeries[] {
   return useIndicatorStore((state) => {
     const overlay: IndicatorSeries[] = [];
     for (const s of state.series.values()) {
-      if (s.kind === 'sma' || s.kind === 'ema' || s.kind === 'bollinger') {
+      if (s.kind === 'sma' || s.kind === 'ema' || s.kind === 'bollinger' || s.kind === 'vwap') {
         overlay.push(s);
       }
     }
@@ -104,7 +104,7 @@ export function useSeparateSeries(): IndicatorSeries[] {
   return useIndicatorStore((state) => {
     const separate: IndicatorSeries[] = [];
     for (const s of state.series.values()) {
-      if (s.kind === 'rsi' || s.kind === 'macd') {
+      if (s.kind === 'rsi' || s.kind === 'macd' || s.kind === 'cvd') {
         separate.push(s);
       }
     }

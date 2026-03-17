@@ -21,6 +21,8 @@ export { computeEMA } from './indicators/ema.js';
 export { computeRSI } from './indicators/rsi.js';
 export { computeMACD } from './indicators/macd.js';
 export { computeBollinger } from './indicators/bollinger.js';
+export { computeCVD } from './indicators/cvd.js';
+export { computeVWAP } from './indicators/vwap.js';
 export { computeIndicator } from './indicators/index.js';
 
 // Worker

@@ -9,6 +9,8 @@ const AVAILABLE_INDICATORS: { kind: IndicatorKind; label: string }[] = [
   { kind: 'rsi', label: 'RSI' },
   { kind: 'macd', label: 'MACD' },
   { kind: 'bollinger', label: 'Bollinger' },
+  { kind: 'cvd', label: 'CVD' },
+  { kind: 'vwap', label: 'VWAP' },
 ];
 
 function formatParams(params: Record<string, number>): string {
