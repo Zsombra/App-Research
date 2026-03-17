@@ -37,7 +37,7 @@ class MockResizeObserver {
 vi.stubGlobal('ResizeObserver', MockResizeObserver);
 
 // Mock requestAnimationFrame / cancelAnimationFrame
-vi.stubGlobal('requestAnimationFrame', vi.fn((cb: FrameRequestCallback) => {
+vi.stubGlobal('requestAnimationFrame', vi.fn((_cb: FrameRequestCallback) => {
   return 1;
 }));
 vi.stubGlobal('cancelAnimationFrame', vi.fn());

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import React, { act } from 'react';
 import ReactDOM from 'react-dom/client';
 
@@ -27,6 +27,19 @@ vi.mock('regl', () => {
   };
 });
 
+// Mock Worker since jsdom doesn't have Web Workers
+const mockWorker = {
+  postMessage: vi.fn(),
+  terminate: vi.fn(),
+  onmessage: null as ((event: MessageEvent) => void) | null,
+  onerror: null as ((event: ErrorEvent) => void) | null,
+  onmessageerror: null as (() => void) | null,
+  addEventListener: vi.fn(),
+  removeEventListener: vi.fn(),
+  dispatchEvent: vi.fn(() => true),
+};
+vi.stubGlobal('Worker', vi.fn(() => mockWorker));
+
 // Mock ResizeObserver
 vi.stubGlobal('ResizeObserver', class {
   observe = vi.fn();
@@ -37,9 +50,33 @@ vi.stubGlobal('ResizeObserver', class {
 vi.stubGlobal('requestAnimationFrame', vi.fn(() => 1));
 vi.stubGlobal('cancelAnimationFrame', vi.fn());
 
+// Mock dockview-react since it requires full DOM
+vi.mock('dockview-react', () => ({
+  DockviewReact: vi.fn(({ onReady }: { onReady: (event: { api: Record<string, unknown> }) => void }) => {
+    // Simulate the ready event with a mock API
+    React.useEffect(() => {
+      onReady({
+        api: {
+          addPanel: vi.fn(),
+          fromJSON: vi.fn(),
+          toJSON: vi.fn(() => ({})),
+          onDidLayoutChange: vi.fn(() => ({ dispose: vi.fn() })),
+        },
+      });
+    }, [onReady]);
+    return React.createElement('div', { 'data-testid': 'dockview' }, 'Dockview Mock');
+  }),
+  themeAbyss: { name: 'abyss', className: 'dockview-theme-abyss' },
+}));
+
 import { App } from '../App.js';
+import { resetWorkerBridge } from '../worker/worker-bridge.js';
 
 describe('App', () => {
+  afterEach(() => {
+    resetWorkerBridge();
+  });
+
   it('should render without crashing', () => {
     const container = document.createElement('div');
     document.body.appendChild(container);
@@ -48,7 +85,7 @@ describe('App', () => {
       root = ReactDOM.createRoot(container);
       root.render(<App />);
     });
-    expect(container.textContent).toContain('Trading Terminal - Phase 1c');
+    expect(container.textContent).toContain('BTC/USDT');
     act(() => {
       root.unmount();
     });

@@ -1,11 +1,11 @@
 # Project Progress
 
 ## Current State
-- **Phase:** 1 - Foundation (Session 2 complete)
-- **Stage:** COMPLETE for Session 2
+- **Phase:** 1 - Foundation (Session 3 complete)
+- **Stage:** COMPLETE for Session 3
 - **Active Worktrees:** none
-- **Last Completed:** Exchange Connector Framework + WebGL Rendering Engine
-- **Next Up:** Phase 1, Session 3: Data Worker Pipeline + Dockview Layout Shell
+- **Last Completed:** Data Worker Pipeline + Dockview Layout Shell
+- **Next Up:** Phase 2: Live Exchange Data Integration
 
 ## Pipeline Status
 ```
@@ -92,12 +92,28 @@
   Stage 3+4: Implement ✅ 10 new files, 31 new tests
   Stage 5: Audit       ✅ 0 Critical, 6 High tracked for optimization
   Stage 7: Integrate   ✅ committed and pushed
+
+[Phase 1b: Worker Bridge + Dockview Layout] ✅ COMPLETE
+  Stage 1: Spec        ✅ specs/phase-1b-worker-bridge-dockview.spec.md
+  Stage 3+4: Implement ✅ 16 new files, 37 new tests
+  Stage 5: Audit       ✅ 0 Critical, lint clean
+  Stage 7: Integrate   ✅ committed and pushed
 ```
 
-## Session 2 Build Stats
-- `pnpm -r build` ✅ — 5 packages (42 Vite modules, 287KB UI bundle)
-- `pnpm test` ✅ — 106 tests pass across 12 test suites (up from 22)
+## Session 3 Build Stats
+- `pnpm -r build` ✅ — 5 packages (61 Vite modules, 641KB UI bundle + 18KB worker chunk)
+- `pnpm test` ✅ — 143 tests pass across 15 test suites (up from 106)
 - `pnpm lint` ✅ — zero violations
 
+## Session 3 New Files
+| Directory | Files | Purpose |
+|-----------|-------|---------|
+| `packages/ui/src/worker/` | worker-bridge.ts, data-worker-entry.ts | WorkerBridge + Worker entry point |
+| `packages/ui/src/stores/` | market-store.ts, layout-store.ts | Zustand state management |
+| `packages/ui/src/layout/` | TerminalLayout.tsx, panel-registry.ts | Dockview layout shell |
+| `packages/ui/src/layout/wrappers/` | ChartPanelWrapper.tsx, TradesPanelWrapper.tsx, OrderbookPanelWrapper.tsx, PlaceholderPanelWrapper.tsx | Dockview panel wrappers |
+| `packages/ui/src/panels/` | TradesPanel.tsx, OrderbookPanel.tsx, TickerBar.tsx | Panel components |
+| `packages/ui/src/__tests__/` | worker-bridge.test.ts, market-store.test.ts, layout-store.test.ts | Tests |
+
 ## Next Session Focus
-- Phase 1, Session 3: Data Worker Pipeline + Dockview Layout Shell
+- Phase 2: Live Exchange Data Integration
