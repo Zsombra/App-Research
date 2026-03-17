@@ -12,6 +12,7 @@ import type {
 } from '@terminal/types';
 import { getWorkerBridge } from '../worker/worker-bridge.js';
 import { aggregateTrade } from './candle-aggregator.js';
+import { useIndicatorStore } from './indicator-store.js';
 
 const MAX_TRADES = 500;
 const DEFAULT_TIMEFRAME: CandleTimeframe = '1m';
@@ -65,6 +66,12 @@ export const useMarketStore = create<MarketState>((set) => ({
         aggregateTrade(candleArray, trade, timeframe);
       }
       candles.set(symbol, candleArray);
+
+      // Trigger indicator recomputation
+      const indicatorStore = useIndicatorStore.getState();
+      if (indicatorStore.indicators.size > 0) {
+        indicatorStore.recompute(symbol, candleArray);
+      }
 
       return { trades, candles };
     });
@@ -151,6 +158,9 @@ export function routeWorkerMessage(message: WorkerOutboundMessage): void {
       break;
     case 'candle-update':
       // Handled server-side in future; client aggregates from trades for now
+      break;
+    case 'indicator-update':
+      // Future: worker-computed indicators
       break;
   }
 }

@@ -7,10 +7,14 @@ import { CandlestickRenderer } from './renderers/candlestick-renderer.js';
 import { VolumeBarRenderer } from './renderers/volume-bar-renderer.js';
 import { VolumeProfileRenderer } from './renderers/volume-profile-renderer.js';
 import { CrosshairRenderer } from './renderers/crosshair-renderer.js';
+import { LineOverlayRenderer } from './renderers/line-overlay-renderer.js';
+import type { LineSeries } from './renderers/line-overlay-renderer.js';
+import { OscillatorPaneRenderer } from './renderers/oscillator-pane-renderer.js';
+import type { OscillatorConfig, OscillatorLine, HistogramBar } from './renderers/oscillator-pane-renderer.js';
 
 /**
  * Orchestrates all renderers for a single chart panel.
- * Render order: grid -> volume bars -> candles -> crosshair.
+ * Render order: grid -> volume bars -> candles -> line overlay -> oscillator -> crosshair.
  * Provides a high-level API for data updates, navigation, and interaction.
  */
 export class ChartManager {
@@ -21,6 +25,8 @@ export class ChartManager {
   private volumeBarRenderer: VolumeBarRenderer;
   private volumeProfileRenderer: VolumeProfileRenderer;
   private crosshairRenderer: CrosshairRenderer;
+  private lineOverlayRenderer: LineOverlayRenderer;
+  private oscillatorRenderer: OscillatorPaneRenderer | null = null;
   private candles: OHLCVCandle[] = [];
   private resizeObserver: ResizeObserver | null = null;
   private readonly canvas: HTMLCanvasElement;
@@ -30,6 +36,9 @@ export class ChartManager {
 
   /** Optional callback fired after each render with updated grid positions. */
   onGridInfoUpdate: ((info: GridInfo) => void) | null = null;
+
+  /** Optional callback fired with oscillator reference line positions. */
+  onOscillatorInfoUpdate: ((lines: { value: number; pixelY: number }[]) => void) | null = null;
 
   /**
    * Create a ChartManager bound to a canvas element.
@@ -59,6 +68,7 @@ export class ChartManager {
     this.volumeBarRenderer = new VolumeBarRenderer(this.renderingCtx, this.viewport);
     this.volumeProfileRenderer = new VolumeProfileRenderer(this.renderingCtx, this.viewport);
     this.crosshairRenderer = new CrosshairRenderer(this.renderingCtx, this.viewport);
+    this.lineOverlayRenderer = new LineOverlayRenderer(this.renderingCtx, this.viewport);
 
     // Initialize renderers
     this.gridRenderer.init();
@@ -66,6 +76,7 @@ export class ChartManager {
     this.volumeBarRenderer.init();
     this.volumeProfileRenderer.init();
     this.crosshairRenderer.init();
+    this.lineOverlayRenderer.init();
 
     // Set up render callback
     this.renderingCtx.onRender = () => {
@@ -73,6 +84,11 @@ export class ChartManager {
       this.volumeProfileRenderer.render();
       this.volumeBarRenderer.render();
       this.candlestickRenderer.render();
+      this.lineOverlayRenderer.render();
+      if (this.oscillatorRenderer) {
+        this.oscillatorRenderer.render();
+        this.onOscillatorInfoUpdate?.(this.oscillatorRenderer.getReferenceLinePositions());
+      }
       this.crosshairRenderer.render();
       // Notify React of grid positions for HTML axis labels
       this.onGridInfoUpdate?.(this.gridRenderer.getGridInfo());
@@ -124,6 +140,41 @@ export class ChartManager {
       this.candles[this.candles.length - 1] = candle;
       this.candlestickRenderer.updateLastCandle(candle);
       this.volumeBarRenderer.updateLastCandle(candle);
+      this.renderingCtx.markDirty();
+    }
+  }
+
+  // --- Indicators ---
+
+  /** Set overlay indicator line series (SMA, EMA, Bollinger). */
+  setOverlaySeries(series: LineSeries[]): void {
+    this.lineOverlayRenderer.setSeries(series);
+    this.renderingCtx.markDirty();
+  }
+
+  /** Configure and set data for the oscillator pane (RSI, MACD). */
+  setOscillatorData(
+    config: OscillatorConfig,
+    lines: OscillatorLine[],
+    histogram?: HistogramBar[]
+  ): void {
+    if (!this.oscillatorRenderer) {
+      this.oscillatorRenderer = new OscillatorPaneRenderer(this.renderingCtx, this.viewport);
+      this.oscillatorRenderer.init();
+    }
+    this.oscillatorRenderer.setConfig(config);
+    this.oscillatorRenderer.setLines(lines);
+    if (histogram) {
+      this.oscillatorRenderer.setHistogram(histogram);
+    }
+    this.renderingCtx.markDirty();
+  }
+
+  /** Remove the oscillator pane. */
+  clearOscillator(): void {
+    if (this.oscillatorRenderer) {
+      this.oscillatorRenderer.dispose();
+      this.oscillatorRenderer = null;
       this.renderingCtx.markDirty();
     }
   }
@@ -223,6 +274,10 @@ export class ChartManager {
     this.volumeBarRenderer.dispose();
     this.volumeProfileRenderer.dispose();
     this.crosshairRenderer.dispose();
+    this.lineOverlayRenderer.dispose();
+    if (this.oscillatorRenderer) {
+      this.oscillatorRenderer.dispose();
+    }
     this.renderingCtx.dispose();
   }
 
@@ -233,6 +288,10 @@ export class ChartManager {
     this.volumeBarRenderer.setViewport(this.viewport);
     this.volumeProfileRenderer.setViewport(this.viewport);
     this.crosshairRenderer.setViewport(this.viewport);
+    this.lineOverlayRenderer.setViewport(this.viewport);
+    if (this.oscillatorRenderer) {
+      this.oscillatorRenderer.setViewport(this.viewport);
+    }
   }
 
   /** Set up ResizeObserver for automatic canvas resizing. */

@@ -4,6 +4,7 @@ import type { NormalizedTrade } from '../market/trade.js';
 import type { OHLCVCandle, CandleTimeframe } from '../market/candle.js';
 import type { OrderbookSnapshot } from '../market/orderbook.js';
 import type { Ticker } from '../market/ticker.js';
+import type { IndicatorKind, IndicatorPoint } from '../market/indicator.js';
 
 /**
  * Messages sent from the main thread to the data worker.
@@ -22,8 +23,8 @@ export type WorkerInboundMessage =
   | {
       type: 'add-indicator';
       id: string;
-      kind: string;
-      params: Record<string, unknown>;
+      kind: IndicatorKind;
+      params: Record<string, number>;
     }
   | { type: 'remove-indicator'; id: string };
 
@@ -46,4 +47,10 @@ export type WorkerOutboundMessage =
       exchange: ExchangeId;
       status: ConnectionStatus;
     }
-  | { type: 'error'; code: string; message: string };
+  | { type: 'error'; code: string; message: string }
+  | {
+      type: 'indicator-update';
+      id: string;
+      kind: IndicatorKind;
+      points: IndicatorPoint<unknown>[];
+    };

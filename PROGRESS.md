@@ -1,11 +1,11 @@
 # Project Progress
 
 ## Current State
-- **Phase:** 9 - Real Exchange Adapters (Session 3 continued)
-- **Stage:** COMPLETE through Phase 9
+- **Phase:** 10 - Technical Indicators & Advanced Charting (Session 3 continued)
+- **Stage:** COMPLETE through Phase 10
 - **Active Worktrees:** none
-- **Last Completed:** Phase 9 — Coinbase adapter, exchange selector UI, multi-exchange support
-- **Next Up:** Phase 10 — Technical indicators, advanced charting
+- **Last Completed:** Phase 10 — 5 indicator calculations, WebGL overlay/oscillator renderers, indicator selector UI
+- **Next Up:** Phase 11 — Advanced order flow (CVD, VWAP, volume profile enhancements)
 
 ## Pipeline Status
 ```
@@ -214,10 +214,28 @@ Build Output (code-split):
   3 Real Adapters      ✅ Binance + Bybit + Coinbase (+ simulated)
 ```
 
+## Phase 10: Technical Indicators & Advanced Charting (Session 3 continued)
+```
+[Phase 10: Indicators + Renderers] ✅ COMPLETE
+  Indicator Types       ✅ IndicatorKind, params, outputs, series types + defaults
+  SMA Calculation       ✅ Sliding window SMA with 6 tests
+  EMA Calculation       ✅ Recursive EMA with SMA seed, 5 tests
+  RSI Calculation       ✅ Wilder smoothing method, 6 tests
+  MACD Calculation      ✅ Fast/Slow EMA + Signal line + Histogram, 5 tests
+  Bollinger Bands       ✅ SMA middle + rolling stddev bands, 7 tests
+  computeIndicator()    ✅ Central dispatch function for all 5 indicators
+  Indicator Store       ✅ Zustand store: add/remove/recompute, auto-triggers on trades
+  LineOverlayRenderer   ✅ WebGL quad-extruded line segments for SMA/EMA/Bollinger
+  OscillatorPaneRenderer ✅ Separate bottom pane for RSI/MACD with reference lines
+  ChartManager          ✅ Integrated overlay + oscillator renderers in render loop
+  IndicatorSelector     ✅ Dropdown UI: add/remove indicators, edit params inline
+  ChartPanel Wiring     ✅ Indicator series → renderer pipeline, Bollinger 3-line split
+```
+
 ## Session 3 Final Build Stats
-- `pnpm -r build` ✅ — code-split, 22KB core shell
-- `pnpm test` ✅ — 186 tests pass across 20 test suites
+- `pnpm -r build` ✅ — code-split, 26KB core shell
+- `pnpm test` ✅ — 215 tests pass across 25 test suites
 - `pnpm lint` ✅ — zero violations
 
 ## Next Session Focus
-- Phase 10: Technical indicators, advanced charting
+- Phase 11: Advanced order flow (CVD, VWAP, volume profile enhancements)

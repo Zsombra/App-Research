@@ -4,6 +4,28 @@ export type { PriceLevel, OrderbookSnapshot, OrderbookDelta } from './market/ord
 export type { CandleTimeframe, OHLCVCandle } from './market/candle.js';
 export type { Ticker, BBO } from './market/ticker.js';
 export type { LiquidationEvent } from './market/liquidation.js';
+export type {
+  IndicatorKind,
+  IndicatorPlacement,
+  SMAParams,
+  EMAParams,
+  RSIParams,
+  MACDParams,
+  BollingerParams,
+  SMAOutput,
+  EMAOutput,
+  RSIOutput,
+  MACDOutput,
+  BollingerOutput,
+  IndicatorPoint,
+  IndicatorSeries,
+  IndicatorConfig,
+} from './market/indicator.js';
+export {
+  INDICATOR_PLACEMENT,
+  INDICATOR_DEFAULTS,
+  INDICATOR_COLORS,
+} from './market/indicator.js';
 export type { Instrument, ExchangeSymbol } from './market/instrument.js';
 
 // Exchange types

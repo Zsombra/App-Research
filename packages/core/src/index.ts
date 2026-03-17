@@ -15,6 +15,14 @@ export { getWebSocketConstructor, WS_CONNECTING, WS_OPEN, WS_CLOSING, WS_CLOSED 
 export { OrderbookManager, SequenceGapError } from './orderbook/orderbook-manager.js';
 export type { OrderbookManagerConfig } from './orderbook/orderbook-manager.js';
 
+// Indicators
+export { computeSMA } from './indicators/sma.js';
+export { computeEMA } from './indicators/ema.js';
+export { computeRSI } from './indicators/rsi.js';
+export { computeMACD } from './indicators/macd.js';
+export { computeBollinger } from './indicators/bollinger.js';
+export { computeIndicator } from './indicators/index.js';
+
 // Worker
 export { FlushScheduler } from './worker/flush-scheduler.js';
 export type { FlushSchedulerConfig } from './worker/flush-scheduler.js';

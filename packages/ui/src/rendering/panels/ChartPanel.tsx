@@ -1,7 +1,10 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import type { OHLCVCandle } from '@terminal/types';
 import type { GridInfo } from '../renderers/grid-renderer.js';
+import type { LineSeries } from '../renderers/line-overlay-renderer.js';
 import { useChart } from '../hooks/use-chart.js';
+import { useIndicatorStore, useOverlaySeries, useSeparateSeries } from '../../stores/indicator-store.js';
+import { IndicatorSelector } from '../../components/IndicatorSelector.js';
 
 /** Props for the ChartPanel component. */
 export interface ChartPanelProps {
@@ -27,13 +30,21 @@ function formatPriceLabel(price: number): string {
   return price.toFixed(4);
 }
 
+/** Parse a hex color string to RGBA tuple. */
+function hexToRGBA(hex: string, alpha: number = 1): [number, number, number, number] {
+  const r = parseInt(hex.slice(1, 3), 16) / 255;
+  const g = parseInt(hex.slice(3, 5), 16) / 255;
+  const b = parseInt(hex.slice(5, 7), 16) / 255;
+  return [r, g, b, alpha];
+}
+
 /** Right axis width in CSS pixels. */
 const PRICE_AXIS_WIDTH = 64;
 /** Bottom axis height in CSS pixels. */
 const TIME_AXIS_HEIGHT = 20;
 
 /**
- * React component that renders a WebGL candlestick chart.
+ * React component that renders a WebGL candlestick chart with indicator overlays.
  * Wraps a canvas element with the useChart hook.
  * Handles mouse events for pan, zoom, and crosshair.
  * Renders HTML overlay labels for price/time axes.
@@ -45,13 +56,20 @@ export function ChartPanel({ panelId, candles }: ChartPanelProps): React.JSX.Ele
   const lastMouseRef = useRef({ x: 0, y: 0 });
   const prevCandleCountRef = useRef(0);
   const [gridInfo, setGridInfo] = useState<GridInfo>({ horizontalLines: [], verticalLines: [] });
+  const [oscLabels, setOscLabels] = useState<{ value: number; pixelY: number }[]>([]);
+
+  // Indicator series from store
+  const overlaySeries = useOverlaySeries();
+  const separateSeries = useSeparateSeries();
 
   // Wire up grid info callback
   useEffect(() => {
     if (chartManager) {
       chartManager.onGridInfoUpdate = setGridInfo;
+      chartManager.onOscillatorInfoUpdate = setOscLabels;
       return () => {
         chartManager.onGridInfoUpdate = null;
+        chartManager.onOscillatorInfoUpdate = null;
       };
     }
   }, [chartManager]);
@@ -81,6 +99,138 @@ export function ChartPanel({ panelId, candles }: ChartPanelProps): React.JSX.Ele
 
     prevCandleCountRef.current = candles.length;
   }, [chartManager, candles]);
+
+  // Wire overlay indicators to chart manager
+  useEffect(() => {
+    if (!chartManager) return;
+
+    if (overlaySeries.length === 0) {
+      chartManager.setOverlaySeries([]);
+      return;
+    }
+
+    const lines: LineSeries[] = [];
+
+    for (const series of overlaySeries) {
+      const config = series;
+      // Look up color from indicator store
+      const { indicators } = useIndicatorStore.getState();
+      const indicatorConfig = indicators.get(config.id);
+      const color = hexToRGBA(indicatorConfig?.color ?? '#FFD700');
+
+      if (series.kind === 'bollinger') {
+        // Bollinger: 3 lines (upper, middle, lower)
+        const pts = series.points;
+        lines.push({
+          id: `${series.id}-upper`,
+          color: [...color.slice(0, 3), 0.5] as [number, number, number, number],
+          width: 1,
+          points: pts.map((p) => ({ timestamp: p.timestamp, value: p.data.upper })),
+        });
+        lines.push({
+          id: `${series.id}-middle`,
+          color,
+          width: 1.5,
+          points: pts.map((p) => ({ timestamp: p.timestamp, value: p.data.middle })),
+        });
+        lines.push({
+          id: `${series.id}-lower`,
+          color: [...color.slice(0, 3), 0.5] as [number, number, number, number],
+          width: 1,
+          points: pts.map((p) => ({ timestamp: p.timestamp, value: p.data.lower })),
+        });
+      } else {
+        // SMA/EMA: single line
+        lines.push({
+          id: series.id,
+          color,
+          width: 1.5,
+          points: series.points.map((p) => ({
+            timestamp: p.timestamp,
+            value: (p.data as { value: number | null }).value,
+          })),
+        });
+      }
+    }
+
+    chartManager.setOverlaySeries(lines);
+  }, [chartManager, overlaySeries]);
+
+  // Wire separate-pane indicators (RSI, MACD) to chart manager
+  useEffect(() => {
+    if (!chartManager) return;
+
+    if (separateSeries.length === 0) {
+      chartManager.clearOscillator();
+      setOscLabels([]);
+      return;
+    }
+
+    // Use the first separate indicator to configure the pane
+    const first = separateSeries[0]!;
+    const { indicators } = useIndicatorStore.getState();
+
+    if (first.kind === 'rsi') {
+      const indicatorConfig = indicators.get(first.id);
+      const color = hexToRGBA(indicatorConfig?.color ?? '#FFD700');
+
+      chartManager.setOscillatorData(
+        {
+          paneTopFraction: 0.75,
+          paneHeightFraction: 0.25,
+          yMin: 0,
+          yMax: 100,
+          referenceLines: [30, 70],
+        },
+        [{
+          color,
+          width: 1.5,
+          points: first.points.map((p) => ({ timestamp: p.timestamp, value: p.data.value })),
+        }]
+      );
+    } else if (first.kind === 'macd') {
+      const indicatorConfig = indicators.get(first.id);
+      const color = hexToRGBA(indicatorConfig?.color ?? '#00BCD4');
+
+      // Find Y range from MACD data
+      let yMin = 0;
+      let yMax = 0;
+      const histogram: { timestamp: number; value: number }[] = [];
+      for (const pt of first.points) {
+        if (pt.data.macd !== null) {
+          yMin = Math.min(yMin, pt.data.macd, pt.data.signal ?? 0, pt.data.histogram ?? 0);
+          yMax = Math.max(yMax, pt.data.macd, pt.data.signal ?? 0, pt.data.histogram ?? 0);
+        }
+        if (pt.data.histogram !== null) {
+          histogram.push({ timestamp: pt.timestamp, value: pt.data.histogram });
+        }
+      }
+      const padding = (yMax - yMin) * 0.1 || 1;
+
+      chartManager.setOscillatorData(
+        {
+          paneTopFraction: 0.75,
+          paneHeightFraction: 0.25,
+          yMin: yMin - padding,
+          yMax: yMax + padding,
+          referenceLines: [0],
+        },
+        [
+          {
+            color,
+            width: 1.5,
+            points: first.points.map((p) => ({ timestamp: p.timestamp, value: p.data.macd })),
+          },
+          {
+            color: hexToRGBA('#FF6EC7'),
+            width: 1,
+            points: first.points.map((p) => ({ timestamp: p.timestamp, value: p.data.signal })),
+          },
+        ],
+        histogram
+      );
+    }
+  }, [chartManager, separateSeries]);
 
   // Mouse move handler for crosshair and pan
   const handleMouseMove = useCallback(
@@ -168,6 +318,11 @@ export function ChartPanel({ panelId, candles }: ChartPanelProps): React.JSX.Ele
         background: '#0f0f14',
       }}
     >
+      {/* Indicator selector (top-left corner) */}
+      <div style={{ position: 'absolute', top: 4, left: 4, zIndex: 10 }}>
+        <IndicatorSelector />
+      </div>
+
       {/* Chart canvas area — leaves room for axes */}
       <canvas
         ref={canvasRef}
@@ -211,6 +366,22 @@ export function ChartPanel({ panelId, candles }: ChartPanelProps): React.JSX.Ele
             }}
           >
             {formatPriceLabel(line.price)}
+          </span>
+        ))}
+        {/* Oscillator reference labels */}
+        {oscLabels.map((label, i) => (
+          <span
+            key={`osc-${i}`}
+            style={{
+              position: 'absolute',
+              right: 6,
+              top: label.pixelY - 7,
+              fontSize: 9,
+              color: '#555',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {label.value}
           </span>
         ))}
       </div>
