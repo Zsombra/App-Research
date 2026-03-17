@@ -6,6 +6,7 @@ import { TradesPanelWrapper } from './wrappers/TradesPanelWrapper.js';
 import { OrderbookPanelWrapper } from './wrappers/OrderbookPanelWrapper.js';
 import { OrderEntryPanelWrapper } from './wrappers/OrderEntryPanelWrapper.js';
 import { PositionsPanelWrapper } from './wrappers/PositionsPanelWrapper.js';
+import { WatchlistPanelWrapper } from './wrappers/WatchlistPanelWrapper.js';
 import { PlaceholderPanelWrapper } from './wrappers/PlaceholderPanelWrapper.js';
 
 /**
@@ -19,6 +20,6 @@ export const panelComponents: Record<string, React.FunctionComponent<IDockviewPa
   'order-entry': OrderEntryPanelWrapper,
   positions: PositionsPanelWrapper,
   'depth-chart': PlaceholderPanelWrapper,
-  watchlist: PlaceholderPanelWrapper,
+  watchlist: WatchlistPanelWrapper,
   placeholder: PlaceholderPanelWrapper,
 } satisfies Record<PanelType, React.FunctionComponent<IDockviewPanelProps>>;

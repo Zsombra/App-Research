@@ -47,6 +47,14 @@ export function getDefaultPanels(): PanelConfig[] {
       exchanges: ['simulated'],
     },
     {
+      id: 'watchlist-main',
+      type: 'watchlist',
+      title: 'Watchlist',
+      linkColor: 'none',
+      symbol: 'BTC/USDT',
+      exchanges: ['simulated'],
+    },
+    {
       id: 'order-entry-main',
       type: 'order-entry',
       title: 'Order Entry',

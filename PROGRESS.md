@@ -1,11 +1,11 @@
 # Project Progress
 
 ## Current State
-- **Phase:** 5 - Trading Interface (Session 3 continued)
-- **Stage:** COMPLETE through Phase 5
+- **Phase:** 6 - Multi-Symbol Support (Session 3 continued)
+- **Stage:** COMPLETE through Phase 6
 - **Active Worktrees:** none
-- **Last Completed:** Phase 5 — Order entry, positions panel, keyboard shortcuts
-- **Next Up:** Phase 6 — Watchlist, multi-symbol support, settings panel
+- **Last Completed:** Phase 6 — Watchlist, symbol store, multi-symbol subscriptions
+- **Next Up:** Phase 7 — Code splitting, settings panel, alert system
 
 ## Pipeline Status
 ```
@@ -154,10 +154,21 @@
   Default Layout       ✅ 5-panel workspace (chart, orderbook, trades, order entry, positions)
 ```
 
+## Phase 6: Multi-Symbol Support (Session 3 continued)
+```
+[Phase 6: Watchlist + Symbol Context] ✅ COMPLETE
+  Symbol Store         ✅ activeSymbol, watchlist, subscribedSymbols in Zustand
+  WatchlistPanel       ✅ live prices, 24h change %, add/remove symbols, click-to-switch
+  Multi-Symbol Subs    ✅ all watchlist symbols subscribed on mount (BTC, ETH, SOL, XRP)
+  Panel Linking        ✅ all panels react to activeSymbol changes (chart, OB, trades, OE, ticker)
+  Hotkeys Updated      ✅ B/S/F now use active symbol instead of hardcoded BTC
+  6-Panel Layout       ✅ watchlist (left) + chart (center) + orderbook (right) + trades/positions (bottom)
+```
+
 ## Session 3 Final Build Stats
-- `pnpm -r build` ✅ — 5 packages (71 Vite modules, 667KB UI + 22KB worker chunk)
+- `pnpm -r build` ✅ — 5 packages (74 Vite modules, 671KB UI + 22KB worker chunk)
 - `pnpm test` ✅ — 161 tests pass across 17 test suites
 - `pnpm lint` ✅ — zero violations
 
 ## Next Session Focus
-- Phase 6: Watchlist, multi-symbol support, settings panel
+- Phase 7: Code splitting, settings panel, alert system

@@ -2,6 +2,7 @@ import React from 'react';
 import { TerminalLayout } from './layout/TerminalLayout.js';
 import { TickerBar } from './panels/TickerBar.js';
 import { useHotkeys } from './hooks/use-hotkeys.js';
+import { useActiveSymbol } from './stores/symbol-store.js';
 import './styles/terminal.css';
 
 /**
@@ -10,6 +11,7 @@ import './styles/terminal.css';
  */
 export function App(): React.JSX.Element {
   useHotkeys();
+  const activeSymbol = useActiveSymbol();
 
   return (
     <div
@@ -20,7 +22,7 @@ export function App(): React.JSX.Element {
         height: '100vh',
       }}
     >
-      <TickerBar symbol="BTC/USDT" exchange="simulated" />
+      <TickerBar symbol={activeSymbol} exchange="simulated" />
       <main style={{ flex: 1, minHeight: 0 }}>
         <TerminalLayout />
       </main>

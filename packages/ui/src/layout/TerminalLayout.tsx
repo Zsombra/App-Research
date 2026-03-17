@@ -6,6 +6,7 @@ import { panelComponents } from './panel-registry.js';
 import { getWorkerBridge, resetWorkerBridge } from '../worker/worker-bridge.js';
 import { routeWorkerMessage } from '../stores/market-store.js';
 import { getDefaultPanels } from '../stores/layout-store.js';
+import { DEFAULT_WATCHLIST, useSymbolStore } from '../stores/symbol-store.js';
 
 const LAYOUT_STORAGE_KEY = 'terminal-dockview-layout-v1';
 
@@ -36,18 +37,23 @@ function loadLayout(): SerializedDockview | null {
 export function TerminalLayout(): React.JSX.Element {
   const apiRef = useRef<DockviewApi | null>(null);
 
-  // Wire up the WorkerBridge on mount
+  // Wire up the WorkerBridge on mount and subscribe to all watchlist symbols
   useEffect(() => {
     const bridge = getWorkerBridge();
     bridge.onMessage(routeWorkerMessage);
 
-    // Default subscription using simulated exchange for demo
-    bridge.send({
-      type: 'subscribe',
-      symbol: 'BTC/USDT',
-      exchanges: ['simulated'],
-      topics: ['trades', 'orderbook', 'ticker'],
-    });
+    const symbolStore = useSymbolStore.getState();
+
+    // Subscribe to all default watchlist symbols
+    for (const symbol of DEFAULT_WATCHLIST) {
+      bridge.send({
+        type: 'subscribe',
+        symbol,
+        exchanges: ['simulated'],
+        topics: ['trades', 'orderbook', 'ticker'],
+      });
+      symbolStore.subscribedSymbols.add(symbol);
+    }
 
     return () => {
       bridge.offMessage(routeWorkerMessage);
@@ -84,7 +90,7 @@ export function TerminalLayout(): React.JSX.Element {
       });
     }
 
-    // Add orderbook panel (right)
+    // Add orderbook panel (right of chart)
     const orderbookConfig = defaultPanels.find((p) => p.type === 'orderbook');
     if (orderbookConfig) {
       api.addPanel({
@@ -97,6 +103,22 @@ export function TerminalLayout(): React.JSX.Element {
           direction: 'right',
         },
         initialWidth: 280,
+      });
+    }
+
+    // Add watchlist panel (left of chart)
+    const watchlistConfig = defaultPanels.find((p) => p.type === 'watchlist');
+    if (watchlistConfig) {
+      api.addPanel({
+        id: watchlistConfig.id,
+        component: watchlistConfig.type,
+        title: watchlistConfig.title,
+        params: watchlistConfig,
+        position: {
+          referencePanel: chartConfig?.id ?? 'chart-main',
+          direction: 'left',
+        },
+        initialWidth: 220,
       });
     }
 
@@ -131,7 +153,7 @@ export function TerminalLayout(): React.JSX.Element {
       });
     }
 
-    // Add positions panel (below trades, spanning bottom)
+    // Add positions panel (tab alongside trades)
     const positionsConfig = defaultPanels.find((p) => p.type === 'positions');
     if (positionsConfig) {
       api.addPanel({
@@ -151,7 +173,6 @@ export function TerminalLayout(): React.JSX.Element {
       saveLayout(api);
     });
 
-    // Clean up on unmount (handled by React strict mode double-invoke)
     return () => {
       disposable.dispose();
     };

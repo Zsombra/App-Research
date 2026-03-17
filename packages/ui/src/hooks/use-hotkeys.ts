@@ -1,17 +1,17 @@
 import { useEffect, useRef } from 'react';
 import { useOrderStore } from '../stores/order-store.js';
+import { useSymbolStore } from '../stores/symbol-store.js';
 
 /**
  * Keyboard shortcut definitions for the trading terminal.
  *
- * B           — Quick buy (market, default qty)
- * S           — Quick sell (market, default qty)
+ * B           — Quick buy (market, default qty) for active symbol
+ * S           — Quick sell (market, default qty) for active symbol
  * Escape      — Cancel all open orders
- * F           — Flatten position (close at market)
+ * F           — Flatten position (close at market) for active symbol
  */
 
 const DEFAULT_QUICK_QTY = 0.01;
-const DEFAULT_SYMBOL = 'BTC/USDT';
 
 export function useHotkeys(): void {
   const handlerRef = useRef<(e: KeyboardEvent) => void>();
@@ -24,14 +24,14 @@ export function useHotkeys(): void {
         return;
       }
 
-      const store = useOrderStore.getState();
+      const orderStore = useOrderStore.getState();
+      const activeSymbol = useSymbolStore.getState().activeSymbol;
 
       switch (e.key.toLowerCase()) {
         case 'b': {
-          // Quick buy
           e.preventDefault();
-          store.placeOrder({
-            symbol: DEFAULT_SYMBOL,
+          orderStore.placeOrder({
+            symbol: activeSymbol,
             side: 'buy',
             type: 'market',
             quantity: DEFAULT_QUICK_QTY,
@@ -39,10 +39,9 @@ export function useHotkeys(): void {
           break;
         }
         case 's': {
-          // Quick sell
           e.preventDefault();
-          store.placeOrder({
-            symbol: DEFAULT_SYMBOL,
+          orderStore.placeOrder({
+            symbol: activeSymbol,
             side: 'sell',
             type: 'market',
             quantity: DEFAULT_QUICK_QTY,
@@ -50,17 +49,15 @@ export function useHotkeys(): void {
           break;
         }
         case 'escape': {
-          // Cancel all orders
-          store.cancelAllOrders();
+          orderStore.cancelAllOrders();
           break;
         }
         case 'f': {
-          // Flatten position
           e.preventDefault();
-          const pos = store.positions.get(DEFAULT_SYMBOL);
+          const pos = orderStore.positions.get(activeSymbol);
           if (pos && Math.abs(pos.quantity) > 0.00000001) {
-            store.placeOrder({
-              symbol: DEFAULT_SYMBOL,
+            orderStore.placeOrder({
+              symbol: activeSymbol,
               side: pos.quantity > 0 ? 'sell' : 'buy',
               type: 'market',
               quantity: Math.abs(pos.quantity),

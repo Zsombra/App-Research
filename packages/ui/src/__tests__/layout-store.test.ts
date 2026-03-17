@@ -24,24 +24,24 @@ describe('useLayoutStore', () => {
 
   it('should have default panels', () => {
     const panels = useLayoutStore.getState().panels;
-    expect(panels).toHaveLength(5);
-    expect(panels.map((p) => p.type)).toEqual(['chart', 'orderbook', 'trades', 'order-entry', 'positions']);
+    expect(panels).toHaveLength(6);
+    expect(panels.map((p) => p.type)).toEqual(['chart', 'orderbook', 'trades', 'watchlist', 'order-entry', 'positions']);
   });
 
   it('should add a panel', () => {
     useLayoutStore.getState().addPanel({
       id: 'test-panel',
-      type: 'watchlist',
-      title: 'Watchlist',
+      type: 'placeholder',
+      title: 'Test',
       linkColor: 'none',
       symbol: 'BTC/USDT',
     });
-    expect(useLayoutStore.getState().panels).toHaveLength(6);
+    expect(useLayoutStore.getState().panels).toHaveLength(7);
   });
 
   it('should remove a panel', () => {
     useLayoutStore.getState().removePanel('chart-main');
-    expect(useLayoutStore.getState().panels).toHaveLength(4);
+    expect(useLayoutStore.getState().panels).toHaveLength(5);
     expect(useLayoutStore.getState().panels.find((p) => p.id === 'chart-main')).toBeUndefined();
   });
 
@@ -60,12 +60,10 @@ describe('useLayoutStore', () => {
 describe('getDefaultPanels', () => {
   it('should return all default panel types', () => {
     const panels = getDefaultPanels();
-    expect(panels).toHaveLength(5);
-    expect(panels[0]!.type).toBe('chart');
-    expect(panels[1]!.type).toBe('orderbook');
-    expect(panels[2]!.type).toBe('trades');
-    expect(panels[3]!.type).toBe('order-entry');
-    expect(panels[4]!.type).toBe('positions');
+    expect(panels).toHaveLength(6);
+    expect(panels.map((p) => p.type)).toEqual([
+      'chart', 'orderbook', 'trades', 'watchlist', 'order-entry', 'positions',
+    ]);
   });
 });
 
@@ -94,7 +92,7 @@ describe('loadPersistedPanels', () => {
     const panels = getDefaultPanels();
     mockStorage['terminal-layout-v1'] = JSON.stringify(panels);
     const result = loadPersistedPanels();
-    expect(result).toHaveLength(5);
+    expect(result).toHaveLength(6);
   });
 });
 
