@@ -1,11 +1,11 @@
 # Project Progress
 
 ## Current State
-- **Phase:** 8 - Performance Optimization (Session 3 continued)
-- **Stage:** COMPLETE through Phase 8
+- **Phase:** 9 - Real Exchange Adapters (Session 3 continued)
+- **Stage:** COMPLETE through Phase 9
 - **Active Worktrees:** none
-- **Last Completed:** Phase 8 — Code splitting, lazy panels, ErrorBoundary, vendor chunks
-- **Next Up:** Phase 9 — Real exchange adapters, WebSocket connections
+- **Last Completed:** Phase 9 — Coinbase adapter, exchange selector UI, multi-exchange support
+- **Next Up:** Phase 10 — Technical indicators, advanced charting
 
 ## Pipeline Status
 ```
@@ -202,5 +202,22 @@ Build Output (code-split):
 - `pnpm test` ✅ — 178 tests pass across 19 test suites
 - `pnpm lint` ✅ — zero violations
 
+## Phase 9: Real Exchange Adapters (Session 3 continued)
+```
+[Phase 9: Coinbase + Exchange Selector] ✅ COMPLETE
+  CoinbaseAdapter      ✅ WebSocket adapter for Advanced Trade API (trades, L2, ticker)
+  DataWorker Update    ✅ Coinbase wired into createAdapter factory
+  ExchangeSelector     ✅ Header bar with Simulated/Binance/Bybit/Coinbase buttons
+  Connection Status    ✅ Live status indicators per exchange (dot colors)
+  Exchange Switching   ✅ Click exchange to switch all watchlist symbols
+  Coinbase Tests       ✅ 8 tests covering trades, orderbook, ticker, symbol mapping
+  3 Real Adapters      ✅ Binance + Bybit + Coinbase (+ simulated)
+```
+
+## Session 3 Final Build Stats
+- `pnpm -r build` ✅ — code-split, 22KB core shell
+- `pnpm test` ✅ — 186 tests pass across 20 test suites
+- `pnpm lint` ✅ — zero violations
+
 ## Next Session Focus
-- Phase 9: Real exchange adapters (Binance/Coinbase WebSocket connections)
+- Phase 10: Technical indicators, advanced charting

@@ -7,6 +7,7 @@ import type { BaseExchangeAdapter } from '../adapters/base-adapter.js';
 import { FlushScheduler } from './flush-scheduler.js';
 import { BinanceAdapter } from '../adapters/binance/binance-adapter.js';
 import { BybitAdapter } from '../adapters/bybit/bybit-adapter.js';
+import { CoinbaseAdapter } from '../adapters/coinbase/coinbase-adapter.js';
 import { SimulatedAdapter } from '../adapters/simulated/simulated-adapter.js';
 
 /**
@@ -19,6 +20,8 @@ function createAdapter(exchangeId: ExchangeId): BaseExchangeAdapter | null {
       return new BinanceAdapter();
     case 'bybit':
       return new BybitAdapter();
+    case 'coinbase':
+      return new CoinbaseAdapter();
     case 'simulated':
       return new SimulatedAdapter();
     default:
