@@ -20,6 +20,7 @@ export type PanelType =
   | 'positions'
   | 'order-entry'
   | 'alerts'
+  | 'settings'
   | 'placeholder';
 
 /**

@@ -5,6 +5,7 @@ import type { LineSeries } from '../renderers/line-overlay-renderer.js';
 import { useChart } from '../hooks/use-chart.js';
 import { useIndicatorStore, useOverlaySeries, useSeparateSeries } from '../../stores/indicator-store.js';
 import { IndicatorSelector } from '../../components/IndicatorSelector.js';
+import { TimeframeSelector } from '../../components/TimeframeSelector.js';
 
 /** Props for the ChartPanel component. */
 export interface ChartPanelProps {
@@ -12,6 +13,8 @@ export interface ChartPanelProps {
   panelId: string;
   /** Candle data to display (optional — chart shows loading state without data) */
   candles?: OHLCVCandle[];
+  /** Active symbol for timeframe selector */
+  symbol?: string;
 }
 
 /** Format a timestamp for the time axis label. */
@@ -49,7 +52,7 @@ const TIME_AXIS_HEIGHT = 20;
  * Handles mouse events for pan, zoom, and crosshair.
  * Renders HTML overlay labels for price/time axes.
  */
-export function ChartPanel({ panelId, candles }: ChartPanelProps): React.JSX.Element {
+export function ChartPanel({ panelId, candles, symbol }: ChartPanelProps): React.JSX.Element {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { chartManager, isReady } = useChart(canvasRef);
   const isPanningRef = useRef(false);
@@ -373,8 +376,9 @@ export function ChartPanel({ panelId, candles }: ChartPanelProps): React.JSX.Ele
         background: '#0f0f14',
       }}
     >
-      {/* Indicator selector (top-left corner) */}
-      <div style={{ position: 'absolute', top: 4, left: 4, zIndex: 10 }}>
+      {/* Chart toolbar (top-left corner) */}
+      <div style={{ position: 'absolute', top: 4, left: 4, zIndex: 10, display: 'flex', gap: 6, alignItems: 'center' }}>
+        {symbol && <TimeframeSelector symbol={symbol} />}
         <IndicatorSelector />
       </div>
 

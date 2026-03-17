@@ -38,6 +38,7 @@ export interface MarketState {
   processOrderbook: (symbol: string, snapshot: OrderbookSnapshot) => void;
   processTicker: (symbol: string, ticker: Ticker) => void;
   processConnectionStatus: (exchange: ExchangeId, status: ConnectionStatus) => void;
+  setTimeframe: (symbol: string, timeframe: CandleTimeframe) => void;
   subscribe: (symbol: string, exchanges: ExchangeId[], topics: SubscriptionTopic[]) => void;
   unsubscribe: (symbol: string) => void;
 }
@@ -99,6 +100,37 @@ export const useMarketStore = create<MarketState>((set) => ({
       connectionStatuses.set(exchange, status);
       return { connectionStatuses };
     });
+  },
+
+  setTimeframe: (symbol, timeframe) => {
+    set((state) => {
+      const timeframes = new Map(state.timeframes);
+      timeframes.set(symbol, timeframe);
+
+      // Re-aggregate existing trades into candles with the new timeframe
+      const candles = new Map(state.candles);
+      const existingTrades = state.trades.get(symbol) ?? [];
+      const candleArray: OHLCVCandle[] = [];
+
+      // Trades are newest-first; reverse to process oldest-first
+      const chronological = [...existingTrades].reverse();
+      for (const trade of chronological) {
+        aggregateTrade(candleArray, trade, timeframe);
+      }
+      candles.set(symbol, candleArray);
+
+      // Trigger indicator recomputation
+      const indicatorStore = useIndicatorStore.getState();
+      if (indicatorStore.indicators.size > 0) {
+        indicatorStore.recompute(symbol, candleArray);
+      }
+
+      return { timeframes, candles };
+    });
+
+    // Notify worker of timeframe change
+    const bridge = getWorkerBridge();
+    bridge.send({ type: 'set-timeframe', symbol, timeframe });
   },
 
   subscribe: (symbol, exchanges, topics) => {
@@ -181,6 +213,10 @@ export function useTicker(symbol: string): Ticker | undefined {
 
 export function useCandles(symbol: string): OHLCVCandle[] {
   return useMarketStore((state) => state.candles.get(symbol) ?? []);
+}
+
+export function useTimeframe(symbol: string): CandleTimeframe {
+  return useMarketStore((state) => state.timeframes.get(symbol) ?? DEFAULT_TIMEFRAME);
 }
 
 export function useConnectionStatus(exchange: ExchangeId): ConnectionStatus {

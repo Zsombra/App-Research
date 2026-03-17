@@ -13,6 +13,7 @@ const LazyPositions = React.lazy(() => import('./wrappers/PositionsPanelWrapper.
 const LazyWatchlist = React.lazy(() => import('./wrappers/WatchlistPanelWrapper.js'));
 const LazyDepthChart = React.lazy(() => import('./wrappers/DepthChartPanelWrapper.js'));
 const LazyAlerts = React.lazy(() => import('./wrappers/AlertsPanelWrapper.js'));
+const LazySettings = React.lazy(() => import('./wrappers/SettingsPanelWrapper.js'));
 const LazyPlaceholder = React.lazy(() => import('./wrappers/PlaceholderPanelWrapper.js'));
 
 /**
@@ -52,5 +53,6 @@ export const panelComponents: Record<string, React.FunctionComponent<IDockviewPa
   'depth-chart': wrapLazy(LazyDepthChart, 'depth-chart'),
   watchlist: wrapLazy(LazyWatchlist, 'watchlist'),
   alerts: wrapLazy(LazyAlerts, 'alerts'),
+  settings: wrapLazy(LazySettings, 'settings'),
   placeholder: wrapLazy(LazyPlaceholder, 'placeholder'),
 } satisfies Record<PanelType, React.FunctionComponent<IDockviewPanelProps>>;

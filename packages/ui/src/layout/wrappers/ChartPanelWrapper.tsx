@@ -16,6 +16,6 @@ export default function ChartPanelWrapper(props: IDockviewPanelProps): React.JSX
   const candles = useCandles(symbol);
 
   return (
-    <ChartPanel panelId={config?.id ?? 'chart'} candles={candles} />
+    <ChartPanel panelId={config?.id ?? 'chart'} candles={candles} symbol={symbol} />
   );
 }
