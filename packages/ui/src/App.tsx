@@ -1,20 +1,20 @@
 import React from 'react';
 import { TerminalLayout } from './layout/TerminalLayout.js';
 import { TickerBar } from './panels/TickerBar.js';
+import './styles/terminal.css';
 
 /**
  * Root application component.
- * Phase 1b: Dockview layout shell with WorkerBridge integration.
+ * Dockview layout shell with WorkerBridge integration and simulated data feed.
  */
 export function App(): React.JSX.Element {
   return (
     <div
+      className="terminal-root"
       style={{
         display: 'flex',
         flexDirection: 'column',
         height: '100vh',
-        background: '#0a0a0e',
-        color: '#ccc',
       }}
     >
       <TickerBar symbol="BTC/USDT" exchange="simulated" />

@@ -1,11 +1,11 @@
 # Project Progress
 
 ## Current State
-- **Phase:** 1 - Foundation (Session 3 complete)
-- **Stage:** COMPLETE for Session 3
+- **Phase:** 3 - Panel Polish (Session 3 continued)
+- **Stage:** COMPLETE through Phase 3
 - **Active Worktrees:** none
-- **Last Completed:** Data Worker Pipeline + Dockview Layout Shell
-- **Next Up:** Phase 2: Live Exchange Data Integration
+- **Last Completed:** Phase 3 — Panel polish, axis labels, depth bars, terminal theme
+- **Next Up:** Phase 4 — Volume bars on chart, footprint chart, performance tuning
 
 ## Pipeline Status
 ```
@@ -125,10 +125,19 @@
   Tests                ✅ 18 new tests (161 total)
 ```
 
+## Phase 3: Panel Polish + Terminal Theme (Session 3 continued)
+```
+[Phase 3: Panel Polish] ✅ COMPLETE
+  Chart Axis Labels    ✅ price axis (right) + time axis (bottom) from GridInfo
+  Orderbook Depth Bars ✅ proportional fill bars with bid/ask coloring, spread %
+  Trades Panel         ✅ React.memo rows, auto-scroll, large trade highlighting
+  Terminal Theme CSS   ✅ CSS custom properties, Dockview overrides, custom scrollbars
+```
+
 ## Session 3 Final Build Stats
-- `pnpm -r build` ✅ — 5 packages (62 Vite modules, 642KB UI + 22KB worker chunk)
+- `pnpm -r build` ✅ — 5 packages (63 Vite modules, 645KB UI + 22KB worker chunk)
 - `pnpm test` ✅ — 161 tests pass across 17 test suites
 - `pnpm lint` ✅ — zero violations
 
 ## Next Session Focus
-- Phase 3: Polish panels (live trades list, live orderbook depth), volume profile, footprint chart
+- Phase 4: Volume bars on chart, footprint chart, performance tuning

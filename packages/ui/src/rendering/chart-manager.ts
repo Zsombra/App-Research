@@ -21,6 +21,9 @@ export class ChartManager {
   private resizeObserver: ResizeObserver | null = null;
   private readonly canvas: HTMLCanvasElement;
 
+  /** Optional callback fired after each render with updated grid positions. */
+  onGridInfoUpdate: ((info: GridInfo) => void) | null = null;
+
   /**
    * Create a ChartManager bound to a canvas element.
    * @param canvas - The canvas element to render into
@@ -58,6 +61,8 @@ export class ChartManager {
       this.gridRenderer.render();
       this.candlestickRenderer.render();
       this.crosshairRenderer.render();
+      // Notify React of grid positions for HTML axis labels
+      this.onGridInfoUpdate?.(this.gridRenderer.getGridInfo());
     };
 
     // Start the render loop

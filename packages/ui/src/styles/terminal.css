@@ -1,0 +1,79 @@
+/* ============================================
+   Terminal Theme — Dark trading terminal palette
+   ============================================ */
+
+:root {
+  /* Background layers */
+  --t-bg-base: #0a0a0e;
+  --t-bg-surface: #0f0f14;
+  --t-bg-elevated: #16161e;
+
+  /* Borders */
+  --t-border: #222;
+  --t-border-subtle: #1a1a22;
+
+  /* Text */
+  --t-text-primary: #ccc;
+  --t-text-secondary: #888;
+  --t-text-muted: #555;
+
+  /* Semantic colors */
+  --t-bullish: #26a69a;
+  --t-bearish: #ef5350;
+  --t-bullish-bg: rgba(38, 166, 154, 0.12);
+  --t-bearish-bg: rgba(239, 83, 80, 0.12);
+
+  /* Accent */
+  --t-accent: #5c6bc0;
+
+  /* Font */
+  --t-font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+  --t-font-size-sm: 11px;
+  --t-font-size-base: 12px;
+  --t-font-size-lg: 14px;
+
+  /* Connection status */
+  --t-status-connected: #26a69a;
+  --t-status-connecting: #f9a825;
+  --t-status-disconnected: #ef5350;
+}
+
+/* Global base styles */
+.terminal-root {
+  font-family: var(--t-font-mono);
+  font-size: var(--t-font-size-base);
+  color: var(--t-text-primary);
+  background: var(--t-bg-base);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Dockview overrides for dark theme consistency */
+.terminal-dockview {
+  --dv-activegroup-visiblepanel-tab-background-color: var(--t-bg-elevated);
+  --dv-activegroup-hiddenpanel-tab-background-color: var(--t-bg-surface);
+  --dv-inactivegroup-visiblepanel-tab-background-color: var(--t-bg-elevated);
+  --dv-inactivegroup-hiddenpanel-tab-background-color: var(--t-bg-surface);
+  --dv-group-view-background-color: var(--t-bg-base);
+  --dv-tabs-and-actions-container-background-color: var(--t-bg-surface);
+  --dv-tab-divider-color: var(--t-border-subtle);
+}
+
+/* Scrollbar styling */
+.terminal-root ::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.terminal-root ::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.terminal-root ::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 3px;
+}
+
+.terminal-root ::-webkit-scrollbar-thumb:hover {
+  background: #444;
+}

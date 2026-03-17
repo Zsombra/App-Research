@@ -1,5 +1,6 @@
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import type { OHLCVCandle } from '@terminal/types';
+import type { GridInfo } from '../renderers/grid-renderer.js';
 import { useChart } from '../hooks/use-chart.js';
 
 /** Props for the ChartPanel component. */
@@ -9,6 +10,27 @@ export interface ChartPanelProps {
   /** Candle data to display (optional — chart shows loading state without data) */
   candles?: OHLCVCandle[];
 }
+
+/** Format a timestamp for the time axis label. */
+function formatTimeLabel(ms: number): string {
+  const d = new Date(ms);
+  const h = d.getHours().toString().padStart(2, '0');
+  const m = d.getMinutes().toString().padStart(2, '0');
+  return `${h}:${m}`;
+}
+
+/** Format a price for the price axis label. */
+function formatPriceLabel(price: number): string {
+  if (price >= 10000) return price.toFixed(0);
+  if (price >= 100) return price.toFixed(1);
+  if (price >= 1) return price.toFixed(2);
+  return price.toFixed(4);
+}
+
+/** Right axis width in CSS pixels. */
+const PRICE_AXIS_WIDTH = 64;
+/** Bottom axis height in CSS pixels. */
+const TIME_AXIS_HEIGHT = 20;
 
 /**
  * React component that renders a WebGL candlestick chart.
@@ -21,6 +43,17 @@ export function ChartPanel({ panelId, candles }: ChartPanelProps): React.JSX.Ele
   const { chartManager, isReady } = useChart(canvasRef);
   const isPanningRef = useRef(false);
   const lastMouseRef = useRef({ x: 0, y: 0 });
+  const [gridInfo, setGridInfo] = useState<GridInfo>({ horizontalLines: [], verticalLines: [] });
+
+  // Wire up grid info callback
+  useEffect(() => {
+    if (chartManager) {
+      chartManager.onGridInfoUpdate = setGridInfo;
+      return () => {
+        chartManager.onGridInfoUpdate = null;
+      };
+    }
+  }, [chartManager]);
 
   // Update candles when data changes
   useEffect(() => {
@@ -102,6 +135,8 @@ export function ChartPanel({ panelId, candles }: ChartPanelProps): React.JSX.Ele
     [chartManager]
   );
 
+  const dpr = typeof window !== 'undefined' ? window.devicePixelRatio : 1;
+
   return (
     <div
       data-panel-id={panelId}
@@ -113,12 +148,13 @@ export function ChartPanel({ panelId, candles }: ChartPanelProps): React.JSX.Ele
         background: '#0f0f14',
       }}
     >
+      {/* Chart canvas area — leaves room for axes */}
       <canvas
         ref={canvasRef}
         style={{
           display: 'block',
-          width: '100%',
-          height: '100%',
+          width: `calc(100% - ${PRICE_AXIS_WIDTH}px)`,
+          height: `calc(100% - ${TIME_AXIS_HEIGHT}px)`,
           cursor: isPanningRef.current ? 'grabbing' : 'crosshair',
         }}
         onMouseMove={handleMouseMove}
@@ -129,15 +165,64 @@ export function ChartPanel({ panelId, candles }: ChartPanelProps): React.JSX.Ele
         onWheel={handleWheel}
       />
 
-      {/* HTML overlay for axis labels (pointer-events: none so clicks pass through) */}
+      {/* Price axis (right side) */}
       <div
         style={{
           position: 'absolute',
-          inset: 0,
+          top: 0,
+          right: 0,
+          width: PRICE_AXIS_WIDTH,
+          bottom: TIME_AXIS_HEIGHT,
+          borderLeft: '1px solid #222',
           pointerEvents: 'none',
+          overflow: 'hidden',
         }}
       >
-        {/* Axis labels will be managed here by a future AxisLabelManager */}
+        {gridInfo.horizontalLines.map((line, i) => (
+          <span
+            key={`p-${i}`}
+            style={{
+              position: 'absolute',
+              right: 6,
+              top: line.y / dpr - 7,
+              fontSize: 10,
+              color: '#666',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {formatPriceLabel(line.price)}
+          </span>
+        ))}
+      </div>
+
+      {/* Time axis (bottom) */}
+      <div
+        style={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: PRICE_AXIS_WIDTH,
+          height: TIME_AXIS_HEIGHT,
+          borderTop: '1px solid #222',
+          pointerEvents: 'none',
+          overflow: 'hidden',
+        }}
+      >
+        {gridInfo.verticalLines.map((line, i) => (
+          <span
+            key={`t-${i}`}
+            style={{
+              position: 'absolute',
+              left: line.x / dpr - 16,
+              top: 3,
+              fontSize: 10,
+              color: '#666',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {formatTimeLabel(line.time)}
+          </span>
+        ))}
       </div>
 
       {/* Loading overlay */}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import type { PanelConfig, PriceLevel } from '@terminal/types';
 import { useOrderbook } from '../stores/market-store.js';
 
@@ -8,19 +8,43 @@ interface OrderbookPanelProps {
 
 const MAX_LEVELS = 20;
 
-function LevelRow({ level, side }: { level: PriceLevel; side: 'bid' | 'ask' }): React.JSX.Element {
+function LevelRow({
+  level,
+  side,
+  depthPercent,
+}: {
+  level: PriceLevel;
+  side: 'bid' | 'ask';
+  depthPercent: number;
+}): React.JSX.Element {
+  const color = side === 'bid' ? '#26a69a' : '#ef5350';
+  const bgColor = side === 'bid' ? 'rgba(38,166,154,0.12)' : 'rgba(239,83,80,0.12)';
+
   return (
     <div
       style={{
+        position: 'relative',
         display: 'flex',
         padding: '1px 8px',
         fontSize: 12,
       }}
     >
-      <span style={{ flex: 1, color: side === 'bid' ? '#26a69a' : '#ef5350' }}>
+      {/* Depth bar */}
+      <div
+        style={{
+          position: 'absolute',
+          top: 0,
+          bottom: 0,
+          [side === 'bid' ? 'left' : 'right']: 0,
+          width: `${Math.min(depthPercent, 100)}%`,
+          background: bgColor,
+          transition: 'width 150ms ease-out',
+        }}
+      />
+      <span style={{ flex: 1, color, position: 'relative' }}>
         {level.price.toFixed(2)}
       </span>
-      <span style={{ flex: 1, textAlign: 'right', color: '#ccc' }}>
+      <span style={{ flex: 1, textAlign: 'right', color: '#ccc', position: 'relative' }}>
         {level.size.toFixed(4)}
       </span>
     </div>
@@ -28,10 +52,32 @@ function LevelRow({ level, side }: { level: PriceLevel; side: 'bid' | 'ask' }): 
 }
 
 /**
- * Displays bid/ask price levels from the orderbook.
+ * Displays bid/ask price levels with depth visualization bars.
  */
 export function OrderbookPanel({ config }: OrderbookPanelProps): React.JSX.Element {
   const orderbook = useOrderbook(config.symbol);
+
+  const { asks, bids, maxSize, spread, spreadPercent } = useMemo(() => {
+    if (!orderbook) return { asks: [], bids: [], maxSize: 0, spread: '—', spreadPercent: '' };
+
+    const a = orderbook.asks.slice(0, MAX_LEVELS);
+    const b = orderbook.bids.slice(0, MAX_LEVELS);
+
+    // Find max size across both sides for normalization
+    let max = 0;
+    for (const level of a) if (level.size > max) max = level.size;
+    for (const level of b) if (level.size > max) max = level.size;
+
+    let sp = '—';
+    let spPct = '';
+    if (a.length > 0 && b.length > 0) {
+      const spreadVal = a[0]!.price - b[0]!.price;
+      sp = spreadVal.toFixed(2);
+      spPct = `(${((spreadVal / a[0]!.price) * 100).toFixed(3)}%)`;
+    }
+
+    return { asks: a.reverse(), bids: b, maxSize: max, spread: sp, spreadPercent: spPct };
+  }, [orderbook]);
 
   if (!orderbook) {
     return (
@@ -41,29 +87,39 @@ export function OrderbookPanel({ config }: OrderbookPanelProps): React.JSX.Eleme
     );
   }
 
-  const asks = orderbook.asks.slice(0, MAX_LEVELS).reverse();
-  const bids = orderbook.bids.slice(0, MAX_LEVELS);
-
   return (
     <div style={{ height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column', background: '#0a0a0e', color: '#ccc', fontSize: 12 }}>
+      {/* Header */}
       <div style={{ display: 'flex', padding: '4px 8px', borderBottom: '1px solid #222', fontWeight: 600, color: '#888' }}>
         <span style={{ flex: 1 }}>Price</span>
         <span style={{ flex: 1, textAlign: 'right' }}>Size</span>
       </div>
       <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
-        <div style={{ flex: 1 }}>
+        {/* Asks (reversed so lowest ask is at bottom) */}
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
           {asks.map((level, i) => (
-            <LevelRow key={`ask-${i}`} level={level} side="ask" />
+            <LevelRow
+              key={`ask-${i}`}
+              level={level}
+              side="ask"
+              depthPercent={maxSize > 0 ? (level.size / maxSize) * 100 : 0}
+            />
           ))}
         </div>
-        <div style={{ padding: '4px 8px', borderTop: '1px solid #333', borderBottom: '1px solid #333', textAlign: 'center', fontWeight: 600, color: '#fff' }}>
-          Spread: {orderbook.asks.length > 0 && orderbook.bids.length > 0
-            ? ((orderbook.asks[0]!.price - orderbook.bids[0]!.price)).toFixed(2)
-            : '—'}
+        {/* Spread */}
+        <div style={{ padding: '4px 8px', borderTop: '1px solid #333', borderBottom: '1px solid #333', textAlign: 'center', fontWeight: 600, fontSize: 11 }}>
+          <span style={{ color: '#fff' }}>{spread}</span>
+          {spreadPercent && <span style={{ color: '#666', marginLeft: 4 }}>{spreadPercent}</span>}
         </div>
+        {/* Bids */}
         <div style={{ flex: 1 }}>
           {bids.map((level, i) => (
-            <LevelRow key={`bid-${i}`} level={level} side="bid" />
+            <LevelRow
+              key={`bid-${i}`}
+              level={level}
+              side="bid"
+              depthPercent={maxSize > 0 ? (level.size / maxSize) * 100 : 0}
+            />
           ))}
         </div>
       </div>
