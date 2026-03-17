@@ -168,6 +168,36 @@ export function TerminalLayout(): React.JSX.Element {
       });
     }
 
+    // Add depth chart (tab alongside trades/positions)
+    const depthChartConfig = defaultPanels.find((p) => p.type === 'depth-chart');
+    if (depthChartConfig) {
+      api.addPanel({
+        id: depthChartConfig.id,
+        component: depthChartConfig.type,
+        title: depthChartConfig.title,
+        params: depthChartConfig,
+        position: {
+          referencePanel: tradesConfig?.id ?? 'trades-main',
+          direction: 'within',
+        },
+      });
+    }
+
+    // Add alerts panel (tab below watchlist)
+    const alertsConfig = defaultPanels.find((p) => p.type === 'alerts');
+    if (alertsConfig) {
+      api.addPanel({
+        id: alertsConfig.id,
+        component: alertsConfig.type,
+        title: alertsConfig.title,
+        params: alertsConfig,
+        position: {
+          referencePanel: watchlistConfig?.id ?? 'watchlist-main',
+          direction: 'below',
+        },
+      });
+    }
+
     // Persist on layout changes
     const disposable = api.onDidLayoutChange(() => {
       saveLayout(api);

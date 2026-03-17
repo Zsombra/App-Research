@@ -55,6 +55,22 @@ export function getDefaultPanels(): PanelConfig[] {
       exchanges: ['simulated'],
     },
     {
+      id: 'depth-chart-main',
+      type: 'depth-chart',
+      title: 'Depth Chart',
+      linkColor: 'none',
+      symbol: 'BTC/USDT',
+      exchanges: ['simulated'],
+    },
+    {
+      id: 'alerts-main',
+      type: 'alerts',
+      title: 'Price Alerts',
+      linkColor: 'none',
+      symbol: 'BTC/USDT',
+      exchanges: ['simulated'],
+    },
+    {
       id: 'order-entry-main',
       type: 'order-entry',
       title: 'Order Entry',

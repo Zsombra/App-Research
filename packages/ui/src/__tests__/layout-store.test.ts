@@ -9,14 +9,14 @@ vi.stubGlobal('localStorage', {
   removeItem: vi.fn((key: string) => { delete mockStorage[key]; }),
 });
 
+const DEFAULT_COUNT = 8; // chart, orderbook, trades, watchlist, depth-chart, alerts, order-entry, positions
+
 describe('useLayoutStore', () => {
   beforeEach(() => {
-    // Reset store
     useLayoutStore.setState({
       panels: getDefaultPanels(),
       initialized: false,
     });
-    // Clear mock storage
     for (const key of Object.keys(mockStorage)) {
       delete mockStorage[key];
     }
@@ -24,8 +24,10 @@ describe('useLayoutStore', () => {
 
   it('should have default panels', () => {
     const panels = useLayoutStore.getState().panels;
-    expect(panels).toHaveLength(6);
-    expect(panels.map((p) => p.type)).toEqual(['chart', 'orderbook', 'trades', 'watchlist', 'order-entry', 'positions']);
+    expect(panels).toHaveLength(DEFAULT_COUNT);
+    expect(panels.map((p) => p.type)).toEqual([
+      'chart', 'orderbook', 'trades', 'watchlist', 'depth-chart', 'alerts', 'order-entry', 'positions',
+    ]);
   });
 
   it('should add a panel', () => {
@@ -36,12 +38,12 @@ describe('useLayoutStore', () => {
       linkColor: 'none',
       symbol: 'BTC/USDT',
     });
-    expect(useLayoutStore.getState().panels).toHaveLength(7);
+    expect(useLayoutStore.getState().panels).toHaveLength(DEFAULT_COUNT + 1);
   });
 
   it('should remove a panel', () => {
     useLayoutStore.getState().removePanel('chart-main');
-    expect(useLayoutStore.getState().panels).toHaveLength(5);
+    expect(useLayoutStore.getState().panels).toHaveLength(DEFAULT_COUNT - 1);
     expect(useLayoutStore.getState().panels.find((p) => p.id === 'chart-main')).toBeUndefined();
   });
 
@@ -60,9 +62,9 @@ describe('useLayoutStore', () => {
 describe('getDefaultPanels', () => {
   it('should return all default panel types', () => {
     const panels = getDefaultPanels();
-    expect(panels).toHaveLength(6);
+    expect(panels).toHaveLength(DEFAULT_COUNT);
     expect(panels.map((p) => p.type)).toEqual([
-      'chart', 'orderbook', 'trades', 'watchlist', 'order-entry', 'positions',
+      'chart', 'orderbook', 'trades', 'watchlist', 'depth-chart', 'alerts', 'order-entry', 'positions',
     ]);
   });
 });
@@ -92,7 +94,7 @@ describe('loadPersistedPanels', () => {
     const panels = getDefaultPanels();
     mockStorage['terminal-layout-v1'] = JSON.stringify(panels);
     const result = loadPersistedPanels();
-    expect(result).toHaveLength(6);
+    expect(result).toHaveLength(DEFAULT_COUNT);
   });
 });
 

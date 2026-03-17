@@ -165,10 +165,21 @@
   6-Panel Layout       ✅ watchlist (left) + chart (center) + orderbook (right) + trades/positions (bottom)
 ```
 
+## Phase 7: Depth Chart + Price Alerts (Session 3 continued)
+```
+[Phase 7: Depth Chart + Alerts] ✅ COMPLETE
+  DepthChartPanel      ✅ Canvas-based cumulative bid/ask depth curves
+  Alert Store          ✅ Zustand store with add/remove/check/clear, 500ms checker
+  AlertsPanel          ✅ Per-symbol alert list, above/below conditions, fired indicators
+  Panel Registry       ✅ 9 panel types registered (depth-chart + alerts replace placeholder)
+  8-Panel Layout       ✅ Watchlist+alerts (left), chart (center), OB+OE (right), trades/positions/depth (bottom)
+  New Tests            ✅ symbol-store (9 tests), alert-store (8 tests)
+```
+
 ## Session 3 Final Build Stats
-- `pnpm -r build` ✅ — 5 packages (74 Vite modules, 671KB UI + 22KB worker chunk)
-- `pnpm test` ✅ — 161 tests pass across 17 test suites
+- `pnpm -r build` ✅ — 5 packages (679KB UI + 22KB worker chunk)
+- `pnpm test` ✅ — 178 tests pass across 19 test suites
 - `pnpm lint` ✅ — zero violations
 
 ## Next Session Focus
-- Phase 7: Code splitting, settings panel, alert system
+- Phase 8: Performance (code splitting, lazy panel loading, bundle optimization)

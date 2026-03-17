@@ -19,6 +19,7 @@ export type PanelType =
   | 'watchlist'
   | 'positions'
   | 'order-entry'
+  | 'alerts'
   | 'placeholder';
 
 /**
