@@ -18,6 +18,7 @@ export type PanelType =
   | 'depth-chart'
   | 'watchlist'
   | 'positions'
+  | 'order-entry'
   | 'placeholder';
 
 /**

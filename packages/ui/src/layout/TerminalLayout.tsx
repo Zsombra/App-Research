@@ -100,7 +100,7 @@ export function TerminalLayout(): React.JSX.Element {
       });
     }
 
-    // Add trades panel (bottom)
+    // Add trades panel (bottom of chart)
     const tradesConfig = defaultPanels.find((p) => p.type === 'trades');
     if (tradesConfig) {
       api.addPanel({
@@ -113,6 +113,36 @@ export function TerminalLayout(): React.JSX.Element {
           direction: 'below',
         },
         initialHeight: 200,
+      });
+    }
+
+    // Add order entry panel (below orderbook)
+    const orderEntryConfig = defaultPanels.find((p) => p.type === 'order-entry');
+    if (orderEntryConfig) {
+      api.addPanel({
+        id: orderEntryConfig.id,
+        component: orderEntryConfig.type,
+        title: orderEntryConfig.title,
+        params: orderEntryConfig,
+        position: {
+          referencePanel: orderbookConfig?.id ?? 'orderbook-main',
+          direction: 'below',
+        },
+      });
+    }
+
+    // Add positions panel (below trades, spanning bottom)
+    const positionsConfig = defaultPanels.find((p) => p.type === 'positions');
+    if (positionsConfig) {
+      api.addPanel({
+        id: positionsConfig.id,
+        component: positionsConfig.type,
+        title: positionsConfig.title,
+        params: positionsConfig,
+        position: {
+          referencePanel: tradesConfig?.id ?? 'trades-main',
+          direction: 'within',
+        },
       });
     }
 

@@ -1,13 +1,16 @@
 import React from 'react';
 import { TerminalLayout } from './layout/TerminalLayout.js';
 import { TickerBar } from './panels/TickerBar.js';
+import { useHotkeys } from './hooks/use-hotkeys.js';
 import './styles/terminal.css';
 
 /**
  * Root application component.
- * Dockview layout shell with WorkerBridge integration and simulated data feed.
+ * Dockview layout shell with WorkerBridge, simulated data feed, and keyboard shortcuts.
  */
 export function App(): React.JSX.Element {
+  useHotkeys();
+
   return (
     <div
       className="terminal-root"

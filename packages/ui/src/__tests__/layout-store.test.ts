@@ -24,8 +24,8 @@ describe('useLayoutStore', () => {
 
   it('should have default panels', () => {
     const panels = useLayoutStore.getState().panels;
-    expect(panels).toHaveLength(3);
-    expect(panels.map((p) => p.type)).toEqual(['chart', 'orderbook', 'trades']);
+    expect(panels).toHaveLength(5);
+    expect(panels.map((p) => p.type)).toEqual(['chart', 'orderbook', 'trades', 'order-entry', 'positions']);
   });
 
   it('should add a panel', () => {
@@ -36,12 +36,12 @@ describe('useLayoutStore', () => {
       linkColor: 'none',
       symbol: 'BTC/USDT',
     });
-    expect(useLayoutStore.getState().panels).toHaveLength(4);
+    expect(useLayoutStore.getState().panels).toHaveLength(6);
   });
 
   it('should remove a panel', () => {
     useLayoutStore.getState().removePanel('chart-main');
-    expect(useLayoutStore.getState().panels).toHaveLength(2);
+    expect(useLayoutStore.getState().panels).toHaveLength(4);
     expect(useLayoutStore.getState().panels.find((p) => p.id === 'chart-main')).toBeUndefined();
   });
 
@@ -58,12 +58,14 @@ describe('useLayoutStore', () => {
 });
 
 describe('getDefaultPanels', () => {
-  it('should return chart, orderbook, and trades panels', () => {
+  it('should return all default panel types', () => {
     const panels = getDefaultPanels();
-    expect(panels).toHaveLength(3);
+    expect(panels).toHaveLength(5);
     expect(panels[0]!.type).toBe('chart');
     expect(panels[1]!.type).toBe('orderbook');
     expect(panels[2]!.type).toBe('trades');
+    expect(panels[3]!.type).toBe('order-entry');
+    expect(panels[4]!.type).toBe('positions');
   });
 });
 
@@ -92,7 +94,7 @@ describe('loadPersistedPanels', () => {
     const panels = getDefaultPanels();
     mockStorage['terminal-layout-v1'] = JSON.stringify(panels);
     const result = loadPersistedPanels();
-    expect(result).toHaveLength(3);
+    expect(result).toHaveLength(5);
   });
 });
 

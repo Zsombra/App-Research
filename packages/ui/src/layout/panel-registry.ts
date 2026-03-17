@@ -4,6 +4,8 @@ import type { IDockviewPanelProps } from 'dockview-react';
 import { ChartPanelWrapper } from './wrappers/ChartPanelWrapper.js';
 import { TradesPanelWrapper } from './wrappers/TradesPanelWrapper.js';
 import { OrderbookPanelWrapper } from './wrappers/OrderbookPanelWrapper.js';
+import { OrderEntryPanelWrapper } from './wrappers/OrderEntryPanelWrapper.js';
+import { PositionsPanelWrapper } from './wrappers/PositionsPanelWrapper.js';
 import { PlaceholderPanelWrapper } from './wrappers/PlaceholderPanelWrapper.js';
 
 /**
@@ -14,8 +16,9 @@ export const panelComponents: Record<string, React.FunctionComponent<IDockviewPa
   chart: ChartPanelWrapper,
   orderbook: OrderbookPanelWrapper,
   trades: TradesPanelWrapper,
+  'order-entry': OrderEntryPanelWrapper,
+  positions: PositionsPanelWrapper,
   'depth-chart': PlaceholderPanelWrapper,
   watchlist: PlaceholderPanelWrapper,
-  positions: PlaceholderPanelWrapper,
   placeholder: PlaceholderPanelWrapper,
 } satisfies Record<PanelType, React.FunctionComponent<IDockviewPanelProps>>;

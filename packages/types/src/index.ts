@@ -17,3 +17,6 @@ export type { WorkerInboundMessage, WorkerOutboundMessage } from './worker/messa
 
 // UI types
 export type { PanelType, PanelConfig, LinkColor } from './ui/panel.js';
+
+// Trading types
+export type { OrderSide, OrderType, OrderStatus, Order, Fill, Position } from './trading/order.js';

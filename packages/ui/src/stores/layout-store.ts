@@ -46,6 +46,22 @@ export function getDefaultPanels(): PanelConfig[] {
       symbol: 'BTC/USDT',
       exchanges: ['simulated'],
     },
+    {
+      id: 'order-entry-main',
+      type: 'order-entry',
+      title: 'Order Entry',
+      linkColor: 'none',
+      symbol: 'BTC/USDT',
+      exchanges: ['simulated'],
+    },
+    {
+      id: 'positions-main',
+      type: 'positions',
+      title: 'Positions & Orders',
+      linkColor: 'none',
+      symbol: 'BTC/USDT',
+      exchanges: ['simulated'],
+    },
   ];
 }
 

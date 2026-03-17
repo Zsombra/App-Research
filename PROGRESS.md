@@ -1,11 +1,11 @@
 # Project Progress
 
 ## Current State
-- **Phase:** 4 - Advanced Chart Features (Session 3 continued)
-- **Stage:** COMPLETE through Phase 4
+- **Phase:** 5 - Trading Interface (Session 3 continued)
+- **Stage:** COMPLETE through Phase 5
 - **Active Worktrees:** none
-- **Last Completed:** Phase 4 — Volume bars, volume profile, incremental chart updates
-- **Next Up:** Phase 5 — Order entry panel, position management, keyboard shortcuts
+- **Last Completed:** Phase 5 — Order entry, positions panel, keyboard shortcuts
+- **Next Up:** Phase 6 — Watchlist, multi-symbol support, settings panel
 
 ## Pipeline Status
 ```
@@ -143,10 +143,21 @@
   User Interaction     ✅ pan/zoom disables auto-fit; fitToData() re-enables
 ```
 
+## Phase 5: Trading Interface (Session 3 continued)
+```
+[Phase 5: Order Entry + Positions] ✅ COMPLETE
+  Trading Types        ✅ Order, Fill, Position types in @terminal/types
+  Order Store          ✅ Zustand store with simulated market/limit execution
+  OrderEntryPanel      ✅ market/limit form, quick-size buttons, position display
+  PositionsPanel       ✅ positions + orders table, cancel buttons, mark price updates
+  Keyboard Shortcuts   ✅ B=buy, S=sell, F=flatten, Esc=cancel all
+  Default Layout       ✅ 5-panel workspace (chart, orderbook, trades, order entry, positions)
+```
+
 ## Session 3 Final Build Stats
-- `pnpm -r build` ✅ — 5 packages (65 Vite modules, 654KB UI + 22KB worker chunk)
+- `pnpm -r build` ✅ — 5 packages (71 Vite modules, 667KB UI + 22KB worker chunk)
 - `pnpm test` ✅ — 161 tests pass across 17 test suites
 - `pnpm lint` ✅ — zero violations
 
 ## Next Session Focus
-- Phase 5: Order entry panel, position management, keyboard shortcuts
+- Phase 6: Watchlist, multi-symbol support, settings panel
