@@ -27,7 +27,8 @@ function loadScripts(): Map<string, CustomScript> {
     if (!raw) return new Map();
     const arr = JSON.parse(raw) as CustomScript[];
     return new Map(arr.map((s) => [s.id, s]));
-  } catch {
+  } catch (err) {
+    console.warn('[script-store] Failed to load scripts:', err);
     return new Map();
   }
 }
@@ -35,8 +36,8 @@ function loadScripts(): Map<string, CustomScript> {
 function persistScripts(scripts: Map<string, CustomScript>): void {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify([...scripts.values()]));
-  } catch {
-    // localStorage may be unavailable
+  } catch (err) {
+    console.warn('[script-store] Failed to persist scripts:', err);
   }
 }
 

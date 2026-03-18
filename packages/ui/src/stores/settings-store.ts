@@ -34,7 +34,8 @@ function loadSettings(): AppSettings {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return DEFAULT_SETTINGS;
     return { ...DEFAULT_SETTINGS, ...JSON.parse(raw) as Partial<AppSettings> };
-  } catch {
+  } catch (err) {
+    console.warn('[settings-store] Failed to load settings:', err);
     return DEFAULT_SETTINGS;
   }
 }
@@ -42,8 +43,8 @@ function loadSettings(): AppSettings {
 function persistSettings(settings: AppSettings): void {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
-  } catch {
-    // localStorage may be unavailable
+  } catch (err) {
+    console.warn('[settings-store] Failed to persist settings:', err);
   }
 }
 

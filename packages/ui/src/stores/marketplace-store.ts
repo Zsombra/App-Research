@@ -7,7 +7,8 @@ function loadInstalled(): InstalledIndicator[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     return raw ? JSON.parse(raw) : [];
-  } catch {
+  } catch (err) {
+    console.warn('[marketplace-store] Failed to load installed indicators:', err);
     return [];
   }
 }
@@ -15,8 +16,8 @@ function loadInstalled(): InstalledIndicator[] {
 function saveInstalled(indicators: InstalledIndicator[]): void {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(indicators));
-  } catch {
-    // Ignore storage errors
+  } catch (err) {
+    console.warn('[marketplace-store] Failed to save installed indicators:', err);
   }
 }
 
@@ -115,6 +116,8 @@ export interface MarketplaceState {
   sortBy: MarketplaceSortBy;
   /** Whether marketplace data is loading */
   loading: boolean;
+  /** Error message from last fetch attempt, null if successful */
+  fetchError: string | null;
 
   /** Set available indicators (from API fetch) */
   setAvailable: (indicators: MarketplaceIndicator[]) => void;
@@ -144,6 +147,7 @@ export const useMarketplaceStore = create<MarketplaceState>((set, get) => ({
   searchQuery: '',
   sortBy: 'popular',
   loading: false,
+  fetchError: null,
 
   setAvailable: (indicators) => set({ available: indicators }),
 
@@ -187,7 +191,7 @@ export const useMarketplaceStore = create<MarketplaceState>((set, get) => ({
   fetchAvailable: async (apiUrl?: string) => {
     const state = get();
     if (state.loading) return;
-    set({ loading: true });
+    set({ loading: true, fetchError: null });
 
     try {
       const url = apiUrl ?? '/api/marketplace/indicators';
@@ -199,38 +203,43 @@ export const useMarketplaceStore = create<MarketplaceState>((set, get) => ({
 
       const data = await response.json() as { indicators: MarketplaceIndicator[] };
       const indicators = Array.isArray(data) ? data : data.indicators ?? [];
-      set({ available: indicators as MarketplaceIndicator[], loading: false });
-    } catch {
-      // On fetch failure, fall back to built-in indicators
-      set({ available: getBuiltInIndicators(), loading: false });
+      set({ available: indicators as MarketplaceIndicator[], loading: false, fetchError: null });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.warn('[marketplace-store] Fetch failed, using built-in indicators:', message);
+      set({ available: getBuiltInIndicators(), loading: false, fetchError: message });
     }
   },
 
   fetchByCategory: async (category: string, apiUrl?: string) => {
-    set({ loading: true });
+    set({ loading: true, fetchError: null });
     try {
       const url = apiUrl ?? '/api/marketplace/indicators';
       const response = await fetch(`${url}?category=${encodeURIComponent(category)}`);
       if (!response.ok) throw new Error(`Fetch failed: ${response.status}`);
       const data = await response.json() as { indicators: MarketplaceIndicator[] };
       const indicators = Array.isArray(data) ? data : data.indicators ?? [];
-      set({ available: indicators as MarketplaceIndicator[], loading: false });
-    } catch {
-      set({ loading: false });
+      set({ available: indicators as MarketplaceIndicator[], loading: false, fetchError: null });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.warn('[marketplace-store] Category fetch failed:', message);
+      set({ loading: false, fetchError: message });
     }
   },
 
   searchRemote: async (query: string, apiUrl?: string) => {
-    set({ loading: true, searchQuery: query });
+    set({ loading: true, searchQuery: query, fetchError: null });
     try {
       const url = apiUrl ?? '/api/marketplace/indicators';
       const response = await fetch(`${url}?q=${encodeURIComponent(query)}`);
       if (!response.ok) throw new Error(`Search failed: ${response.status}`);
       const data = await response.json() as { indicators: MarketplaceIndicator[] };
       const indicators = Array.isArray(data) ? data : data.indicators ?? [];
-      set({ available: indicators as MarketplaceIndicator[], loading: false });
-    } catch {
-      set({ loading: false });
+      set({ available: indicators as MarketplaceIndicator[], loading: false, fetchError: null });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.warn('[marketplace-store] Search failed:', message);
+      set({ loading: false, fetchError: message });
     }
   },
 }));

@@ -120,8 +120,8 @@ export const useLayoutStore = create<LayoutState>((set) => ({
 function persistPanels(panels: PanelConfig[]): void {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(panels));
-  } catch {
-    // localStorage may be unavailable (SSR, private browsing)
+  } catch (err) {
+    console.warn('[layout-store] Failed to persist layout:', err);
   }
 }
 
@@ -132,7 +132,8 @@ export function loadPersistedPanels(): PanelConfig[] | null {
     const parsed = JSON.parse(raw) as PanelConfig[];
     if (!Array.isArray(parsed) || parsed.length === 0) return null;
     return parsed;
-  } catch {
+  } catch (err) {
+    console.warn('[layout-store] Failed to load persisted panels:', err);
     return null;
   }
 }
