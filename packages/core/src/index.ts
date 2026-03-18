@@ -24,6 +24,7 @@ export { computeBollinger } from './indicators/bollinger.js';
 export { computeCVD } from './indicators/cvd.js';
 export { computeVWAP } from './indicators/vwap.js';
 export { computeIndicator } from './indicators/index.js';
+export { buildFootprintFromTrades, buildFootprintFromCandles, autoTickSize, bucketPrice } from './indicators/footprint.js';
 
 // Worker
 export { FlushScheduler } from './worker/flush-scheduler.js';

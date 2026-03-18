@@ -6,6 +6,9 @@ import { useChart } from '../hooks/use-chart.js';
 import { useIndicatorStore, useOverlaySeries, useSeparateSeries } from '../../stores/indicator-store.js';
 import { IndicatorSelector } from '../../components/IndicatorSelector.js';
 import { TimeframeSelector } from '../../components/TimeframeSelector.js';
+import { useFootprintEnabled, useFootprints, useFootprintStore } from '../../stores/footprint-store.js';
+import { timeframeToMs } from '../../stores/candle-aggregator.js';
+import { useTimeframe } from '../../stores/market-store.js';
 
 /** Props for the ChartPanel component. */
 export interface ChartPanelProps {
@@ -64,6 +67,11 @@ export function ChartPanel({ panelId, candles, symbol }: ChartPanelProps): React
   // Indicator series from store
   const overlaySeries = useOverlaySeries();
   const separateSeries = useSeparateSeries();
+
+  // Footprint data
+  const footprintEnabled = useFootprintEnabled();
+  const footprintData = useFootprints(symbol ?? '');
+  const activeTimeframe = useTimeframe(symbol ?? '');
 
   // Wire up grid info callback
   useEffect(() => {
@@ -290,6 +298,19 @@ export function ChartPanel({ panelId, candles, symbol }: ChartPanelProps): React
     }
   }, [chartManager, separateSeries]);
 
+  // Wire footprint data to chart manager
+  useEffect(() => {
+    if (!chartManager) return;
+
+    if (!footprintEnabled || footprintData.length === 0) {
+      chartManager.clearFootprint();
+      return;
+    }
+
+    const candleWidthMs = timeframeToMs(activeTimeframe);
+    chartManager.setFootprintData(footprintData, candleWidthMs);
+  }, [chartManager, footprintEnabled, footprintData, activeTimeframe]);
+
   // Mouse move handler for crosshair and pan
   const handleMouseMove = useCallback(
     (e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -380,6 +401,27 @@ export function ChartPanel({ panelId, candles, symbol }: ChartPanelProps): React
       <div style={{ position: 'absolute', top: 4, left: 4, zIndex: 10, display: 'flex', gap: 6, alignItems: 'center' }}>
         {symbol && <TimeframeSelector symbol={symbol} />}
         <IndicatorSelector />
+        <button
+          onClick={() => {
+            const store = useFootprintStore.getState();
+            store.setEnabled(!store.enabled);
+            // Trigger recompute if enabling
+            if (!store.enabled && candles && candles.length > 0 && symbol) {
+              setTimeout(() => useFootprintStore.getState().recompute(symbol, candles), 0);
+            }
+          }}
+          style={{
+            padding: '1px 5px',
+            fontSize: 10,
+            background: footprintEnabled ? 'rgba(92, 107, 192, 0.2)' : 'transparent',
+            border: footprintEnabled ? '1px solid #5c6bc0' : '1px solid #444',
+            borderRadius: 2,
+            color: footprintEnabled ? '#fff' : '#777',
+            cursor: 'pointer',
+          }}
+        >
+          FP
+        </button>
       </div>
 
       {/* Chart canvas area — leaves room for axes */}

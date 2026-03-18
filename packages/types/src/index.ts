@@ -31,6 +31,12 @@ export {
   INDICATOR_COLORS,
 } from './market/indicator.js';
 export type { Instrument, ExchangeSymbol } from './market/instrument.js';
+export type {
+  FootprintLevel,
+  FootprintCandle,
+  FootprintConfig,
+} from './market/footprint.js';
+export { DEFAULT_FOOTPRINT_CONFIG } from './market/footprint.js';
 
 // Exchange types
 export type { ExchangeAdapter } from './exchange/adapter.js';

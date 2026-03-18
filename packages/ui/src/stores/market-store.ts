@@ -13,6 +13,7 @@ import type {
 import { getWorkerBridge } from '../worker/worker-bridge.js';
 import { aggregateTrade } from './candle-aggregator.js';
 import { useIndicatorStore } from './indicator-store.js';
+import { useFootprintStore } from './footprint-store.js';
 
 const MAX_TRADES = 500;
 const DEFAULT_TIMEFRAME: CandleTimeframe = '1m';
@@ -72,6 +73,12 @@ export const useMarketStore = create<MarketState>((set) => ({
       const indicatorStore = useIndicatorStore.getState();
       if (indicatorStore.indicators.size > 0) {
         indicatorStore.recompute(symbol, candleArray);
+      }
+
+      // Trigger footprint recomputation
+      const footprintStore = useFootprintStore.getState();
+      if (footprintStore.enabled) {
+        footprintStore.recompute(symbol, candleArray);
       }
 
       return { trades, candles };

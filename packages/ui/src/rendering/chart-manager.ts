@@ -11,6 +11,8 @@ import { LineOverlayRenderer } from './renderers/line-overlay-renderer.js';
 import type { LineSeries } from './renderers/line-overlay-renderer.js';
 import { OscillatorPaneRenderer } from './renderers/oscillator-pane-renderer.js';
 import type { OscillatorConfig, OscillatorLine, HistogramBar } from './renderers/oscillator-pane-renderer.js';
+import { FootprintRenderer } from './renderers/footprint-renderer.js';
+import type { FootprintCandle } from '@terminal/types';
 
 /**
  * Orchestrates all renderers for a single chart panel.
@@ -27,6 +29,7 @@ export class ChartManager {
   private crosshairRenderer: CrosshairRenderer;
   private lineOverlayRenderer: LineOverlayRenderer;
   private oscillatorRenderer: OscillatorPaneRenderer | null = null;
+  private footprintRenderer: FootprintRenderer;
   private candles: OHLCVCandle[] = [];
   private resizeObserver: ResizeObserver | null = null;
   private readonly canvas: HTMLCanvasElement;
@@ -69,6 +72,7 @@ export class ChartManager {
     this.volumeProfileRenderer = new VolumeProfileRenderer(this.renderingCtx, this.viewport);
     this.crosshairRenderer = new CrosshairRenderer(this.renderingCtx, this.viewport);
     this.lineOverlayRenderer = new LineOverlayRenderer(this.renderingCtx, this.viewport);
+    this.footprintRenderer = new FootprintRenderer(this.renderingCtx, this.viewport);
 
     // Initialize renderers
     this.gridRenderer.init();
@@ -77,6 +81,7 @@ export class ChartManager {
     this.volumeProfileRenderer.init();
     this.crosshairRenderer.init();
     this.lineOverlayRenderer.init();
+    this.footprintRenderer.init();
 
     // Set up render callback
     this.renderingCtx.onRender = () => {
@@ -84,6 +89,7 @@ export class ChartManager {
       this.volumeProfileRenderer.render();
       this.volumeBarRenderer.render();
       this.candlestickRenderer.render();
+      this.footprintRenderer.render();
       this.lineOverlayRenderer.render();
       if (this.oscillatorRenderer) {
         this.oscillatorRenderer.render();
@@ -167,6 +173,18 @@ export class ChartManager {
     if (histogram) {
       this.oscillatorRenderer.setHistogram(histogram);
     }
+    this.renderingCtx.markDirty();
+  }
+
+  /** Set footprint chart data. */
+  setFootprintData(footprints: FootprintCandle[], candleWidthMs: number): void {
+    this.footprintRenderer.setData(footprints, candleWidthMs);
+    this.renderingCtx.markDirty();
+  }
+
+  /** Clear footprint data. */
+  clearFootprint(): void {
+    this.footprintRenderer.setData([], 60_000);
     this.renderingCtx.markDirty();
   }
 
@@ -275,6 +293,7 @@ export class ChartManager {
     this.volumeProfileRenderer.dispose();
     this.crosshairRenderer.dispose();
     this.lineOverlayRenderer.dispose();
+    this.footprintRenderer.dispose();
     if (this.oscillatorRenderer) {
       this.oscillatorRenderer.dispose();
     }
@@ -289,6 +308,7 @@ export class ChartManager {
     this.volumeProfileRenderer.setViewport(this.viewport);
     this.crosshairRenderer.setViewport(this.viewport);
     this.lineOverlayRenderer.setViewport(this.viewport);
+    this.footprintRenderer.setViewport(this.viewport);
     if (this.oscillatorRenderer) {
       this.oscillatorRenderer.setViewport(this.viewport);
     }
