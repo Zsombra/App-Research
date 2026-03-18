@@ -37,6 +37,41 @@ export interface FootprintCandle {
 }
 
 /**
+ * Filter mode for filtered footprints.
+ * - 'none': Show all levels (no filtering)
+ * - 'min-volume': Only show levels above a minimum total volume
+ * - 'min-trades': Only show levels above a minimum trade count
+ * - 'min-delta': Only show levels where |buyVolume - sellVolume| exceeds threshold
+ * - 'percentile': Only show levels in the top N percentile by volume
+ */
+export type FootprintFilterMode = 'none' | 'min-volume' | 'min-trades' | 'min-delta' | 'percentile';
+
+/**
+ * Filter configuration for filtered footprints.
+ */
+export interface FootprintFilter {
+  /** Active filter mode */
+  mode: FootprintFilterMode;
+  /** Minimum total volume threshold (for 'min-volume' mode) */
+  minVolume: number;
+  /** Minimum trade count threshold (for 'min-trades' mode) */
+  minTrades: number;
+  /** Minimum absolute delta threshold (for 'min-delta' mode) */
+  minDelta: number;
+  /** Percentile cutoff 0-100 (for 'percentile' mode, e.g. 90 = top 10%) */
+  percentile: number;
+}
+
+/** Default filter — no filtering active. */
+export const DEFAULT_FOOTPRINT_FILTER: FootprintFilter = {
+  mode: 'none',
+  minVolume: 0,
+  minTrades: 0,
+  minDelta: 0,
+  percentile: 90,
+};
+
+/**
  * Configuration for footprint chart rendering.
  */
 export interface FootprintConfig {
@@ -48,6 +83,8 @@ export interface FootprintConfig {
   showDelta: boolean;
   /** Whether to show volume numbers as text */
   showNumbers: boolean;
+  /** Footprint filter settings */
+  filter: FootprintFilter;
 }
 
 /** Default footprint configuration. */
@@ -56,4 +93,5 @@ export const DEFAULT_FOOTPRINT_CONFIG: FootprintConfig = {
   showDelta: true,
   minVolume: 0,
   showNumbers: false,
+  filter: { ...DEFAULT_FOOTPRINT_FILTER },
 };

@@ -1,11 +1,11 @@
 # Project Progress
 
 ## Current State
-- **Phase:** 18 - Custom Scripting (Session 4)
-- **Stage:** COMPLETE through Phase 18
+- **Phase:** 22 - HD Heatmaps (Session 5)
+- **Stage:** COMPLETE through Phase 22
 - **Active Worktrees:** none
-- **Last Completed:** Phase 18 — Custom scripting engine with sandboxed JS execution
-- **Feature Coverage:** 19 of 26 researched features implemented
+- **Last Completed:** Phase 22 — HD Heatmaps with WebGL texture-based rendering
+- **Feature Coverage:** 23 of 26 researched features implemented
 - **Panel Types:** 15 (chart, orderbook, trades, depth-chart, watchlist, positions, order-entry, alerts, settings, market-profile, derivatives, script-editor, placeholder + 2 more)
 
 ## Pipeline Status
@@ -322,9 +322,52 @@ Build Output (code-split):
   Tests                ✅ 9 new script engine tests
 ```
 
-## Session 4 Final Build Stats
+## Session 4 Build Stats (after Phase 18)
 - `pnpm -r build` ✅ — code-split, 30KB core shell
 - `pnpm test` ✅ — 276 tests pass across 33 test suites
+- `pnpm lint` ✅ — zero violations
+
+## Phase 19: Filtered Footprints (Session 5)
+```
+[Phase 19: Filtered Footprints] ✅ COMPLETE
+  Filter Types           ✅ FootprintFilterMode, FootprintFilter + defaults
+  filterFootprintLevels  ✅ min-volume, min-trades, min-delta, percentile filters
+  Store Integration      ✅ updateFilter action, auto-applies in recompute
+  Tests                  ✅ 8 new footprint filter tests
+```
+
+## Phase 20: Bucketed Trade Size Groups (Session 5 continued)
+```
+[Phase 20: Bucketed Trade Groups] ✅ COMPLETE
+  Cluster Types          ✅ TradeSizeBucket, TradeSizeCluster, TradeClusterResult
+  K-Means Algorithm      ✅ Percentile-seeded K-Means with configurable k
+  clusterTradeSizes      ✅ Classifies trades into small/medium/large/whale
+  Tests                  ✅ 7 new K-Means clustering tests
+```
+
+## Phase 21: Dual Cluster Modes (Session 5 continued)
+```
+[Phase 21: Dual Cluster Modes] ✅ COMPLETE
+  Cluster Mode Types     ✅ ClusterMode ('size' | 'time' | 'combined'), TimeCluster
+  clusterByTime          ✅ Groups consecutive trades within maxGapMs
+  Time Thresholds        ✅ Configurable minTrades, minCost filtering
+  VWAP Computation       ✅ Per-cluster volume-weighted average price
+  Tests                  ✅ 7 new time cluster tests
+```
+
+## Phase 22: HD Heatmaps (Session 5 continued)
+```
+[Phase 22: HD Heatmaps] ✅ COMPLETE
+  HDHeatmapRenderer      ✅ WebGL texture-based rendering (1024x512 = 524K cells)
+  Texture Encoding       ✅ R=bid intensity, G=ask intensity, fragment shader colormap
+  Chart Manager          ✅ setHDHeatmap toggle, dual renderer (standard + HD)
+  ChartPanel UI          ✅ HD toggle button in toolbar
+  Test Mock              ✅ Added regl.texture to chart-manager mock
+```
+
+## Session 5 Final Build Stats
+- `pnpm -r build` ✅ — code-split, 31KB core shell, 186KB chart panel
+- `pnpm test` ✅ — 299 tests pass across 36 test suites
 - `pnpm lint` ✅ — zero violations
 
 ## Feature Coverage (26 Research Features)
@@ -349,12 +392,12 @@ Build Output (code-split):
 | 17 | Aggregated DOM | ✅ (OrderbookPanel) | Phase 3 |
 | 18 | Depth Chart | ✅ | Phase 7 |
 | 19 | Liquidation Tracking | ✅ | Phase 17 |
-| 20 | HD Heatmaps | ⬜ (needs WebGL texture approach) | — |
+| 20 | HD Heatmaps | ✅ (WebGL texture renderer) | Phase 22 |
 | 21 | Liquidation Heatmap | ⬜ (needs Hyperliquid integration) | — |
 | 22 | Hyperliquid MBO | ⬜ (needs self-hosted node) | — |
-| 23 | Filtered Footprints | ⬜ (volume filter on footprints) | — |
-| 24 | Community Marketplace | ⬜ (future) | — |
-| 25 | Bucketed Trade Groups | ⬜ (K-Means clustering) | — |
-| 26 | Dual Cluster Modes | ⬜ | — |
+| 23 | Filtered Footprints | ✅ (4 filter modes) | Phase 19 |
+| 24 | Community Marketplace | ⬜ (future backend needed) | — |
+| 25 | Bucketed Trade Groups | ✅ (K-Means clustering) | Phase 20 |
+| 26 | Dual Cluster Modes | ✅ (time + size clustering) | Phase 21 |
 
-**19 of 26 features implemented.** Remaining 7 require specialized infrastructure (Hyperliquid node, HD WebGL textures, marketplace backend).
+**23 of 26 features implemented.** Remaining 3 require external infrastructure (Hyperliquid self-hosted node, marketplace backend).

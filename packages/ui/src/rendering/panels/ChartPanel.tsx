@@ -80,6 +80,9 @@ export function ChartPanel({ panelId, candles, symbol }: ChartPanelProps): React
   const heatmapColumns = useHeatmapColumns(symbol ?? '');
   const heatmapMaxLiquidity = useHeatmapMaxLiquidity(symbol ?? '');
 
+  // HD Heatmap toggle
+  const [hdHeatmap, setHdHeatmap] = useState(false);
+
   // Volume bubbles
   const [bubblesEnabled, setBubblesEnabled] = useState(false);
   const recentTrades = useTrades(symbol ?? '');
@@ -480,6 +483,24 @@ export function ChartPanel({ panelId, candles, symbol }: ChartPanelProps): React
           }}
         >
           HM
+        </button>
+        <button
+          onClick={() => {
+            const next = !hdHeatmap;
+            setHdHeatmap(next);
+            chartManager?.setHDHeatmap(next);
+          }}
+          style={{
+            padding: '1px 5px',
+            fontSize: 10,
+            background: hdHeatmap ? 'rgba(255, 152, 0, 0.2)' : 'transparent',
+            border: hdHeatmap ? '1px solid #FF9800' : '1px solid #444',
+            borderRadius: 2,
+            color: hdHeatmap ? '#fff' : '#777',
+            cursor: 'pointer',
+          }}
+        >
+          HD
         </button>
         <button
           onClick={() => setBubblesEnabled(!bubblesEnabled)}

@@ -25,9 +25,14 @@ export { computeCVD } from './indicators/cvd.js';
 export { computeVWAP } from './indicators/vwap.js';
 export { computeIndicator } from './indicators/index.js';
 export { buildFootprintFromTrades, buildFootprintFromCandles, autoTickSize, bucketPrice } from './indicators/footprint.js';
+export { filterFootprintLevels } from './indicators/footprint-filter.js';
 export { computeMarketProfile } from './indicators/tpo.js';
 export { computeOrderbookImbalance, detectStackedImbalances } from './indicators/orderbook-imbalance.js';
 export type { ImbalanceResult, StackedImbalance, Absorption } from './indicators/orderbook-imbalance.js';
+
+// Trade clustering
+export { clusterTradeSizes } from './indicators/trade-cluster.js';
+export { clusterByTime } from './indicators/time-cluster.js';
 
 // Scripting
 export { executeScript } from './scripting/script-engine.js';

@@ -1,20 +1,22 @@
 import { create } from 'zustand';
-import type { FootprintCandle, FootprintConfig, OHLCVCandle } from '@terminal/types';
+import type { FootprintCandle, FootprintConfig, FootprintFilter, OHLCVCandle } from '@terminal/types';
 import { DEFAULT_FOOTPRINT_CONFIG } from '@terminal/types';
-import { buildFootprintFromCandles, autoTickSize } from '@terminal/core';
+import { buildFootprintFromCandles, autoTickSize, filterFootprintLevels } from '@terminal/core';
 
 export interface FootprintState {
   /** Whether footprint mode is enabled */
   enabled: boolean;
   /** Footprint configuration */
   config: FootprintConfig;
-  /** Computed footprint candles per symbol */
+  /** Computed footprint candles per symbol (after filtering) */
   footprints: Map<string, FootprintCandle[]>;
 
   /** Toggle footprint mode on/off */
   setEnabled: (enabled: boolean) => void;
   /** Update footprint config */
   updateConfig: <K extends keyof FootprintConfig>(key: K, value: FootprintConfig[K]) => void;
+  /** Update filter settings */
+  updateFilter: <K extends keyof FootprintFilter>(key: K, value: FootprintFilter[K]) => void;
   /** Recompute footprints from candles (called when candles update) */
   recompute: (symbol: string, candles: OHLCVCandle[]) => void;
 }
@@ -34,6 +36,15 @@ export const useFootprintStore = create<FootprintState>((set, get) => ({
     }));
   },
 
+  updateFilter: (key, value) => {
+    set((state) => ({
+      config: {
+        ...state.config,
+        filter: { ...state.config.filter, [key]: value },
+      },
+    }));
+  },
+
   recompute: (symbol, candles) => {
     const state = get();
     if (!state.enabled || candles.length === 0) return;
@@ -43,7 +54,12 @@ export const useFootprintStore = create<FootprintState>((set, get) => ({
       ? state.config.tickSize
       : autoTickSize(candles);
 
-    const fpCandles = buildFootprintFromCandles(candles, tickSize);
+    let fpCandles = buildFootprintFromCandles(candles, tickSize);
+
+    // Apply footprint filter
+    if (state.config.filter.mode !== 'none') {
+      fpCandles = filterFootprintLevels(fpCandles, state.config.filter);
+    }
 
     set((prev) => {
       const footprints = new Map(prev.footprints);

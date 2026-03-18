@@ -7,12 +7,16 @@ vi.mock('regl', () => {
     destroy: vi.fn(),
     subdata: vi.fn(),
   };
+  const mockTexture = Object.assign(vi.fn(), {
+    destroy: vi.fn(),
+  });
   const mockCommand = vi.fn();
   const mockRegl = vi.fn(() => mockCommand);
 
   // Add methods to mockRegl instance
   const reglInstance = Object.assign(mockRegl, {
     buffer: vi.fn(() => mockBuffer),
+    texture: vi.fn(() => mockTexture),
     clear: vi.fn(),
     destroy: vi.fn(),
     on: vi.fn(),

@@ -35,8 +35,10 @@ export type {
   FootprintLevel,
   FootprintCandle,
   FootprintConfig,
+  FootprintFilterMode,
+  FootprintFilter,
 } from './market/footprint.js';
-export { DEFAULT_FOOTPRINT_CONFIG } from './market/footprint.js';
+export { DEFAULT_FOOTPRINT_CONFIG, DEFAULT_FOOTPRINT_FILTER } from './market/footprint.js';
 export type {
   HeatmapColumn,
   HeatmapConfig,
@@ -59,6 +61,20 @@ export type {
   OpenInterestPoint,
   FundingRate,
 } from './market/open-interest.js';
+export type {
+  TradeSizeBucket,
+  TradeSizeCluster,
+  TradeClassification,
+  TradeClusterResult,
+  TradeClusterConfig,
+} from './market/trade-cluster.js';
+export { DEFAULT_TRADE_CLUSTER_CONFIG } from './market/trade-cluster.js';
+export type {
+  ClusterMode,
+  TimeCluster,
+  TimeClusterConfig,
+} from './market/cluster-mode.js';
+export { DEFAULT_TIME_CLUSTER_CONFIG } from './market/cluster-mode.js';
 
 // Exchange types
 export type { ExchangeAdapter } from './exchange/adapter.js';
