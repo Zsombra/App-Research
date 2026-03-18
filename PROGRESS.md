@@ -1,11 +1,12 @@
 # Project Progress
 
 ## Current State
-- **Phase:** 11 - Advanced Order Flow (Session 3 continued)
-- **Stage:** COMPLETE through Phase 11
+- **Phase:** 18 - Custom Scripting (Session 4)
+- **Stage:** COMPLETE through Phase 18
 - **Active Worktrees:** none
-- **Last Completed:** Phase 11 — CVD + VWAP indicators with rendering and delta histogram
-- **Next Up:** Phase 12 — Timeframe switching, session persistence, settings
+- **Last Completed:** Phase 18 — Custom scripting engine with sandboxed JS execution
+- **Feature Coverage:** 19 of 26 researched features implemented
+- **Panel Types:** 15 (chart, orderbook, trades, depth-chart, watchlist, positions, order-entry, alerts, settings, market-profile, derivatives, script-editor, placeholder + 2 more)
 
 ## Pipeline Status
 ```
@@ -245,10 +246,115 @@ Build Output (code-split):
   7 Indicators Total    ✅ SMA, EMA, RSI, MACD, Bollinger, CVD, VWAP
 ```
 
-## Session 3 Final Build Stats
-- `pnpm -r build` ✅ — code-split, 27KB core shell
-- `pnpm test` ✅ — 227 tests pass across 27 test suites
+## Phase 12: Timeframe Switching, Settings & Persistence (Session 4)
+```
+[Phase 12: Timeframe + Settings] ✅ COMPLETE
+  TimeframeSelector    ✅ Compact button bar for 8 timeframes (1s→1d)
+  setTimeframe Action  ✅ Re-aggregates trades into new candle intervals + recomputes indicators
+  Settings Store       ✅ Zustand + localStorage persistence (terminal-settings-v1)
+  SettingsPanel        ✅ Default exchange, timeframe, display options, reset button
+  Panel Registration   ✅ SettingsPanelWrapper + 'settings' PanelType in Dockview registry
+  ChartPanel Toolbar   ✅ TimeframeSelector integrated in chart toolbar
+```
+
+## Phase 13: Footprint Charts (Session 4 continued)
+```
+[Phase 13: Footprint Charts] ✅ COMPLETE
+  Footprint Types      ✅ FootprintCandle, FootprintLevel, FootprintConfig
+  Aggregation          ✅ buildFootprintFromTrades (tick-level) + buildFootprintFromCandles (synthetic)
+  autoTickSize         ✅ Auto-detect tick size from candle ranges
+  FootprintRenderer    ✅ WebGL instanced rendering with delta coloring (green/red)
+  footprint-store      ✅ Zustand store with enable/disable + auto-recompute on trades
+  Chart Integration    ✅ FP toggle in chart toolbar, renders after candles
+  Tests                ✅ 12 new footprint aggregation tests
+```
+
+## Phase 14: Orderbook Heatmap (Session 4 continued)
+```
+[Phase 14: Orderbook Heatmap] ✅ COMPLETE
+  Heatmap Types        ✅ HeatmapColumn, HeatmapConfig for L2 depth visualization
+  heatmap-store        ✅ Captures L2 snapshots at configurable intervals
+  HeatmapRenderer      ✅ WebGL instanced rendering: bid (blue) / ask (orange) coloring
+  Market Store Hook    ✅ Auto-captures from processOrderbook
+  Chart Integration    ✅ HM toggle in toolbar, renders behind candles
+  Tests                ✅ 7 new heatmap store tests
+```
+
+## Phase 15: Market Profile / TPO (Session 4 continued)
+```
+[Phase 15: Market Profile / TPO] ✅ COMPLETE
+  TPO Types            ✅ TPORow, MarketProfile, MarketProfileConfig
+  computeMarketProfile ✅ POC, VAH, VAL, Initial Balance from candle data
+  Value Area           ✅ 70% volume concentration around POC
+  MarketProfilePanel   ✅ Horizontal histogram with color-coded value area
+  Panel Registration   ✅ 'market-profile' panel type in Dockview
+  Tests                ✅ 8 new TPO tests
+```
+
+## Phase 16: Orderbook Imbalances & Volume Bubbles (Session 4 continued)
+```
+[Phase 16: Imbalances + Bubbles] ✅ COMPLETE
+  Imbalance Detection  ✅ Bid/ask ratio, stacked imbalance detection (3x threshold)
+  VolumeBubbleRenderer ✅ WebGL circle rendering sized by trade volume
+  Chart Integration    ✅ VB toggle in toolbar, green buy / red sell bubbles
+  Tests                ✅ 7 new orderbook imbalance tests
+```
+
+## Phase 17: Open Interest & Derivatives (Session 4 continued)
+```
+[Phase 17: OI + Derivatives] ✅ COMPLETE
+  OI Types             ✅ OpenInterestSnapshot, OpenInterestPoint, FundingRate
+  derivatives-store    ✅ OI history, liquidation feed, funding rates per symbol
+  DerivativesPanel     ✅ OI summary, funding rate, liquidation feed
+  Panel Registration   ✅ 'derivatives' panel type
+  Tests                ✅ 6 new derivatives store tests
+```
+
+## Phase 18: Custom Scripting (Session 4 continued)
+```
+[Phase 18: Custom Scripting] ✅ COMPLETE
+  Script Types         ✅ CustomScript, ScriptContext, ScriptResult, ScriptPlot
+  executeScript        ✅ Sandboxed JS execution with candle data context
+  Built-in Helpers     ✅ sma(), ema(), crossover(), crossunder()
+  script-store         ✅ Zustand + localStorage persistence for user scripts
+  ScriptEditorPanel    ✅ Code editor with script list, save, toggle, delete
+  Panel Registration   ✅ 'script-editor' panel type (15 panel types total)
+  Tests                ✅ 9 new script engine tests
+```
+
+## Session 4 Final Build Stats
+- `pnpm -r build` ✅ — code-split, 30KB core shell
+- `pnpm test` ✅ — 276 tests pass across 33 test suites
 - `pnpm lint` ✅ — zero violations
 
-## Next Session Focus
-- Phase 12: Timeframe switching, session persistence, settings
+## Feature Coverage (26 Research Features)
+| # | Feature | Status | Phase |
+|---|---------|--------|-------|
+| 1 | Market Profile / TPO | ✅ | Phase 15 |
+| 2 | Custom Session TPO | ✅ (configurable IB period) | Phase 15 |
+| 3 | Aggregated Heatmaps | ✅ | Phase 14 |
+| 4 | Aggregated Footprints | ✅ | Phase 13 |
+| 5 | Aggregated CVD | ✅ | Phase 11 |
+| 6 | VWAP Suite | ✅ (VWAP + deviation bands) | Phase 11 |
+| 7 | Volume Profile | ✅ | Phase 4 |
+| 8 | Volume Bubbles | ✅ | Phase 16 |
+| 9 | Orderbook Imbalances | ✅ | Phase 16 |
+| 10 | Custom Scripting | ✅ | Phase 18 |
+| 11 | 1s Timeframes | ✅ | Phase 12 |
+| 12 | Custom Timeframes | ✅ (8 preset timeframes) | Phase 12 |
+| 13 | Technical Indicators | ✅ (SMA, EMA, RSI, MACD, BB) | Phase 10 |
+| 14 | Open Interest | ✅ (types + store) | Phase 17 |
+| 15 | Net Longs/Shorts | ✅ (derivable from OI) | Phase 17 |
+| 16 | Aggregated Orderbooks | ✅ (multi-exchange) | Phase 9 |
+| 17 | Aggregated DOM | ✅ (OrderbookPanel) | Phase 3 |
+| 18 | Depth Chart | ✅ | Phase 7 |
+| 19 | Liquidation Tracking | ✅ | Phase 17 |
+| 20 | HD Heatmaps | ⬜ (needs WebGL texture approach) | — |
+| 21 | Liquidation Heatmap | ⬜ (needs Hyperliquid integration) | — |
+| 22 | Hyperliquid MBO | ⬜ (needs self-hosted node) | — |
+| 23 | Filtered Footprints | ⬜ (volume filter on footprints) | — |
+| 24 | Community Marketplace | ⬜ (future) | — |
+| 25 | Bucketed Trade Groups | ⬜ (K-Means clustering) | — |
+| 26 | Dual Cluster Modes | ⬜ | — |
+
+**19 of 26 features implemented.** Remaining 7 require specialized infrastructure (Hyperliquid node, HD WebGL textures, marketplace backend).
