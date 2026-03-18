@@ -19,6 +19,8 @@ const LazyDerivatives = React.lazy(() => import('./wrappers/DerivativesPanelWrap
 const LazyScriptEditor = React.lazy(() => import('./wrappers/ScriptEditorPanelWrapper.js'));
 const LazyMBOProfile = React.lazy(() => import('./wrappers/MBOProfilePanelWrapper.js'));
 const LazyMarketplace = React.lazy(() => import('./wrappers/MarketplacePanelWrapper.js'));
+const LazySLHeatmap = React.lazy(() => import('./wrappers/SLHeatmapPanelWrapper.js'));
+const LazyTPHeatmap = React.lazy(() => import('./wrappers/TPHeatmapPanelWrapper.js'));
 const LazyPlaceholder = React.lazy(() => import('./wrappers/PlaceholderPanelWrapper.js'));
 
 /**
@@ -64,5 +66,7 @@ export const panelComponents: Record<string, React.FunctionComponent<IDockviewPa
   'script-editor': wrapLazy(LazyScriptEditor, 'script-editor'),
   'mbo-profile': wrapLazy(LazyMBOProfile, 'mbo-profile'),
   marketplace: wrapLazy(LazyMarketplace, 'marketplace'),
+  'sl-heatmap': wrapLazy(LazySLHeatmap, 'sl-heatmap'),
+  'tp-heatmap': wrapLazy(LazyTPHeatmap, 'tp-heatmap'),
   placeholder: wrapLazy(LazyPlaceholder, 'placeholder'),
 } satisfies Record<PanelType, React.FunctionComponent<IDockviewPanelProps>>;

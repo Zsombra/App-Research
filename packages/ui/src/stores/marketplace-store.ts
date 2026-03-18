@@ -20,6 +20,90 @@ function saveInstalled(indicators: InstalledIndicator[]): void {
   }
 }
 
+/**
+ * Built-in community indicators shipped with the app.
+ * Used as fallback when the marketplace API is unavailable.
+ */
+function getBuiltInIndicators(): MarketplaceIndicator[] {
+  return [
+    {
+      id: 'builtin-ema-ribbon',
+      name: 'EMA Ribbon',
+      description: 'Multiple EMA lines (8, 13, 21, 34, 55) forming a ribbon for trend direction.',
+      author: 'terminal-team',
+      version: '1.0.0',
+      category: 'trend',
+      source: 'const periods = [8,13,21,34,55]; return periods.map(p => ema(close, p));',
+      installs: 1200,
+      rating: 4.5,
+      ratingCount: 48,
+      publishedAt: Date.now() - 90 * 86_400_000,
+      updatedAt: Date.now() - 30 * 86_400_000,
+      tags: ['ema', 'ribbon', 'trend'],
+    },
+    {
+      id: 'builtin-vol-profile',
+      name: 'Session Volume Profile',
+      description: 'Volume profile histogram for the current trading session.',
+      author: 'terminal-team',
+      version: '1.0.0',
+      category: 'volume',
+      source: 'return volumeProfile(candles, { session: "day" });',
+      installs: 980,
+      rating: 4.3,
+      ratingCount: 32,
+      publishedAt: Date.now() - 60 * 86_400_000,
+      updatedAt: Date.now() - 15 * 86_400_000,
+      tags: ['volume', 'profile', 'session'],
+    },
+    {
+      id: 'builtin-delta-divergence',
+      name: 'Delta Divergence',
+      description: 'Highlights when price and cumulative delta diverge — potential reversal signal.',
+      author: 'terminal-team',
+      version: '1.0.0',
+      category: 'orderflow',
+      source: 'const d = cvd(candles); return divergence(close, d);',
+      installs: 750,
+      rating: 4.7,
+      ratingCount: 25,
+      publishedAt: Date.now() - 45 * 86_400_000,
+      updatedAt: Date.now() - 10 * 86_400_000,
+      tags: ['delta', 'divergence', 'orderflow', 'reversal'],
+    },
+    {
+      id: 'builtin-rsi-divergence',
+      name: 'RSI Divergence Scanner',
+      description: 'Automatically detects bullish/bearish RSI divergences.',
+      author: 'terminal-team',
+      version: '1.0.0',
+      category: 'momentum',
+      source: 'const r = rsi(close, 14); return divergence(close, r);',
+      installs: 620,
+      rating: 4.2,
+      ratingCount: 19,
+      publishedAt: Date.now() - 30 * 86_400_000,
+      updatedAt: Date.now() - 5 * 86_400_000,
+      tags: ['rsi', 'divergence', 'momentum'],
+    },
+    {
+      id: 'builtin-atr-bands',
+      name: 'ATR Bands',
+      description: 'Volatility bands based on ATR around a moving average.',
+      author: 'terminal-team',
+      version: '1.0.0',
+      category: 'volatility',
+      source: 'const m = sma(close, 20); const a = atr(14); return [m+2*a, m, m-2*a];',
+      installs: 540,
+      rating: 4.1,
+      ratingCount: 15,
+      publishedAt: Date.now() - 20 * 86_400_000,
+      updatedAt: Date.now() - 3 * 86_400_000,
+      tags: ['atr', 'bands', 'volatility'],
+    },
+  ];
+}
+
 export interface MarketplaceState {
   /** Available indicators from the marketplace (fetched from server) */
   available: MarketplaceIndicator[];
@@ -46,6 +130,12 @@ export interface MarketplaceState {
   setSortBy: (sortBy: MarketplaceSortBy) => void;
   /** Set loading state */
   setLoading: (loading: boolean) => void;
+  /** Fetch available indicators from API */
+  fetchAvailable: (apiUrl?: string) => Promise<void>;
+  /** Fetch indicators filtered by category */
+  fetchByCategory: (category: string, apiUrl?: string) => Promise<void>;
+  /** Search indicators remotely */
+  searchRemote: (query: string, apiUrl?: string) => Promise<void>;
 }
 
 export const useMarketplaceStore = create<MarketplaceState>((set, get) => ({
@@ -93,6 +183,56 @@ export const useMarketplaceStore = create<MarketplaceState>((set, get) => ({
   setSearchQuery: (searchQuery) => set({ searchQuery }),
   setSortBy: (sortBy) => set({ sortBy }),
   setLoading: (loading) => set({ loading }),
+
+  fetchAvailable: async (apiUrl?: string) => {
+    const state = get();
+    if (state.loading) return;
+    set({ loading: true });
+
+    try {
+      const url = apiUrl ?? '/api/marketplace/indicators';
+      const response = await fetch(url);
+
+      if (!response.ok) {
+        throw new Error(`Marketplace fetch failed: ${response.status}`);
+      }
+
+      const data = await response.json() as { indicators: MarketplaceIndicator[] };
+      const indicators = Array.isArray(data) ? data : data.indicators ?? [];
+      set({ available: indicators as MarketplaceIndicator[], loading: false });
+    } catch {
+      // On fetch failure, fall back to built-in indicators
+      set({ available: getBuiltInIndicators(), loading: false });
+    }
+  },
+
+  fetchByCategory: async (category: string, apiUrl?: string) => {
+    set({ loading: true });
+    try {
+      const url = apiUrl ?? '/api/marketplace/indicators';
+      const response = await fetch(`${url}?category=${encodeURIComponent(category)}`);
+      if (!response.ok) throw new Error(`Fetch failed: ${response.status}`);
+      const data = await response.json() as { indicators: MarketplaceIndicator[] };
+      const indicators = Array.isArray(data) ? data : data.indicators ?? [];
+      set({ available: indicators as MarketplaceIndicator[], loading: false });
+    } catch {
+      set({ loading: false });
+    }
+  },
+
+  searchRemote: async (query: string, apiUrl?: string) => {
+    set({ loading: true, searchQuery: query });
+    try {
+      const url = apiUrl ?? '/api/marketplace/indicators';
+      const response = await fetch(`${url}?q=${encodeURIComponent(query)}`);
+      if (!response.ok) throw new Error(`Search failed: ${response.status}`);
+      const data = await response.json() as { indicators: MarketplaceIndicator[] };
+      const indicators = Array.isArray(data) ? data : data.indicators ?? [];
+      set({ available: indicators as MarketplaceIndicator[], loading: false });
+    } catch {
+      set({ loading: false });
+    }
+  },
 }));
 
 // Selectors

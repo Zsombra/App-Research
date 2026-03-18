@@ -26,6 +26,8 @@ export type PanelType =
   | 'script-editor'
   | 'mbo-profile'
   | 'marketplace'
+  | 'sl-heatmap'
+  | 'tp-heatmap'
   | 'placeholder';
 
 /**

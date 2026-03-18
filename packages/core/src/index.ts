@@ -34,6 +34,30 @@ export type { ImbalanceResult, StackedImbalance, Absorption } from './indicators
 export { clusterTradeSizes } from './indicators/trade-cluster.js';
 export { clusterByTime } from './indicators/time-cluster.js';
 
+// SL/TP estimation engine
+export {
+  computeSLTPHeatmap,
+  computeLiquidationLevels,
+  detectSwingPoints,
+  clusterSwingPoints,
+  computeATR,
+  computeRoundNumberLevels,
+  detectHistoricalSweeps,
+  dbscanCluster,
+  dbscanSLTPClusters,
+  computeCompositeScores,
+} from './indicators/sl-tp-engine.js';
+
+// VWAP variants
+export { computeAnchoredVWAP, computeRollingVWAP } from './indicators/vwap-extended.js';
+
+// Custom bar types
+export { buildTickBars, buildVolumeBars, buildRangeBars } from './indicators/custom-bars.js';
+
+// Footprint display modes
+export { transformFootprintLevels, computeFootprintCumulativeDelta } from './indicators/footprint-display.js';
+export type { FootprintCellData } from './indicators/footprint-display.js';
+
 // Scripting
 export { executeScript } from './scripting/script-engine.js';
 

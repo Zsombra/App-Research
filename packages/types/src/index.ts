@@ -94,6 +94,34 @@ export type {
   MarketplaceSortBy,
   InstalledIndicator,
 } from './market/marketplace.js';
+export type {
+  StopTakeType,
+  SLTPCluster,
+  SLTPAlgorithm,
+  SLTPHeatmapCell,
+  SLTPHeatmap,
+  EstimatedPosition,
+  SwingPoint,
+  SLTPConfig,
+} from './market/sl-tp-heatmap.js';
+export { DEFAULT_SLTP_CONFIG } from './market/sl-tp-heatmap.js';
+export type {
+  BarType,
+  TickBarConfig,
+  VolumeBarConfig,
+  RangeBarConfig,
+  CustomBarConfig,
+} from './market/custom-timeframe.js';
+export {
+  DEFAULT_TICK_BAR_CONFIG,
+  DEFAULT_VOLUME_BAR_CONFIG,
+  DEFAULT_RANGE_BAR_CONFIG,
+} from './market/custom-timeframe.js';
+export type {
+  FootprintDisplayMode,
+  FootprintDisplayConfig,
+} from './market/footprint-display.js';
+export { DEFAULT_FOOTPRINT_DISPLAY_CONFIG } from './market/footprint-display.js';
 
 // Exchange types
 export type { ExchangeAdapter } from './exchange/adapter.js';
