@@ -42,6 +42,12 @@ export type {
   HeatmapConfig,
 } from './market/heatmap.js';
 export { DEFAULT_HEATMAP_CONFIG } from './market/heatmap.js';
+export type {
+  TPORow,
+  MarketProfile,
+  MarketProfileConfig,
+} from './market/tpo.js';
+export { DEFAULT_MARKET_PROFILE_CONFIG } from './market/tpo.js';
 
 // Exchange types
 export type { ExchangeAdapter } from './exchange/adapter.js';

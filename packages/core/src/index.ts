@@ -25,6 +25,7 @@ export { computeCVD } from './indicators/cvd.js';
 export { computeVWAP } from './indicators/vwap.js';
 export { computeIndicator } from './indicators/index.js';
 export { buildFootprintFromTrades, buildFootprintFromCandles, autoTickSize, bucketPrice } from './indicators/footprint.js';
+export { computeMarketProfile } from './indicators/tpo.js';
 
 // Worker
 export { FlushScheduler } from './worker/flush-scheduler.js';

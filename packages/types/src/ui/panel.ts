@@ -21,6 +21,7 @@ export type PanelType =
   | 'order-entry'
   | 'alerts'
   | 'settings'
+  | 'market-profile'
   | 'placeholder';
 
 /**
