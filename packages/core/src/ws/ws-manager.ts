@@ -76,6 +76,11 @@ export class WebSocketManager {
     ) {
       return;
     }
+    // Clear any pending reconnect timer to avoid racing with the new connection
+    if (this.reconnectTimer !== null) {
+      clearTimeout(this.reconnectTimer);
+      this.reconnectTimer = null;
+    }
     this.intentionalDisconnect = false;
     this.reconnectAttempt = 0;
     this.openSocket();
