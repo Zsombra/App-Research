@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   useMarketplaceStore,
   useFilteredMarketplace,
@@ -23,6 +23,13 @@ export function MarketplacePanel({ panelId }: MarketplacePanelProps): React.JSX.
   const loading = useMarketplaceStore((s) => s.loading);
   const available = useFilteredMarketplace();
   const installed = useInstalledIndicators();
+
+  const fetchAvailable = useMarketplaceStore((s) => s.fetchAvailable);
+
+  // Fetch marketplace indicators on mount
+  useEffect(() => {
+    fetchAvailable();
+  }, [fetchAvailable]);
 
   const installedIds = new Set(installed.map((i) => i.indicatorId));
 

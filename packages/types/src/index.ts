@@ -14,6 +14,8 @@ export type {
   BollingerParams,
   CVDParams,
   VWAPParams,
+  VWAPAnchoredParams,
+  VWAPRollingParams,
   SMAOutput,
   EMAOutput,
   RSIOutput,

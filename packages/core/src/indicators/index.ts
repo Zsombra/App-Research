@@ -6,6 +6,7 @@ import { computeMACD } from './macd.js';
 import { computeBollinger } from './bollinger.js';
 import { computeCVD } from './cvd.js';
 import { computeVWAP } from './vwap.js';
+import { computeAnchoredVWAP, computeRollingVWAP } from './vwap-extended.js';
 
 export { computeSMA } from './sma.js';
 export { computeEMA } from './ema.js';
@@ -14,6 +15,7 @@ export { computeMACD } from './macd.js';
 export { computeBollinger } from './bollinger.js';
 export { computeCVD } from './cvd.js';
 export { computeVWAP } from './vwap.js';
+export { computeAnchoredVWAP, computeRollingVWAP } from './vwap-extended.js';
 
 /**
  * Dispatch function: compute any indicator by kind.
@@ -48,5 +50,9 @@ export function computeIndicator(
       return computeCVD(candles);
     case 'vwap':
       return computeVWAP(candles);
+    case 'vwap-anchored':
+      return computeAnchoredVWAP(candles, params['anchorIndex'] ?? 0);
+    case 'vwap-rolling':
+      return computeRollingVWAP(candles, params['windowSize'] ?? 20);
   }
 }

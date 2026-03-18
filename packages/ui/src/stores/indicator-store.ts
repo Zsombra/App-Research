@@ -92,7 +92,7 @@ export function useOverlaySeries(): IndicatorSeries[] {
   return useIndicatorStore((state) => {
     const overlay: IndicatorSeries[] = [];
     for (const s of state.series.values()) {
-      if (s.kind === 'sma' || s.kind === 'ema' || s.kind === 'bollinger' || s.kind === 'vwap') {
+      if (s.kind === 'sma' || s.kind === 'ema' || s.kind === 'bollinger' || s.kind === 'vwap' || s.kind === 'vwap-anchored' || s.kind === 'vwap-rolling') {
         overlay.push(s);
       }
     }

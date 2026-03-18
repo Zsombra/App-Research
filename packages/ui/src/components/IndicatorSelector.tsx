@@ -11,6 +11,8 @@ const AVAILABLE_INDICATORS: { kind: IndicatorKind; label: string }[] = [
   { kind: 'bollinger', label: 'Bollinger' },
   { kind: 'cvd', label: 'CVD' },
   { kind: 'vwap', label: 'VWAP' },
+  { kind: 'vwap-anchored', label: 'VWAP Anchored' },
+  { kind: 'vwap-rolling', label: 'VWAP Rolling' },
 ];
 
 function formatParams(params: Record<string, number>): string {

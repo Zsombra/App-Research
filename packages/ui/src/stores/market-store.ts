@@ -9,9 +9,12 @@ import type {
   CandleTimeframe,
   SubscriptionTopic,
   WorkerOutboundMessage,
+  BarType,
+  CustomBarConfig,
 } from '@terminal/types';
 import { getWorkerBridge } from '../worker/worker-bridge.js';
 import { aggregateTrade } from './candle-aggregator.js';
+import { buildTickBars, buildVolumeBars, buildRangeBars } from '@terminal/core';
 import { useIndicatorStore } from './indicator-store.js';
 import { useFootprintStore } from './footprint-store.js';
 import { useHeatmapStore } from './heatmap-store.js';
@@ -30,6 +33,10 @@ export interface MarketState {
   candles: Map<string, OHLCVCandle[]>;
   /** Active timeframe per symbol */
   timeframes: Map<string, CandleTimeframe>;
+  /** Active bar type per symbol ('time' uses standard candle aggregator) */
+  barTypes: Map<string, BarType>;
+  /** Custom bar config per symbol (for tick/volume/range bars) */
+  customBarConfigs: Map<string, CustomBarConfig>;
   /** Connection status per exchange */
   connectionStatuses: Map<ExchangeId, ConnectionStatus>;
   /** Currently subscribed symbols */
@@ -41,6 +48,7 @@ export interface MarketState {
   processTicker: (symbol: string, ticker: Ticker) => void;
   processConnectionStatus: (exchange: ExchangeId, status: ConnectionStatus) => void;
   setTimeframe: (symbol: string, timeframe: CandleTimeframe) => void;
+  setBarType: (symbol: string, barType: BarType, config?: CustomBarConfig) => void;
   subscribe: (symbol: string, exchanges: ExchangeId[], topics: SubscriptionTopic[]) => void;
   unsubscribe: (symbol: string) => void;
 }
@@ -51,6 +59,8 @@ export const useMarketStore = create<MarketState>((set) => ({
   tickers: new Map(),
   candles: new Map(),
   timeframes: new Map(),
+  barTypes: new Map(),
+  customBarConfigs: new Map(),
   connectionStatuses: new Map(),
   subscriptions: new Set(),
 
@@ -63,10 +73,28 @@ export const useMarketStore = create<MarketState>((set) => ({
 
       // Aggregate trades into candles
       const candles = new Map(state.candles);
-      const timeframe = state.timeframes.get(symbol) ?? DEFAULT_TIMEFRAME;
-      const candleArray = [...(candles.get(symbol) ?? [])];
-      for (const trade of newTrades) {
-        aggregateTrade(candleArray, trade, timeframe);
+      const barType = state.barTypes.get(symbol) ?? 'time';
+
+      let candleArray: OHLCVCandle[];
+      if (barType !== 'time') {
+        // Custom bar types: rebuild from all trades
+        const config = state.customBarConfigs.get(symbol);
+        const chronological = [...merged].reverse();
+        if (config?.type === 'tick') {
+          candleArray = buildTickBars(chronological, config);
+        } else if (config?.type === 'volume') {
+          candleArray = buildVolumeBars(chronological, config);
+        } else if (config?.type === 'range') {
+          candleArray = buildRangeBars(chronological, config);
+        } else {
+          candleArray = [...(candles.get(symbol) ?? [])];
+        }
+      } else {
+        const timeframe = state.timeframes.get(symbol) ?? DEFAULT_TIMEFRAME;
+        candleArray = [...(candles.get(symbol) ?? [])];
+        for (const trade of newTrades) {
+          aggregateTrade(candleArray, trade, timeframe);
+        }
       }
       candles.set(symbol, candleArray);
 
@@ -145,6 +173,51 @@ export const useMarketStore = create<MarketState>((set) => ({
     // Notify worker of timeframe change
     const bridge = getWorkerBridge();
     bridge.send({ type: 'set-timeframe', symbol, timeframe });
+  },
+
+  setBarType: (symbol, barType, config) => {
+    set((state) => {
+      const barTypes = new Map(state.barTypes);
+      barTypes.set(symbol, barType);
+
+      const customBarConfigs = new Map(state.customBarConfigs);
+      if (config) {
+        customBarConfigs.set(symbol, config);
+      } else {
+        customBarConfigs.delete(symbol);
+      }
+
+      // Rebuild candles from existing trades
+      const candles = new Map(state.candles);
+      const existingTrades = state.trades.get(symbol) ?? [];
+      const chronological = [...existingTrades].reverse();
+
+      let candleArray: OHLCVCandle[];
+      if (barType === 'time') {
+        candleArray = [];
+        const timeframe = state.timeframes.get(symbol) ?? DEFAULT_TIMEFRAME;
+        for (const trade of chronological) {
+          aggregateTrade(candleArray, trade, timeframe);
+        }
+      } else if (config?.type === 'tick') {
+        candleArray = buildTickBars(chronological, config);
+      } else if (config?.type === 'volume') {
+        candleArray = buildVolumeBars(chronological, config);
+      } else if (config?.type === 'range') {
+        candleArray = buildRangeBars(chronological, config);
+      } else {
+        candleArray = [];
+      }
+      candles.set(symbol, candleArray);
+
+      // Trigger indicator recomputation
+      const indicatorStore = useIndicatorStore.getState();
+      if (indicatorStore.indicators.size > 0) {
+        indicatorStore.recompute(symbol, candleArray);
+      }
+
+      return { barTypes, customBarConfigs, candles };
+    });
   },
 
   subscribe: (symbol, exchanges, topics) => {
@@ -231,6 +304,10 @@ export function useCandles(symbol: string): OHLCVCandle[] {
 
 export function useTimeframe(symbol: string): CandleTimeframe {
   return useMarketStore((state) => state.timeframes.get(symbol) ?? DEFAULT_TIMEFRAME);
+}
+
+export function useBarType(symbol: string): BarType {
+  return useMarketStore((state) => state.barTypes.get(symbol) ?? 'time');
 }
 
 export function useConnectionStatus(exchange: ExchangeId): ConnectionStatus {

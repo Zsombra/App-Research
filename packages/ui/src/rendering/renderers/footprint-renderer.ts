@@ -1,5 +1,5 @@
 import REGL from 'regl';
-import type { FootprintCandle } from '@terminal/types';
+import type { FootprintCandle, FootprintDisplayMode } from '@terminal/types';
 import { BaseRenderer } from '../base-renderer.js';
 import type { RenderingContext } from '../rendering-context.js';
 import type { ViewportTransform } from '../viewport-transform.js';
@@ -22,6 +22,7 @@ const MAX_CELLS = 100_000;
 export class FootprintRenderer extends BaseRenderer {
   private footprints: FootprintCandle[] = [];
   private candleWidthMs: number = 60_000;
+  private displayMode: FootprintDisplayMode = 'delta';
 
   private quadBuffer: REGL.Buffer | null = null;
   private instanceBuffer: REGL.Buffer | null = null;
@@ -124,9 +125,16 @@ export class FootprintRenderer extends BaseRenderer {
   }
 
   /** Set footprint data and candle interval. */
-  setData(footprints: FootprintCandle[], candleWidthMs: number): void {
+  setData(footprints: FootprintCandle[], candleWidthMs: number, displayMode?: FootprintDisplayMode): void {
     this.footprints = footprints;
     this.candleWidthMs = candleWidthMs;
+    if (displayMode !== undefined) this.displayMode = displayMode;
+    this.updateVisibleCells();
+  }
+
+  /** Update display mode without changing data. */
+  setDisplayMode(mode: FootprintDisplayMode): void {
+    this.displayMode = mode;
     this.updateVisibleCells();
   }
 
@@ -181,21 +189,50 @@ export class FootprintRenderer extends BaseRenderer {
         const centerPricePx = this.viewport.dataToPixelY(level.price + fp.tickSize / 2);
         const cellHeightPx = Math.max(1, fp.tickSize * this.viewport.scaleY);
 
-        // Delta coloring: positive = green, negative = red
         const delta = level.buyVolume - level.sellVolume;
         const intensity = Math.min(1, totalVol / this.globalMaxVolume);
 
         let r: number, g: number, b: number;
-        if (delta >= 0) {
-          // Green (bullish)
-          r = 0.173;
-          g = 0.714;
-          b = 0.463;
-        } else {
-          // Red (bearish)
-          r = 0.914;
-          g = 0.278;
-          b = 0.278;
+
+        switch (this.displayMode) {
+          case 'bid-ask': {
+            // Bid side (sell) = red tint, Ask side (buy) = green tint
+            // Color based on which side dominates
+            const buyRatio = level.buyVolume / totalVol;
+            if (buyRatio > 0.6) {
+              r = 0.173; g = 0.714; b = 0.463; // green (ask-dominant)
+            } else if (buyRatio < 0.4) {
+              r = 0.914; g = 0.278; b = 0.278; // red (bid-dominant)
+            } else {
+              r = 0.6; g = 0.6; b = 0.2; // yellow (balanced)
+            }
+            break;
+          }
+          case 'total-volume': {
+            // Single color (blue-purple) with intensity based on volume
+            r = 0.388; g = 0.400; b = 0.753;
+            break;
+          }
+          case 'bid-ask-delta': {
+            // Bid|Ask layout with delta gradient coloring
+            const normalizedDelta = this.globalMaxVolume > 0 ? delta / this.globalMaxVolume : 0;
+            if (normalizedDelta >= 0) {
+              r = 0.173; g = 0.4 + 0.314 * Math.min(1, normalizedDelta * 2); b = 0.463;
+            } else {
+              r = 0.914; g = 0.278 * (1 + normalizedDelta); b = 0.278;
+            }
+            break;
+          }
+          case 'delta':
+          default: {
+            // Original delta coloring: positive = green, negative = red
+            if (delta >= 0) {
+              r = 0.173; g = 0.714; b = 0.463;
+            } else {
+              r = 0.914; g = 0.278; b = 0.278;
+            }
+            break;
+          }
         }
 
         // Alpha based on volume intensity

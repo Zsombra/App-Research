@@ -1,6 +1,6 @@
 import { create } from 'zustand';
-import type { FootprintCandle, FootprintConfig, FootprintFilter, OHLCVCandle } from '@terminal/types';
-import { DEFAULT_FOOTPRINT_CONFIG } from '@terminal/types';
+import type { FootprintCandle, FootprintConfig, FootprintFilter, FootprintDisplayConfig, FootprintDisplayMode, OHLCVCandle } from '@terminal/types';
+import { DEFAULT_FOOTPRINT_CONFIG, DEFAULT_FOOTPRINT_DISPLAY_CONFIG } from '@terminal/types';
 import { buildFootprintFromCandles, autoTickSize, filterFootprintLevels } from '@terminal/core';
 
 export interface FootprintState {
@@ -8,6 +8,8 @@ export interface FootprintState {
   enabled: boolean;
   /** Footprint configuration */
   config: FootprintConfig;
+  /** Display configuration (mode, labels, imbalances, etc.) */
+  displayConfig: FootprintDisplayConfig;
   /** Computed footprint candles per symbol (after filtering) */
   footprints: Map<string, FootprintCandle[]>;
 
@@ -17,6 +19,10 @@ export interface FootprintState {
   updateConfig: <K extends keyof FootprintConfig>(key: K, value: FootprintConfig[K]) => void;
   /** Update filter settings */
   updateFilter: <K extends keyof FootprintFilter>(key: K, value: FootprintFilter[K]) => void;
+  /** Update display config */
+  updateDisplayConfig: <K extends keyof FootprintDisplayConfig>(key: K, value: FootprintDisplayConfig[K]) => void;
+  /** Set display mode shorthand */
+  setDisplayMode: (mode: FootprintDisplayMode) => void;
   /** Recompute footprints from candles (called when candles update) */
   recompute: (symbol: string, candles: OHLCVCandle[]) => void;
 }
@@ -24,6 +30,7 @@ export interface FootprintState {
 export const useFootprintStore = create<FootprintState>((set, get) => ({
   enabled: false,
   config: { ...DEFAULT_FOOTPRINT_CONFIG },
+  displayConfig: { ...DEFAULT_FOOTPRINT_DISPLAY_CONFIG },
   footprints: new Map(),
 
   setEnabled: (enabled) => {
@@ -42,6 +49,18 @@ export const useFootprintStore = create<FootprintState>((set, get) => ({
         ...state.config,
         filter: { ...state.config.filter, [key]: value },
       },
+    }));
+  },
+
+  updateDisplayConfig: (key, value) => {
+    set((state) => ({
+      displayConfig: { ...state.displayConfig, [key]: value },
+    }));
+  },
+
+  setDisplayMode: (mode) => {
+    set((state) => ({
+      displayConfig: { ...state.displayConfig, mode },
     }));
   },
 
@@ -81,4 +100,12 @@ export function useFootprints(symbol: string): FootprintCandle[] {
 
 export function useFootprintConfig(): FootprintConfig {
   return useFootprintStore((s) => s.config);
+}
+
+export function useFootprintDisplayConfig(): FootprintDisplayConfig {
+  return useFootprintStore((s) => s.displayConfig);
+}
+
+export function useFootprintDisplayMode(): FootprintDisplayMode {
+  return useFootprintStore((s) => s.displayConfig.mode);
 }

@@ -1,12 +1,12 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import type { OHLCVCandle } from '@terminal/types';
+import type { OHLCVCandle, FootprintDisplayMode } from '@terminal/types';
 import type { GridInfo } from '../renderers/grid-renderer.js';
 import type { LineSeries } from '../renderers/line-overlay-renderer.js';
 import { useChart } from '../hooks/use-chart.js';
 import { useIndicatorStore, useOverlaySeries, useSeparateSeries } from '../../stores/indicator-store.js';
 import { IndicatorSelector } from '../../components/IndicatorSelector.js';
 import { TimeframeSelector } from '../../components/TimeframeSelector.js';
-import { useFootprintEnabled, useFootprints, useFootprintStore } from '../../stores/footprint-store.js';
+import { useFootprintEnabled, useFootprints, useFootprintStore, useFootprintDisplayMode } from '../../stores/footprint-store.js';
 import { useHeatmapEnabled, useHeatmapColumns, useHeatmapMaxLiquidity, useHeatmapStore } from '../../stores/heatmap-store.js';
 import { useTrades } from '../../stores/market-store.js';
 import { timeframeToMs } from '../../stores/candle-aggregator.js';
@@ -74,6 +74,7 @@ export function ChartPanel({ panelId, candles, symbol }: ChartPanelProps): React
   const footprintEnabled = useFootprintEnabled();
   const footprintData = useFootprints(symbol ?? '');
   const activeTimeframe = useTimeframe(symbol ?? '');
+  const footprintDisplayMode = useFootprintDisplayMode();
 
   // Heatmap data
   const heatmapEnabled = useHeatmapEnabled();
@@ -164,7 +165,7 @@ export function ChartPanel({ panelId, candles, symbol }: ChartPanelProps): React
           width: 1,
           points: pts.map((p) => ({ timestamp: p.timestamp, value: p.data.lower })),
         });
-      } else if (series.kind === 'vwap') {
+      } else if (series.kind === 'vwap' || series.kind === 'vwap-anchored' || series.kind === 'vwap-rolling') {
         // VWAP: 3 lines (vwap + upper/lower deviation bands)
         const pts = series.points;
         lines.push({
@@ -322,8 +323,8 @@ export function ChartPanel({ panelId, candles, symbol }: ChartPanelProps): React
     }
 
     const candleWidthMs = timeframeToMs(activeTimeframe);
-    chartManager.setFootprintData(footprintData, candleWidthMs);
-  }, [chartManager, footprintEnabled, footprintData, activeTimeframe]);
+    chartManager.setFootprintData(footprintData, candleWidthMs, footprintDisplayMode);
+  }, [chartManager, footprintEnabled, footprintData, activeTimeframe, footprintDisplayMode]);
 
   // Wire heatmap data to chart manager
   useEffect(() => {
@@ -467,6 +468,25 @@ export function ChartPanel({ panelId, candles, symbol }: ChartPanelProps): React
         >
           FP
         </button>
+        {footprintEnabled && (
+          <select
+            value={footprintDisplayMode}
+            onChange={(e) => useFootprintStore.getState().setDisplayMode(e.target.value as FootprintDisplayMode)}
+            style={{
+              background: '#1a1a22',
+              border: '1px solid #333',
+              borderRadius: 2,
+              color: '#ccc',
+              fontSize: 9,
+              padding: '1px 2px',
+            }}
+          >
+            <option value="delta">Delta</option>
+            <option value="bid-ask">Bid/Ask</option>
+            <option value="total-volume">Volume</option>
+            <option value="bid-ask-delta">B/A Delta</option>
+          </select>
+        )}
         <button
           onClick={() => {
             const store = useHeatmapStore.getState();

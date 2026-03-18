@@ -15,7 +15,7 @@ import { FootprintRenderer } from './renderers/footprint-renderer.js';
 import { HeatmapRenderer } from './renderers/heatmap-renderer.js';
 import { HDHeatmapRenderer } from './renderers/hd-heatmap-renderer.js';
 import { VolumeBubbleRenderer } from './renderers/volume-bubble-renderer.js';
-import type { FootprintCandle, HeatmapColumn, NormalizedTrade } from '@terminal/types';
+import type { FootprintCandle, FootprintDisplayMode, HeatmapColumn, NormalizedTrade } from '@terminal/types';
 
 /**
  * Orchestrates all renderers for a single chart panel.
@@ -196,8 +196,14 @@ export class ChartManager {
   }
 
   /** Set footprint chart data. */
-  setFootprintData(footprints: FootprintCandle[], candleWidthMs: number): void {
-    this.footprintRenderer.setData(footprints, candleWidthMs);
+  setFootprintData(footprints: FootprintCandle[], candleWidthMs: number, displayMode?: FootprintDisplayMode): void {
+    this.footprintRenderer.setData(footprints, candleWidthMs, displayMode);
+    this.renderingCtx.markDirty();
+  }
+
+  /** Set footprint display mode. */
+  setFootprintDisplayMode(mode: FootprintDisplayMode): void {
+    this.footprintRenderer.setDisplayMode(mode);
     this.renderingCtx.markDirty();
   }
 

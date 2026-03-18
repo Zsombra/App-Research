@@ -1,5 +1,5 @@
 /** Supported indicator kinds. */
-export type IndicatorKind = 'sma' | 'ema' | 'rsi' | 'macd' | 'bollinger' | 'cvd' | 'vwap';
+export type IndicatorKind = 'sma' | 'ema' | 'rsi' | 'macd' | 'bollinger' | 'cvd' | 'vwap' | 'vwap-anchored' | 'vwap-rolling';
 
 /** Whether an indicator renders overlaid on price or in a separate pane. */
 export type IndicatorPlacement = 'overlay' | 'separate';
@@ -13,6 +13,8 @@ export const INDICATOR_PLACEMENT: Record<IndicatorKind, IndicatorPlacement> = {
   bollinger: 'overlay',
   cvd: 'separate',
   vwap: 'overlay',
+  'vwap-anchored': 'overlay',
+  'vwap-rolling': 'overlay',
 };
 
 // --- Parameter types ---
@@ -24,6 +26,8 @@ export interface MACDParams { fastPeriod: number; slowPeriod: number; signalPeri
 export interface BollingerParams { period: number; stdDev: number }
 export interface CVDParams { _placeholder?: number }
 export interface VWAPParams { _placeholder?: number }
+export interface VWAPAnchoredParams { anchorIndex: number }
+export interface VWAPRollingParams { windowSize: number }
 
 /** Default parameters per indicator kind. */
 export const INDICATOR_DEFAULTS: Record<IndicatorKind, Record<string, number>> = {
@@ -34,6 +38,8 @@ export const INDICATOR_DEFAULTS: Record<IndicatorKind, Record<string, number>> =
   bollinger: { period: 20, stdDev: 2 },
   cvd: {},
   vwap: {},
+  'vwap-anchored': { anchorIndex: 0 },
+  'vwap-rolling': { windowSize: 20 },
 };
 
 // --- Output types ---
@@ -62,7 +68,9 @@ export type IndicatorSeries =
   | { kind: 'macd'; id: string; params: MACDParams; points: IndicatorPoint<MACDOutput>[] }
   | { kind: 'bollinger'; id: string; params: BollingerParams; points: IndicatorPoint<BollingerOutput>[] }
   | { kind: 'cvd'; id: string; params: CVDParams; points: IndicatorPoint<CVDOutput>[] }
-  | { kind: 'vwap'; id: string; params: VWAPParams; points: IndicatorPoint<VWAPOutput>[] };
+  | { kind: 'vwap'; id: string; params: VWAPParams; points: IndicatorPoint<VWAPOutput>[] }
+  | { kind: 'vwap-anchored'; id: string; params: VWAPAnchoredParams; points: IndicatorPoint<VWAPOutput>[] }
+  | { kind: 'vwap-rolling'; id: string; params: VWAPRollingParams; points: IndicatorPoint<VWAPOutput>[] };
 
 /** User-facing indicator configuration. */
 export interface IndicatorConfig {
