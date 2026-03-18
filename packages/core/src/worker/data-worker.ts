@@ -188,8 +188,16 @@ export class DataWorker {
 
     this.adapters.set(exchangeId, adapter);
 
-    // Connect the adapter
-    adapter.connect().catch((err: unknown) => {
+    // Connect the adapter with a timeout to avoid hanging indefinitely
+    const CONNECT_TIMEOUT_MS = 15_000;
+    const connectWithTimeout = Promise.race([
+      adapter.connect(),
+      new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error('Connection timed out')), CONNECT_TIMEOUT_MS)
+      ),
+    ]);
+
+    connectWithTimeout.catch((err: unknown) => {
       const errorMessage = err instanceof Error ? err.message : String(err);
       this.postMessage({
         type: 'error',
