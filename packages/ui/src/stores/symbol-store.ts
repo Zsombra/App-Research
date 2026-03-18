@@ -32,14 +32,16 @@ export const useSymbolStore = create<SymbolState>((set, get) => ({
   subscribedSymbols: new Set(),
 
   setActiveSymbol: (symbol) => {
-    const state = get();
-    if (symbol === state.activeSymbol) return;
+    let needsSubscription = false;
+    set((state) => {
+      if (symbol === state.activeSymbol) return {};
+      needsSubscription = !state.subscribedSymbols.has(symbol);
+      return { activeSymbol: symbol };
+    });
 
-    set({ activeSymbol: symbol });
-
-    // Auto-subscribe if not already subscribed
-    if (!state.subscribedSymbols.has(symbol)) {
-      state.subscribeSymbol(symbol, ['simulated'], ['trades', 'orderbook', 'ticker']);
+    // Auto-subscribe if not already subscribed (checked atomically above)
+    if (needsSubscription) {
+      get().subscribeSymbol(symbol, ['simulated'], ['trades', 'orderbook', 'ticker']);
     }
   },
 
