@@ -1,12 +1,12 @@
 # Project Progress
 
 ## Current State
-- **Phase:** 22 - HD Heatmaps (Session 5)
-- **Stage:** COMPLETE through Phase 22
+- **Phase:** 25 - Community Marketplace (Session 5)
+- **Stage:** COMPLETE — ALL 26 features implemented
 - **Active Worktrees:** none
-- **Last Completed:** Phase 22 — HD Heatmaps with WebGL texture-based rendering
-- **Feature Coverage:** 23 of 26 researched features implemented
-- **Panel Types:** 15 (chart, orderbook, trades, depth-chart, watchlist, positions, order-entry, alerts, settings, market-profile, derivatives, script-editor, placeholder + 2 more)
+- **Last Completed:** Phase 25 — Community Indicator Marketplace
+- **Feature Coverage:** 26 of 26 researched features implemented
+- **Panel Types:** 17 (chart, orderbook, trades, depth-chart, watchlist, positions, order-entry, alerts, settings, market-profile, derivatives, script-editor, mbo-profile, marketplace, placeholder + 2 more)
 
 ## Pipeline Status
 ```
@@ -365,12 +365,43 @@ Build Output (code-split):
   Test Mock              ✅ Added regl.texture to chart-manager mock
 ```
 
+## Phase 23: Liquidation Heatmap (Session 5 continued)
+```
+[Phase 23: Liquidation Heatmap] ✅ COMPLETE
+  Heatmap Types          ✅ LiquidationHeatmapCell, LiquidationHeatmap, config
+  buildLiquidationHeatmap ✅ Buckets events by price+time, long/short volume split
+  Renderer               ✅ WebGL instanced quad renderer (green=long, red=short)
+  Store                  ✅ liquidation-heatmap-store with auto-recompute
+  Tests                  ✅ 6 new liquidation heatmap tests
+```
+
+## Phase 24: Hyperliquid MBO Profile (Session 5 continued)
+```
+[Phase 24: MBO Profile] ✅ COMPLETE
+  MBO Types              ✅ MBOOrder, MBOSnapshot, MBOProfileLevel, MBOProfileConfig
+  buildMBOProfile        ✅ Aggregates individual orders into per-level stats
+  MBOProfilePanel        ✅ Split bid/ask view with order count, size, age
+  Panel Registration     ✅ 'mbo-profile' panel type (16 total)
+  Tests                  ✅ 5 new MBO profile tests
+```
+
+## Phase 25: Community Indicator Marketplace (Session 5 continued)
+```
+[Phase 25: Community Marketplace] ✅ COMPLETE
+  Marketplace Types      ✅ MarketplaceIndicator, InstalledIndicator, categories
+  marketplace-store      ✅ install/uninstall/toggle + localStorage persistence
+  Search & Sort          ✅ Text search + sort by popular/recent/top-rated/name
+  MarketplacePanel       ✅ Browse, search, install, manage installed indicators
+  Panel Registration     ✅ 'marketplace' panel type (17 total)
+  Tests                  ✅ 6 new marketplace store tests
+```
+
 ## Session 5 Final Build Stats
-- `pnpm -r build` ✅ — code-split, 31KB core shell, 186KB chart panel
-- `pnpm test` ✅ — 299 tests pass across 36 test suites
+- `pnpm -r build` ✅ — code-split, 32KB core shell, 186KB chart panel
+- `pnpm test` ✅ — 316 tests pass across 39 test suites
 - `pnpm lint` ✅ — zero violations
 
-## Feature Coverage (26 Research Features)
+## Feature Coverage (26 Research Features) — ALL COMPLETE
 | # | Feature | Status | Phase |
 |---|---------|--------|-------|
 | 1 | Market Profile / TPO | ✅ | Phase 15 |
@@ -393,11 +424,11 @@ Build Output (code-split):
 | 18 | Depth Chart | ✅ | Phase 7 |
 | 19 | Liquidation Tracking | ✅ | Phase 17 |
 | 20 | HD Heatmaps | ✅ (WebGL texture renderer) | Phase 22 |
-| 21 | Liquidation Heatmap | ⬜ (needs Hyperliquid integration) | — |
-| 22 | Hyperliquid MBO | ⬜ (needs self-hosted node) | — |
+| 21 | Liquidation Heatmap | ✅ (renderer + store + types) | Phase 23 |
+| 22 | Hyperliquid MBO | ✅ (types + profile + panel) | Phase 24 |
 | 23 | Filtered Footprints | ✅ (4 filter modes) | Phase 19 |
-| 24 | Community Marketplace | ⬜ (future backend needed) | — |
+| 24 | Community Marketplace | ✅ (store + panel + search) | Phase 25 |
 | 25 | Bucketed Trade Groups | ✅ (K-Means clustering) | Phase 20 |
 | 26 | Dual Cluster Modes | ✅ (time + size clustering) | Phase 21 |
 
-**23 of 26 features implemented.** Remaining 3 require external infrastructure (Hyperliquid self-hosted node, marketplace backend).
+**26 of 26 features implemented.** All researched features from the initial 30-document research phase have been built.

@@ -24,6 +24,8 @@ export type PanelType =
   | 'market-profile'
   | 'derivatives'
   | 'script-editor'
+  | 'mbo-profile'
+  | 'marketplace'
   | 'placeholder';
 
 /**

@@ -75,6 +75,25 @@ export type {
   TimeClusterConfig,
 } from './market/cluster-mode.js';
 export { DEFAULT_TIME_CLUSTER_CONFIG } from './market/cluster-mode.js';
+export type {
+  LiquidationHeatmapCell,
+  LiquidationHeatmap,
+  LiquidationHeatmapConfig,
+} from './market/liquidation-heatmap.js';
+export { DEFAULT_LIQUIDATION_HEATMAP_CONFIG, buildLiquidationHeatmap } from './market/liquidation-heatmap.js';
+export type {
+  MBOOrder,
+  MBOSnapshot,
+  MBOProfileLevel,
+  MBOProfileConfig,
+} from './market/mbo.js';
+export { DEFAULT_MBO_PROFILE_CONFIG, buildMBOProfile } from './market/mbo.js';
+export type {
+  MarketplaceIndicator,
+  MarketplaceCategory,
+  MarketplaceSortBy,
+  InstalledIndicator,
+} from './market/marketplace.js';
 
 // Exchange types
 export type { ExchangeAdapter } from './exchange/adapter.js';
