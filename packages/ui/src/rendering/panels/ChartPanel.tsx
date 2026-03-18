@@ -8,6 +8,7 @@ import { IndicatorSelector } from '../../components/IndicatorSelector.js';
 import { TimeframeSelector } from '../../components/TimeframeSelector.js';
 import { useFootprintEnabled, useFootprints, useFootprintStore } from '../../stores/footprint-store.js';
 import { useHeatmapEnabled, useHeatmapColumns, useHeatmapMaxLiquidity, useHeatmapStore } from '../../stores/heatmap-store.js';
+import { useTrades } from '../../stores/market-store.js';
 import { timeframeToMs } from '../../stores/candle-aggregator.js';
 import { useTimeframe } from '../../stores/market-store.js';
 
@@ -78,6 +79,10 @@ export function ChartPanel({ panelId, candles, symbol }: ChartPanelProps): React
   const heatmapEnabled = useHeatmapEnabled();
   const heatmapColumns = useHeatmapColumns(symbol ?? '');
   const heatmapMaxLiquidity = useHeatmapMaxLiquidity(symbol ?? '');
+
+  // Volume bubbles
+  const [bubblesEnabled, setBubblesEnabled] = useState(false);
+  const recentTrades = useTrades(symbol ?? '');
 
   // Wire up grid info callback
   useEffect(() => {
@@ -336,6 +341,18 @@ export function ChartPanel({ panelId, candles, symbol }: ChartPanelProps): React
     );
   }, [chartManager, heatmapEnabled, heatmapColumns, heatmapMaxLiquidity]);
 
+  // Wire volume bubbles to chart manager
+  useEffect(() => {
+    if (!chartManager) return;
+
+    if (!bubblesEnabled || recentTrades.length === 0) {
+      chartManager.clearVolumeBubbles();
+      return;
+    }
+
+    chartManager.setVolumeBubbles(recentTrades);
+  }, [chartManager, bubblesEnabled, recentTrades]);
+
   // Mouse move handler for crosshair and pan
   const handleMouseMove = useCallback(
     (e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -463,6 +480,20 @@ export function ChartPanel({ panelId, candles, symbol }: ChartPanelProps): React
           }}
         >
           HM
+        </button>
+        <button
+          onClick={() => setBubblesEnabled(!bubblesEnabled)}
+          style={{
+            padding: '1px 5px',
+            fontSize: 10,
+            background: bubblesEnabled ? 'rgba(76, 175, 80, 0.2)' : 'transparent',
+            border: bubblesEnabled ? '1px solid #4CAF50' : '1px solid #444',
+            borderRadius: 2,
+            color: bubblesEnabled ? '#fff' : '#777',
+            cursor: 'pointer',
+          }}
+        >
+          VB
         </button>
       </div>
 

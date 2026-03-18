@@ -26,6 +26,8 @@ export { computeVWAP } from './indicators/vwap.js';
 export { computeIndicator } from './indicators/index.js';
 export { buildFootprintFromTrades, buildFootprintFromCandles, autoTickSize, bucketPrice } from './indicators/footprint.js';
 export { computeMarketProfile } from './indicators/tpo.js';
+export { computeOrderbookImbalance, detectStackedImbalances } from './indicators/orderbook-imbalance.js';
+export type { ImbalanceResult, StackedImbalance, Absorption } from './indicators/orderbook-imbalance.js';
 
 // Worker
 export { FlushScheduler } from './worker/flush-scheduler.js';

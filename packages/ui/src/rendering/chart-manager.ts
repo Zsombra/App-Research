@@ -13,7 +13,8 @@ import { OscillatorPaneRenderer } from './renderers/oscillator-pane-renderer.js'
 import type { OscillatorConfig, OscillatorLine, HistogramBar } from './renderers/oscillator-pane-renderer.js';
 import { FootprintRenderer } from './renderers/footprint-renderer.js';
 import { HeatmapRenderer } from './renderers/heatmap-renderer.js';
-import type { FootprintCandle, HeatmapColumn } from '@terminal/types';
+import { VolumeBubbleRenderer } from './renderers/volume-bubble-renderer.js';
+import type { FootprintCandle, HeatmapColumn, NormalizedTrade } from '@terminal/types';
 
 /**
  * Orchestrates all renderers for a single chart panel.
@@ -32,6 +33,7 @@ export class ChartManager {
   private oscillatorRenderer: OscillatorPaneRenderer | null = null;
   private footprintRenderer: FootprintRenderer;
   private heatmapRenderer: HeatmapRenderer;
+  private volumeBubbleRenderer: VolumeBubbleRenderer;
   private candles: OHLCVCandle[] = [];
   private resizeObserver: ResizeObserver | null = null;
   private readonly canvas: HTMLCanvasElement;
@@ -76,6 +78,7 @@ export class ChartManager {
     this.lineOverlayRenderer = new LineOverlayRenderer(this.renderingCtx, this.viewport);
     this.footprintRenderer = new FootprintRenderer(this.renderingCtx, this.viewport);
     this.heatmapRenderer = new HeatmapRenderer(this.renderingCtx, this.viewport);
+    this.volumeBubbleRenderer = new VolumeBubbleRenderer(this.renderingCtx, this.viewport);
 
     // Initialize renderers
     this.gridRenderer.init();
@@ -86,6 +89,7 @@ export class ChartManager {
     this.lineOverlayRenderer.init();
     this.footprintRenderer.init();
     this.heatmapRenderer.init();
+    this.volumeBubbleRenderer.init();
 
     // Set up render callback
     this.renderingCtx.onRender = () => {
@@ -95,6 +99,7 @@ export class ChartManager {
       this.volumeBarRenderer.render();
       this.candlestickRenderer.render();
       this.footprintRenderer.render();
+      this.volumeBubbleRenderer.render();
       this.lineOverlayRenderer.render();
       if (this.oscillatorRenderer) {
         this.oscillatorRenderer.render();
@@ -195,6 +200,18 @@ export class ChartManager {
     priceBucketSize: number,
   ): void {
     this.heatmapRenderer.setData(columns, columnIntervalMs, maxLiquidity, priceBucketSize);
+    this.renderingCtx.markDirty();
+  }
+
+  /** Set volume bubble trade data. */
+  setVolumeBubbles(trades: NormalizedTrade[], minSize: number = 0): void {
+    this.volumeBubbleRenderer.setData(trades, minSize);
+    this.renderingCtx.markDirty();
+  }
+
+  /** Clear volume bubbles. */
+  clearVolumeBubbles(): void {
+    this.volumeBubbleRenderer.setData([], 0);
     this.renderingCtx.markDirty();
   }
 
@@ -317,6 +334,7 @@ export class ChartManager {
     this.lineOverlayRenderer.dispose();
     this.footprintRenderer.dispose();
     this.heatmapRenderer.dispose();
+    this.volumeBubbleRenderer.dispose();
     if (this.oscillatorRenderer) {
       this.oscillatorRenderer.dispose();
     }
@@ -333,6 +351,7 @@ export class ChartManager {
     this.lineOverlayRenderer.setViewport(this.viewport);
     this.footprintRenderer.setViewport(this.viewport);
     this.heatmapRenderer.setViewport(this.viewport);
+    this.volumeBubbleRenderer.setViewport(this.viewport);
     if (this.oscillatorRenderer) {
       this.oscillatorRenderer.setViewport(this.viewport);
     }
