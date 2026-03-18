@@ -29,6 +29,9 @@ export { computeMarketProfile } from './indicators/tpo.js';
 export { computeOrderbookImbalance, detectStackedImbalances } from './indicators/orderbook-imbalance.js';
 export type { ImbalanceResult, StackedImbalance, Absorption } from './indicators/orderbook-imbalance.js';
 
+// Scripting
+export { executeScript } from './scripting/script-engine.js';
+
 // Worker
 export { FlushScheduler } from './worker/flush-scheduler.js';
 export type { FlushSchedulerConfig } from './worker/flush-scheduler.js';

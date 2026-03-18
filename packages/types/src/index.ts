@@ -49,6 +49,12 @@ export type {
 } from './market/tpo.js';
 export { DEFAULT_MARKET_PROFILE_CONFIG } from './market/tpo.js';
 export type {
+  CustomScript,
+  ScriptContext,
+  ScriptResult,
+  ScriptPlot,
+} from './market/script.js';
+export type {
   OpenInterestSnapshot,
   OpenInterestPoint,
   FundingRate,

@@ -23,6 +23,7 @@ export type PanelType =
   | 'settings'
   | 'market-profile'
   | 'derivatives'
+  | 'script-editor'
   | 'placeholder';
 
 /**

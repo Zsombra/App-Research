@@ -16,6 +16,7 @@ const LazyAlerts = React.lazy(() => import('./wrappers/AlertsPanelWrapper.js'));
 const LazySettings = React.lazy(() => import('./wrappers/SettingsPanelWrapper.js'));
 const LazyMarketProfile = React.lazy(() => import('./wrappers/MarketProfilePanelWrapper.js'));
 const LazyDerivatives = React.lazy(() => import('./wrappers/DerivativesPanelWrapper.js'));
+const LazyScriptEditor = React.lazy(() => import('./wrappers/ScriptEditorPanelWrapper.js'));
 const LazyPlaceholder = React.lazy(() => import('./wrappers/PlaceholderPanelWrapper.js'));
 
 /**
@@ -58,5 +59,6 @@ export const panelComponents: Record<string, React.FunctionComponent<IDockviewPa
   settings: wrapLazy(LazySettings, 'settings'),
   'market-profile': wrapLazy(LazyMarketProfile, 'market-profile'),
   derivatives: wrapLazy(LazyDerivatives, 'derivatives'),
+  'script-editor': wrapLazy(LazyScriptEditor, 'script-editor'),
   placeholder: wrapLazy(LazyPlaceholder, 'placeholder'),
 } satisfies Record<PanelType, React.FunctionComponent<IDockviewPanelProps>>;
