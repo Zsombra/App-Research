@@ -279,6 +279,30 @@ describe('WebSocketManager edge cases', () => {
       manager.connect();
       expect(manager.state).toBe(ConnectionStatus.Connecting);
     });
+
+    it('connect during Reconnecting clears pending timer so no duplicate socket is created', () => {
+      const manager = new WebSocketManager({
+        url: 'wss://test.com',
+        maxReconnectAttempts: 5,
+        inboundTimeout: 0,
+      });
+      manager.connect();
+      const firstWs = MockWebSocket.instances[0]!;
+      firstWs.simulateOpen();
+      firstWs.simulateClose(1006);
+
+      expect(manager.state).toBe(ConnectionStatus.Reconnecting);
+      const countBeforeConnect = MockWebSocket.instances.length;
+
+      // Manual connect() while reconnect timer is pending
+      manager.connect();
+      const countAfterConnect = MockWebSocket.instances.length;
+      expect(countAfterConnect).toBe(countBeforeConnect + 1);
+
+      // Advance past the old reconnect backoff — no extra socket should appear
+      vi.advanceTimersByTime(60_000);
+      expect(MockWebSocket.instances.length).toBe(countAfterConnect);
+    });
   });
 
   // -------------------------------------------------------------------------
