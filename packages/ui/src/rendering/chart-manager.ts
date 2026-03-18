@@ -12,7 +12,8 @@ import type { LineSeries } from './renderers/line-overlay-renderer.js';
 import { OscillatorPaneRenderer } from './renderers/oscillator-pane-renderer.js';
 import type { OscillatorConfig, OscillatorLine, HistogramBar } from './renderers/oscillator-pane-renderer.js';
 import { FootprintRenderer } from './renderers/footprint-renderer.js';
-import type { FootprintCandle } from '@terminal/types';
+import { HeatmapRenderer } from './renderers/heatmap-renderer.js';
+import type { FootprintCandle, HeatmapColumn } from '@terminal/types';
 
 /**
  * Orchestrates all renderers for a single chart panel.
@@ -30,6 +31,7 @@ export class ChartManager {
   private lineOverlayRenderer: LineOverlayRenderer;
   private oscillatorRenderer: OscillatorPaneRenderer | null = null;
   private footprintRenderer: FootprintRenderer;
+  private heatmapRenderer: HeatmapRenderer;
   private candles: OHLCVCandle[] = [];
   private resizeObserver: ResizeObserver | null = null;
   private readonly canvas: HTMLCanvasElement;
@@ -73,6 +75,7 @@ export class ChartManager {
     this.crosshairRenderer = new CrosshairRenderer(this.renderingCtx, this.viewport);
     this.lineOverlayRenderer = new LineOverlayRenderer(this.renderingCtx, this.viewport);
     this.footprintRenderer = new FootprintRenderer(this.renderingCtx, this.viewport);
+    this.heatmapRenderer = new HeatmapRenderer(this.renderingCtx, this.viewport);
 
     // Initialize renderers
     this.gridRenderer.init();
@@ -82,10 +85,12 @@ export class ChartManager {
     this.crosshairRenderer.init();
     this.lineOverlayRenderer.init();
     this.footprintRenderer.init();
+    this.heatmapRenderer.init();
 
     // Set up render callback
     this.renderingCtx.onRender = () => {
       this.gridRenderer.render();
+      this.heatmapRenderer.render();
       this.volumeProfileRenderer.render();
       this.volumeBarRenderer.render();
       this.candlestickRenderer.render();
@@ -179,6 +184,23 @@ export class ChartManager {
   /** Set footprint chart data. */
   setFootprintData(footprints: FootprintCandle[], candleWidthMs: number): void {
     this.footprintRenderer.setData(footprints, candleWidthMs);
+    this.renderingCtx.markDirty();
+  }
+
+  /** Set orderbook heatmap data. */
+  setHeatmapData(
+    columns: HeatmapColumn[],
+    columnIntervalMs: number,
+    maxLiquidity: number,
+    priceBucketSize: number,
+  ): void {
+    this.heatmapRenderer.setData(columns, columnIntervalMs, maxLiquidity, priceBucketSize);
+    this.renderingCtx.markDirty();
+  }
+
+  /** Clear heatmap data. */
+  clearHeatmap(): void {
+    this.heatmapRenderer.setData([], 1000, 1, 1);
     this.renderingCtx.markDirty();
   }
 
@@ -294,6 +316,7 @@ export class ChartManager {
     this.crosshairRenderer.dispose();
     this.lineOverlayRenderer.dispose();
     this.footprintRenderer.dispose();
+    this.heatmapRenderer.dispose();
     if (this.oscillatorRenderer) {
       this.oscillatorRenderer.dispose();
     }
@@ -309,6 +332,7 @@ export class ChartManager {
     this.crosshairRenderer.setViewport(this.viewport);
     this.lineOverlayRenderer.setViewport(this.viewport);
     this.footprintRenderer.setViewport(this.viewport);
+    this.heatmapRenderer.setViewport(this.viewport);
     if (this.oscillatorRenderer) {
       this.oscillatorRenderer.setViewport(this.viewport);
     }

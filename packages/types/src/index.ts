@@ -37,6 +37,11 @@ export type {
   FootprintConfig,
 } from './market/footprint.js';
 export { DEFAULT_FOOTPRINT_CONFIG } from './market/footprint.js';
+export type {
+  HeatmapColumn,
+  HeatmapConfig,
+} from './market/heatmap.js';
+export { DEFAULT_HEATMAP_CONFIG } from './market/heatmap.js';
 
 // Exchange types
 export type { ExchangeAdapter } from './exchange/adapter.js';

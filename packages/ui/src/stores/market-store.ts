@@ -14,6 +14,7 @@ import { getWorkerBridge } from '../worker/worker-bridge.js';
 import { aggregateTrade } from './candle-aggregator.js';
 import { useIndicatorStore } from './indicator-store.js';
 import { useFootprintStore } from './footprint-store.js';
+import { useHeatmapStore } from './heatmap-store.js';
 
 const MAX_TRADES = 500;
 const DEFAULT_TIMEFRAME: CandleTimeframe = '1m';
@@ -91,6 +92,12 @@ export const useMarketStore = create<MarketState>((set) => ({
       orderbooks.set(symbol, snapshot);
       return { orderbooks };
     });
+
+    // Capture for heatmap
+    const heatmapStore = useHeatmapStore.getState();
+    if (heatmapStore.enabled) {
+      heatmapStore.captureSnapshot(symbol, snapshot);
+    }
   },
 
   processTicker: (symbol, ticker) => {

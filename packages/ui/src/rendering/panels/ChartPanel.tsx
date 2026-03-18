@@ -7,6 +7,7 @@ import { useIndicatorStore, useOverlaySeries, useSeparateSeries } from '../../st
 import { IndicatorSelector } from '../../components/IndicatorSelector.js';
 import { TimeframeSelector } from '../../components/TimeframeSelector.js';
 import { useFootprintEnabled, useFootprints, useFootprintStore } from '../../stores/footprint-store.js';
+import { useHeatmapEnabled, useHeatmapColumns, useHeatmapMaxLiquidity, useHeatmapStore } from '../../stores/heatmap-store.js';
 import { timeframeToMs } from '../../stores/candle-aggregator.js';
 import { useTimeframe } from '../../stores/market-store.js';
 
@@ -72,6 +73,11 @@ export function ChartPanel({ panelId, candles, symbol }: ChartPanelProps): React
   const footprintEnabled = useFootprintEnabled();
   const footprintData = useFootprints(symbol ?? '');
   const activeTimeframe = useTimeframe(symbol ?? '');
+
+  // Heatmap data
+  const heatmapEnabled = useHeatmapEnabled();
+  const heatmapColumns = useHeatmapColumns(symbol ?? '');
+  const heatmapMaxLiquidity = useHeatmapMaxLiquidity(symbol ?? '');
 
   // Wire up grid info callback
   useEffect(() => {
@@ -311,6 +317,25 @@ export function ChartPanel({ panelId, candles, symbol }: ChartPanelProps): React
     chartManager.setFootprintData(footprintData, candleWidthMs);
   }, [chartManager, footprintEnabled, footprintData, activeTimeframe]);
 
+  // Wire heatmap data to chart manager
+  useEffect(() => {
+    if (!chartManager) return;
+
+    if (!heatmapEnabled || heatmapColumns.length === 0) {
+      chartManager.clearHeatmap();
+      return;
+    }
+
+    const config = useHeatmapStore.getState().config;
+    const priceBucketSize = config.priceBucketSize > 0 ? config.priceBucketSize : 1;
+    chartManager.setHeatmapData(
+      heatmapColumns,
+      config.captureIntervalMs,
+      heatmapMaxLiquidity,
+      priceBucketSize,
+    );
+  }, [chartManager, heatmapEnabled, heatmapColumns, heatmapMaxLiquidity]);
+
   // Mouse move handler for crosshair and pan
   const handleMouseMove = useCallback(
     (e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -421,6 +446,23 @@ export function ChartPanel({ panelId, candles, symbol }: ChartPanelProps): React
           }}
         >
           FP
+        </button>
+        <button
+          onClick={() => {
+            const store = useHeatmapStore.getState();
+            store.setEnabled(!store.enabled);
+          }}
+          style={{
+            padding: '1px 5px',
+            fontSize: 10,
+            background: heatmapEnabled ? 'rgba(0, 150, 200, 0.2)' : 'transparent',
+            border: heatmapEnabled ? '1px solid #0096C8' : '1px solid #444',
+            borderRadius: 2,
+            color: heatmapEnabled ? '#fff' : '#777',
+            cursor: 'pointer',
+          }}
+        >
+          HM
         </button>
       </div>
 
