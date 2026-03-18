@@ -22,6 +22,7 @@ export type PanelType =
   | 'alerts'
   | 'settings'
   | 'market-profile'
+  | 'derivatives'
   | 'placeholder';
 
 /**

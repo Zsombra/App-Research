@@ -48,6 +48,11 @@ export type {
   MarketProfileConfig,
 } from './market/tpo.js';
 export { DEFAULT_MARKET_PROFILE_CONFIG } from './market/tpo.js';
+export type {
+  OpenInterestSnapshot,
+  OpenInterestPoint,
+  FundingRate,
+} from './market/open-interest.js';
 
 // Exchange types
 export type { ExchangeAdapter } from './exchange/adapter.js';
