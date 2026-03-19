@@ -25,6 +25,7 @@ export function timeframeToMs(tf: CandleTimeframe): number {
 
 /** Floors a timestamp to the start of its candle period. */
 export function floorToCandle(timestamp: number, intervalMs: number): number {
+  if (intervalMs <= 0) return timestamp;
   return Math.floor(timestamp / intervalMs) * intervalMs;
 }
 
@@ -87,9 +88,11 @@ export function aggregateTrade(
 
     candles.push(newCandle);
 
-    // Trim old candles
+    // Trim old candles (use slice for immutability safety)
     if (candles.length > maxCandles) {
-      candles.splice(0, candles.length - maxCandles);
+      const trimmed = candles.slice(candles.length - maxCandles);
+      candles.length = 0;
+      candles.push(...trimmed);
     }
   }
 

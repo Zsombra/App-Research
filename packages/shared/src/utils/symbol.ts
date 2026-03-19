@@ -7,6 +7,7 @@
  * normalizeSymbol('btcusdt') // => 'BTC/USDT'
  */
 export function normalizeSymbol(symbol: string): string {
+  if (!symbol || symbol.trim().length === 0) return '';
   // Already normalized
   if (symbol.includes('/')) {
     return symbol.toUpperCase();

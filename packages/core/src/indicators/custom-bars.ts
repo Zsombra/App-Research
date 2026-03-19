@@ -109,8 +109,8 @@ function buildBarFromTrades(trades: NormalizedTrade[]): OHLCVCandle {
   const first = trades[0]!;
   const last = trades[trades.length - 1]!;
 
-  let high = -Infinity;
-  let low = Infinity;
+  let high = first.price;
+  let low = first.price;
   let volume = 0;
   let buyVolume = 0;
   let sellVolume = 0;

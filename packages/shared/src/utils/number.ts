@@ -7,6 +7,7 @@
  * formatPrice(0.00001234) // => '0.00001234'
  */
 export function formatPrice(price: number): string {
+  if (!Number.isFinite(price)) return '—';
   if (price >= 1) {
     return price.toLocaleString('en-US', {
       minimumFractionDigits: 2,
@@ -28,6 +29,7 @@ export function formatPrice(price: number): string {
  * formatVolume(1234) // => '1,234.00'
  */
 export function formatVolume(volume: number): string {
+  if (!Number.isFinite(volume)) return '—';
   if (volume >= 1_000_000_000) {
     return `${(volume / 1_000_000_000).toFixed(2)}B`;
   }

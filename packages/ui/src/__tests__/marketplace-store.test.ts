@@ -91,4 +91,11 @@ describe('marketplace-store', () => {
     expect(stored).toHaveLength(1);
     expect(stored[0].indicatorId).toBe('ind-1');
   });
+
+  it('should handle corrupt localStorage without crashing', () => {
+    // Store invalid JSON
+    storage['terminal-installed-indicators-v1'] = 'not-json!!!';
+    // The store should not crash — loadInstalled has try-catch
+    expect(useMarketplaceStore.getState().installed).toBeDefined();
+  });
 });

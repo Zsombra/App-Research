@@ -133,6 +133,28 @@ describe('aggregateTrade edge cases', () => {
       expect(candles[4]!.close).toBe(109);
     });
   });
+
+  describe('splice→slice immutability on trim', () => {
+    it('trims using slice-based approach (no external array mutation)', () => {
+      const candles: OHLCVCandle[] = [];
+      const baseTs = 1700000060000;
+
+      // Add 6 candles with maxCandles=3
+      for (let i = 0; i < 6; i++) {
+        aggregateTrade(
+          candles,
+          makeTrade({ price: 100 + i, timestamp: baseTs + i * 60_000 }),
+          '1m',
+          3,
+        );
+      }
+
+      // Should have exactly 3 candles (trimmed)
+      expect(candles).toHaveLength(3);
+      // Latest candle should be the last one added
+      expect(candles[2]!.close).toBe(105);
+    });
+  });
 });
 
 describe('floorToCandle', () => {

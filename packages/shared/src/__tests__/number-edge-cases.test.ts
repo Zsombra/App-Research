@@ -4,18 +4,17 @@ import { formatPrice, formatVolume } from '../utils/number.js';
 describe('formatPrice edge cases', () => {
   it('should handle NaN', () => {
     const result = formatPrice(NaN);
-    expect(result).toBe('NaN');
+    expect(result).toBe('—');
   });
 
   it('should handle Infinity', () => {
     const result = formatPrice(Infinity);
-    // Should not throw
-    expect(typeof result).toBe('string');
+    expect(result).toBe('—');
   });
 
   it('should handle negative Infinity', () => {
     const result = formatPrice(-Infinity);
-    expect(typeof result).toBe('string');
+    expect(result).toBe('—');
   });
 
   it('should handle very large prices', () => {
@@ -52,7 +51,12 @@ describe('formatPrice edge cases', () => {
 describe('formatVolume edge cases', () => {
   it('should handle NaN', () => {
     const result = formatVolume(NaN);
-    expect(result).toBe('NaN');
+    expect(result).toBe('—');
+  });
+
+  it('should handle Infinity', () => {
+    const result = formatVolume(Infinity);
+    expect(result).toBe('—');
   });
 
   it('should handle trillion-level volumes', () => {

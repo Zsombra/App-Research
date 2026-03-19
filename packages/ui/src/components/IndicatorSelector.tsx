@@ -32,7 +32,7 @@ export function IndicatorSelector(): React.JSX.Element {
 
   const handleParamChange = useCallback((id: string, key: string, value: string) => {
     const num = parseInt(value, 10);
-    if (!isNaN(num) && num > 0) {
+    if (Number.isFinite(num) && num > 0) {
       updateParams(id, { [key]: num });
     }
   }, [updateParams]);

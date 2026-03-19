@@ -71,6 +71,7 @@ export function detectSwingPoints(
   candles: OHLCVCandle[],
   strength: number,
 ): SwingPoint[] {
+  if (strength < 1) throw new RangeError(`Swing strength must be >= 1, got ${strength}`);
   const swings: SwingPoint[] = [];
   const len = candles.length;
 
@@ -199,6 +200,7 @@ export function clusterSwingPoints(
  * Compute ATR (Average True Range) from candles.
  */
 export function computeATR(candles: OHLCVCandle[], period: number): number {
+  if (period < 1) throw new RangeError(`ATR period must be >= 1, got ${period}`);
   if (candles.length < 2) return 0;
 
   let atrSum = 0;
@@ -231,6 +233,7 @@ export function computeRoundNumberLevels(
   atrMultiplier: number,
   range: number,
 ): SLTPCluster[] {
+  if (roundInterval <= 0) return [];
   const clusters: SLTPCluster[] = [];
   const zoneWidth = atr * atrMultiplier;
 
@@ -425,6 +428,7 @@ export function computeCompositeScores(
   bucketSize: number,
 ): SLTPCluster[] {
   if (allClusters.length === 0) return [];
+  if (bucketSize <= 0) return allClusters;
 
   // Bucket clusters by price
   const bucketMap = new Map<string, SLTPCluster[]>();
@@ -515,8 +519,9 @@ export function computeSLTPHeatmap(
   // Algorithm 3: Round Number + ATR
   if (algorithms.includes('round-number')) {
     const atr = computeATR(candles, 14);
-    const priceRange = candles.reduce((r, c) => Math.max(r, c.high), 0)
-      - candles.reduce((r, c) => Math.min(r, c.low), Infinity);
+    const maxHigh = candles.reduce((r, c) => Math.max(r, c.high), 0);
+    const minLow = candles.reduce((r, c) => Math.min(r, c.low), Infinity);
+    const priceRange = isFinite(minLow) ? maxHigh - minLow : maxHigh;
     allClusters.push(
       ...computeRoundNumberLevels(
         currentPrice,

@@ -83,7 +83,7 @@ export function SettingsPanel(): React.JSX.Element {
             value={settings.maxTradesDisplay}
             onChange={(e) => {
               const val = parseInt(e.target.value, 10);
-              if (!isNaN(val) && val > 0) settings.updateSetting('maxTradesDisplay', val);
+              if (Number.isFinite(val) && val > 0) settings.updateSetting('maxTradesDisplay', val);
             }}
             min={10}
             max={500}

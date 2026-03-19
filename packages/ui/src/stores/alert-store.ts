@@ -59,6 +59,7 @@ export const useAlertStore = create<AlertState>((set, get) => ({
       if (!ticker) return alert;
 
       const price = ticker.lastPrice;
+      if (!Number.isFinite(price)) return alert;
       const fired =
         (alert.condition === 'above' && price >= alert.targetPrice) ||
         (alert.condition === 'below' && price <= alert.targetPrice);

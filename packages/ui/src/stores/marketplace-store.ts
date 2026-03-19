@@ -6,7 +6,9 @@ const STORAGE_KEY = 'terminal-installed-indicators-v1';
 function loadInstalled(): InstalledIndicator[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : [];
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
   } catch (err) {
     console.warn('[marketplace-store] Failed to load installed indicators:', err);
     return [];

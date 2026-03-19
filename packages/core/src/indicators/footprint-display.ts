@@ -55,10 +55,10 @@ export function transformFootprintLevels(
     // Detect imbalance: one side is N times larger than the other
     const bidAskRatio = level.sellVolume > 0
       ? level.buyVolume / level.sellVolume
-      : level.buyVolume > 0 ? Infinity : 1;
+      : level.buyVolume > 0 ? imbalanceThreshold : 0;
     const askBidRatio = level.buyVolume > 0
       ? level.sellVolume / level.buyVolume
-      : level.sellVolume > 0 ? Infinity : 1;
+      : level.sellVolume > 0 ? imbalanceThreshold : 0;
     const isImbalance = bidAskRatio >= imbalanceThreshold || askBidRatio >= imbalanceThreshold;
 
     switch (mode) {
