@@ -8,6 +8,9 @@ import type {
 import { INDICATOR_DEFAULTS, INDICATOR_COLORS } from '@terminal/types';
 import { computeIndicator } from '@terminal/core';
 
+const OVERLAY_KINDS: ReadonlySet<string> = new Set(['sma', 'ema', 'bollinger', 'vwap', 'vwap-anchored', 'vwap-rolling']);
+const SEPARATE_KINDS: ReadonlySet<string> = new Set(['rsi', 'macd', 'cvd']);
+
 let idCounter = 0;
 
 export interface IndicatorState {
@@ -92,7 +95,7 @@ export function useOverlaySeries(): IndicatorSeries[] {
   return useIndicatorStore((state) => {
     const overlay: IndicatorSeries[] = [];
     for (const s of state.series.values()) {
-      if (s.kind === 'sma' || s.kind === 'ema' || s.kind === 'bollinger' || s.kind === 'vwap' || s.kind === 'vwap-anchored' || s.kind === 'vwap-rolling') {
+      if (OVERLAY_KINDS.has(s.kind)) {
         overlay.push(s);
       }
     }
@@ -104,7 +107,7 @@ export function useSeparateSeries(): IndicatorSeries[] {
   return useIndicatorStore((state) => {
     const separate: IndicatorSeries[] = [];
     for (const s of state.series.values()) {
-      if (s.kind === 'rsi' || s.kind === 'macd' || s.kind === 'cvd') {
+      if (SEPARATE_KINDS.has(s.kind)) {
         separate.push(s);
       }
     }

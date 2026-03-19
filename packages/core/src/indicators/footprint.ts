@@ -46,7 +46,7 @@ export function bucketPrice(price: number, tickSize: number): number {
  * Auto-detect a reasonable tick size based on the price range.
  * Aims for roughly 20-50 levels per candle.
  */
-export function autoTickSize(candles: OHLCVCandle[]): number {
+export function autoTickSize(candles: readonly OHLCVCandle[]): number {
   if (candles.length === 0) return 1;
 
   // Use the average candle range to determine tick size
@@ -89,8 +89,8 @@ export function autoTickSize(candles: OHLCVCandle[]): number {
  * @returns Array of FootprintCandle with per-level volume data
  */
 export function buildFootprintFromTrades(
-  candles: OHLCVCandle[],
-  trades: NormalizedTrade[],
+  candles: readonly OHLCVCandle[],
+  trades: readonly NormalizedTrade[],
   tickSize: number,
 ): FootprintCandle[] {
   if (candles.length === 0) return [];
@@ -185,7 +185,7 @@ export function buildFootprintFromTrades(
  * Useful when tick data is not available.
  */
 export function buildFootprintFromCandles(
-  candles: OHLCVCandle[],
+  candles: readonly OHLCVCandle[],
   tickSize: number,
 ): FootprintCandle[] {
   return candles.map((c) => {

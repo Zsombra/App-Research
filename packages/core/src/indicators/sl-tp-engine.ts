@@ -13,6 +13,11 @@ import type {
 } from '@terminal/types';
 
 const DEFAULT_SL_TP_WIDTH_RATIO = 0.002;
+const MIN_PRICE_WIDTH_RATIO = 0.001;
+const MAX_CLUSTER_INTENSITY_DIVISOR = 10;
+const SWEEP_INTENSITY_DIVISOR = 5;
+const RECENT_CANDLE_COUNT = 20;
+const ROUND_NUMBER_INTENSITY = 0.15;
 
 // ─── Algorithm 1: Liquidation Level Math ─────────────────────────────
 
@@ -22,8 +27,8 @@ const DEFAULT_SL_TP_WIDTH_RATIO = 0.002;
  * short_liquidation = entry * (1 + 1/L)
  */
 export function computeLiquidationLevels(
-  positions: EstimatedPosition[],
-  leverageLevels: number[],
+  positions: readonly EstimatedPosition[],
+  leverageLevels: readonly number[],
 ): SLTPCluster[] {
   const clusters: SLTPCluster[] = [];
 
@@ -70,7 +75,7 @@ export function computeLiquidationLevels(
  * A swing low has `strength` candles on each side with higher lows.
  */
 export function detectSwingPoints(
-  candles: OHLCVCandle[],
+  candles: readonly OHLCVCandle[],
   strength: number,
 ): SwingPoint[] {
   if (strength < 1) throw new RangeError(`Swing strength must be >= 1, got ${strength}`);
@@ -124,7 +129,7 @@ export function detectSwingPoints(
  * Swing lows → SL for longs, TP for shorts.
  */
 export function clusterSwingPoints(
-  swings: SwingPoint[],
+  swings: readonly SwingPoint[],
   eps: number,
 ): SLTPCluster[] {
   if (swings.length === 0) return [];
@@ -150,8 +155,8 @@ export function clusterSwingPoints(
     const avgPrice = group.reduce((s, p) => s + p.price, 0) / group.length;
     const priceRange = group.length > 1
       ? (group[group.length - 1] as SwingPoint).price - (group[0] as SwingPoint).price
-      : avgPrice * 0.001;
-    const intensity = Math.min(1, group.length / 10);
+      : avgPrice * MIN_PRICE_WIDTH_RATIO;
+    const intensity = Math.min(1, group.length / MAX_CLUSTER_INTENSITY_DIVISOR);
 
     const isHigh = group.filter((p) => p.type === 'high').length > group.length / 2;
 
@@ -201,7 +206,7 @@ export function clusterSwingPoints(
 /**
  * Compute ATR (Average True Range) from candles.
  */
-export function computeATR(candles: OHLCVCandle[], period: number): number {
+export function computeATR(candles: readonly OHLCVCandle[], period: number): number {
   if (period < 1) throw new RangeError(`ATR period must be >= 1, got ${period}`);
   if (candles.length < 2) return 0;
 
@@ -254,7 +259,7 @@ export function computeRoundNumberLevels(
     clusters.push({
       price: level,
       width: zoneWidth,
-      intensity: 0.15, // Per Osler: ~10% of orders at round numbers
+      intensity: ROUND_NUMBER_INTENSITY, // Per Osler: ~10% of orders at round numbers
       sources: ['round-number'],
       type: isBelowPrice ? 'stop-loss' : 'take-profit',
       side: 'long',
@@ -262,7 +267,7 @@ export function computeRoundNumberLevels(
     clusters.push({
       price: level,
       width: zoneWidth,
-      intensity: 0.15,
+      intensity: ROUND_NUMBER_INTENSITY,
       sources: ['round-number'],
       type: isBelowPrice ? 'take-profit' : 'stop-loss',
       side: 'short',
@@ -279,8 +284,8 @@ export function computeRoundNumberLevels(
  * and reversed, indicating stop hunts / liquidity grabs.
  */
 export function detectHistoricalSweeps(
-  candles: OHLCVCandle[],
-  swings: SwingPoint[],
+  candles: readonly OHLCVCandle[],
+  swings: readonly SwingPoint[],
   tolerance: number,
 ): SLTPCluster[] {
   const clusters: SLTPCluster[] = [];
@@ -311,7 +316,7 @@ export function detectHistoricalSweeps(
   }
 
   for (const [price, count] of sweepCounts) {
-    const intensity = Math.min(1, count / 5);
+    const intensity = Math.min(1, count / SWEEP_INTENSITY_DIVISOR);
     // Sweep zones are high-probability SL zones (stops get hunted here)
     clusters.push({
       price,
@@ -341,7 +346,7 @@ export function detectHistoricalSweeps(
  * Groups nearby price levels into dense clusters.
  */
 export function dbscanCluster(
-  prices: number[],
+  prices: readonly number[],
   eps: number,
   minPoints: number,
 ): number[][] {
@@ -379,7 +384,7 @@ export function dbscanCluster(
  * Run DBSCAN on all detected cluster prices to find dense zones.
  */
 export function dbscanSLTPClusters(
-  existingClusters: SLTPCluster[],
+  existingClusters: readonly SLTPCluster[],
   eps: number,
   minPoints: number,
 ): SLTPCluster[] {
@@ -393,8 +398,8 @@ export function dbscanSLTPClusters(
     const avgPrice = cluster.reduce((s, p) => s + p, 0) / cluster.length;
     const width = cluster.length > 1
       ? (cluster[cluster.length - 1] as number) - (cluster[0] as number)
-      : avgPrice * 0.001;
-    const intensity = Math.min(1, cluster.length / 10);
+      : avgPrice * MIN_PRICE_WIDTH_RATIO;
+    const intensity = Math.min(1, cluster.length / MAX_CLUSTER_INTENSITY_DIVISOR);
 
     // Inherit type/side from the majority of contributing clusters
     const contributing = existingClusters.filter((c) =>
@@ -425,12 +430,12 @@ export function dbscanSLTPClusters(
  * nearby clusters and summing weighted intensities.
  */
 export function computeCompositeScores(
-  allClusters: SLTPCluster[],
+  allClusters: readonly SLTPCluster[],
   weights: Record<SLTPAlgorithm, number>,
   bucketSize: number,
 ): SLTPCluster[] {
   if (allClusters.length === 0) return [];
-  if (bucketSize <= 0) return allClusters;
+  if (bucketSize <= 0) return [...allClusters];
 
   // Bucket clusters by price
   const bucketMap = new Map<string, SLTPCluster[]>();
@@ -576,7 +581,7 @@ function generateEstimatedPositions(
 ): EstimatedPosition[] {
   const positions: EstimatedPosition[] = [];
   // Use recent candle closes as estimated entry prices
-  const recentCount = Math.min(20, candles.length);
+  const recentCount = Math.min(RECENT_CANDLE_COUNT, candles.length);
   const recentCandles = candles.slice(-recentCount);
 
   for (const candle of recentCandles) {
@@ -603,7 +608,7 @@ function generateEstimatedPositions(
  * Convert clusters into heatmap grid cells.
  */
 function buildHeatmapCells(
-  clusters: SLTPCluster[],
+  clusters: readonly SLTPCluster[],
   priceBucket: number,
 ): SLTPHeatmapCell[] {
   const cellMap = new Map<number, SLTPHeatmapCell>();

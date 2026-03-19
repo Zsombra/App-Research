@@ -6,10 +6,10 @@ import type { FootprintCandle, FootprintLevel, FootprintFilter } from '@terminal
  * Levels that don't pass the filter are removed entirely.
  */
 export function filterFootprintLevels(
-  candles: FootprintCandle[],
-  filter: FootprintFilter,
+  candles: readonly FootprintCandle[],
+  filter: Readonly<FootprintFilter>,
 ): FootprintCandle[] {
-  if (filter.mode === 'none') return candles;
+  if (filter.mode === 'none') return [...candles];
 
   return candles.map((candle) => {
     const filtered = applyFilter(candle.levels, filter);
@@ -29,7 +29,7 @@ export function filterFootprintLevels(
 /**
  * Apply the active filter mode to a set of levels.
  */
-function applyFilter(levels: FootprintLevel[], filter: FootprintFilter): FootprintLevel[] {
+function applyFilter(levels: readonly FootprintLevel[], filter: Readonly<FootprintFilter>): FootprintLevel[] {
   switch (filter.mode) {
     case 'min-volume':
       return levels.filter((l) => l.buyVolume + l.sellVolume >= filter.minVolume);
@@ -44,7 +44,7 @@ function applyFilter(levels: FootprintLevel[], filter: FootprintFilter): Footpri
       return filterByPercentile(levels, filter.percentile);
 
     default:
-      return levels;
+      return [...levels];
   }
 }
 
@@ -52,8 +52,8 @@ function applyFilter(levels: FootprintLevel[], filter: FootprintFilter): Footpri
  * Keep only levels in the top (100 - percentile)% by total volume.
  * E.g. percentile=90 keeps the top 10% of levels.
  */
-function filterByPercentile(levels: FootprintLevel[], percentile: number): FootprintLevel[] {
-  if (levels.length === 0) return levels;
+function filterByPercentile(levels: readonly FootprintLevel[], percentile: number): FootprintLevel[] {
+  if (levels.length === 0) return [];
 
   const volumes = levels.map((l) => l.buyVolume + l.sellVolume);
   const sorted = [...volumes].sort((a, b) => a - b);

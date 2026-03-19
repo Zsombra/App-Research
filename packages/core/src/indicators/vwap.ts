@@ -1,6 +1,7 @@
 import type { OHLCVCandle, IndicatorPoint, VWAPOutput } from '@terminal/types';
 
 const VWAP_VOLUME_EPSILON = 1e-15;
+const MS_PER_DAY = 86_400_000;
 
 /**
  * Compute Volume Weighted Average Price (VWAP) with +/- 1 standard deviation bands.
@@ -29,7 +30,7 @@ export function computeVWAP(
     const tp = (candle.high + candle.low + candle.close) / 3;
 
     // Check for day boundary reset (UTC)
-    const currentDay = Math.floor(candle.timestamp / 86_400_000);
+    const currentDay = Math.floor(candle.timestamp / MS_PER_DAY);
     if (currentDay !== prevDay) {
       cumPV = 0;
       cumV = 0;

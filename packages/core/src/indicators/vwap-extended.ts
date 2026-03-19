@@ -1,5 +1,7 @@
 import type { OHLCVCandle, IndicatorPoint, VWAPOutput } from '@terminal/types';
 
+const VWAP_VOLUME_EPSILON = 1e-15;
+
 /**
  * Compute anchored VWAP: starts from a user-specified candle index.
  *
@@ -33,7 +35,7 @@ export function computeAnchoredVWAP(
     cumV += candle.volume;
     cumPV2 += tp * tp * candle.volume;
 
-    if (cumV === 0) {
+    if (cumV < VWAP_VOLUME_EPSILON) {
       result[i] = {
         timestamp: candle.timestamp,
         data: { vwap: null, upper: null, lower: null },
@@ -83,7 +85,7 @@ export function computeRollingVWAP(
     }
 
     const candle = candles[i] as OHLCVCandle;
-    if (cumV === 0) {
+    if (cumV < VWAP_VOLUME_EPSILON) {
       result[i] = {
         timestamp: candle.timestamp,
         data: { vwap: null, upper: null, lower: null },

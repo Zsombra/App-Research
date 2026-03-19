@@ -27,7 +27,7 @@ export interface FootprintCellData {
  * Transform footprint levels into display-mode-specific cell data.
  */
 export function transformFootprintLevels(
-  levels: FootprintLevel[],
+  levels: readonly FootprintLevel[],
   mode: FootprintDisplayMode,
   imbalanceThreshold: number,
 ): FootprintCellData[] {
@@ -119,7 +119,7 @@ export function transformFootprintLevels(
 /**
  * Compute cumulative delta for a footprint candle.
  */
-export function computeFootprintCumulativeDelta(levels: FootprintLevel[]): number {
+export function computeFootprintCumulativeDelta(levels: readonly FootprintLevel[]): number {
   let cumDelta = 0;
   for (const level of levels) {
     cumDelta += level.buyVolume - level.sellVolume;

@@ -17,8 +17,8 @@ const BUCKET_LABELS: TradeSizeBucket[] = ['small', 'medium', 'large', 'whale'];
  * @returns Cluster summaries + per-trade classifications
  */
 export function clusterTradeSizes(
-  trades: NormalizedTrade[],
-  config: TradeClusterConfig,
+  trades: readonly NormalizedTrade[],
+  config: Readonly<TradeClusterConfig>,
 ): TradeClusterResult {
   const k = Math.min(config.k, trades.length, 4);
 

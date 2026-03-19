@@ -10,8 +10,8 @@ import type { NormalizedTrade, TimeCluster, TimeClusterConfig } from '@terminal/
  * @returns Array of time clusters, sorted by start time
  */
 export function clusterByTime(
-  trades: NormalizedTrade[],
-  config: TimeClusterConfig,
+  trades: readonly NormalizedTrade[],
+  config: Readonly<TimeClusterConfig>,
 ): TimeCluster[] {
   if (trades.length === 0) return [];
 
