@@ -1,5 +1,7 @@
 import type { OHLCVCandle, IndicatorPoint, VWAPOutput } from '@terminal/types';
 
+const VWAP_VOLUME_EPSILON = 1e-15;
+
 /**
  * Compute Volume Weighted Average Price (VWAP) with +/- 1 standard deviation bands.
  *
@@ -39,7 +41,7 @@ export function computeVWAP(
     cumV += candle.volume;
     cumPV2 += tp * tp * candle.volume;
 
-    if (cumV < 1e-15) {
+    if (cumV < VWAP_VOLUME_EPSILON) {
       result[i] = {
         timestamp: candle.timestamp,
         data: { vwap: null, upper: null, lower: null },

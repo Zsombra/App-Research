@@ -4,6 +4,6 @@ import type { PanelConfig } from '@terminal/types';
 import { WatchlistPanel } from '../../panels/WatchlistPanel.js';
 
 export default function WatchlistPanelWrapper(props: IDockviewPanelProps): React.JSX.Element {
-  const config = props.params as unknown as PanelConfig;
+  const config = props.params as PanelConfig;
   return <WatchlistPanel config={config} />;
 }

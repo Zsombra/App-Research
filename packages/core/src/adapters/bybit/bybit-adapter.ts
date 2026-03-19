@@ -12,6 +12,8 @@ import { OrderbookManager } from '../../orderbook/orderbook-manager.js';
 
 /** Default WebSocket URL for Bybit linear perpetuals. */
 const DEFAULT_WS_URL = 'wss://stream.bybit.com/v5/public/linear';
+const BYBIT_ORDERBOOK_DEPTH = 50;
+const BYBIT_QUOTE_CURRENCIES = ['USDT', 'USDC', 'BTC', 'ETH', 'USD'] as const;
 
 /**
  * Bybit exchange adapter for linear perpetual contracts.
@@ -81,7 +83,7 @@ export class BybitAdapter extends BaseExchangeAdapter {
     if (!this.orderbookManagers.has(symbol)) {
       this.orderbookManagers.set(
         symbol,
-        new OrderbookManager({ symbol, exchange: 'bybit', maxDepth: 50 })
+        new OrderbookManager({ symbol, exchange: 'bybit', maxDepth: BYBIT_ORDERBOOK_DEPTH })
       );
     }
     this.sendSubscribe([`orderbook.50.${exchangeSymbol}`]);
@@ -342,7 +344,7 @@ export class BybitAdapter extends BaseExchangeAdapter {
    * Converts a Bybit symbol (e.g. "BTCUSDT") to normalized format ("BTC/USDT").
    */
   private toNormalizedSymbol(exchangeSymbol: string): string | null {
-    const quotes = ['USDT', 'USDC', 'BTC', 'ETH', 'USD'];
+    const quotes = BYBIT_QUOTE_CURRENCIES;
     for (const quote of quotes) {
       if (exchangeSymbol.endsWith(quote) && exchangeSymbol.length > quote.length) {
         const base = exchangeSymbol.slice(0, exchangeSymbol.length - quote.length);

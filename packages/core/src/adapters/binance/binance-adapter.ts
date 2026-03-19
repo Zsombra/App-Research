@@ -12,6 +12,8 @@ import { OrderbookManager } from '../../orderbook/orderbook-manager.js';
 
 /** Default WebSocket URL for Binance spot combined streams. */
 const DEFAULT_WS_URL = 'wss://stream.binance.com:9443/ws';
+const BINANCE_ORDERBOOK_DEPTH = 20;
+const BINANCE_QUOTE_CURRENCIES = ['USDT', 'BUSD', 'USDC', 'BTC', 'ETH', 'BNB', 'TUSD', 'FDUSD', 'USD'] as const;
 
 /**
  * Binance exchange adapter.
@@ -82,7 +84,7 @@ export class BinanceAdapter extends BaseExchangeAdapter {
     if (!this.orderbookManagers.has(symbol)) {
       this.orderbookManagers.set(
         symbol,
-        new OrderbookManager({ symbol, exchange: 'binance', maxDepth: 20 })
+        new OrderbookManager({ symbol, exchange: 'binance', maxDepth: BINANCE_ORDERBOOK_DEPTH })
       );
     }
     this.sendSubscribe([`${exchangeSymbol.toLowerCase()}@depth20@100ms`]);
@@ -290,7 +292,7 @@ export class BinanceAdapter extends BaseExchangeAdapter {
   /**
    * Sends a SUBSCRIBE frame to Binance.
    */
-  private sendSubscribe(params: string[]): void {
+  private sendSubscribe(params: readonly string[]): void {
     const id = this.subscriptionId++;
     this.wsManager.send(
       JSON.stringify({ method: 'SUBSCRIBE', params, id })
@@ -300,7 +302,7 @@ export class BinanceAdapter extends BaseExchangeAdapter {
   /**
    * Sends an UNSUBSCRIBE frame to Binance.
    */
-  private sendUnsubscribe(params: string[]): void {
+  private sendUnsubscribe(params: readonly string[]): void {
     const id = this.subscriptionId++;
     this.wsManager.send(
       JSON.stringify({ method: 'UNSUBSCRIBE', params, id })
@@ -341,7 +343,7 @@ export class BinanceAdapter extends BaseExchangeAdapter {
    * Uses known quote currencies to determine where to insert the separator.
    */
   private toNormalizedSymbol(exchangeSymbol: string): string | null {
-    const quotes = ['USDT', 'BUSD', 'USDC', 'BTC', 'ETH', 'BNB', 'TUSD', 'FDUSD', 'USD'];
+    const quotes = BINANCE_QUOTE_CURRENCIES;
     for (const quote of quotes) {
       if (exchangeSymbol.endsWith(quote) && exchangeSymbol.length > quote.length) {
         const base = exchangeSymbol.slice(0, exchangeSymbol.length - quote.length);

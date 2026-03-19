@@ -10,7 +10,7 @@ import { useActiveSymbol } from '../../stores/symbol-store.js';
  * Reads live candle data from the market store using the active symbol.
  */
 export default function ChartPanelWrapper(props: IDockviewPanelProps): React.JSX.Element {
-  const config = props.params as unknown as PanelConfig;
+  const config = props.params as PanelConfig;
   const activeSymbol = useActiveSymbol();
   const symbol = activeSymbol ?? config?.symbol ?? 'BTC/USDT';
   const candles = useCandles(symbol);

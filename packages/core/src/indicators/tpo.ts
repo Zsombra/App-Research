@@ -1,6 +1,9 @@
 import type { OHLCVCandle, MarketProfile, TPORow } from '@terminal/types';
 import { bucketPrice } from './footprint.js';
 
+const DEFAULT_VALUE_AREA_PERCENT = 0.70;
+const DEFAULT_IB_PERIOD_MINUTES = 60;
+
 /**
  * Compute a Market Profile (TPO) from candle data.
  *
@@ -17,8 +20,8 @@ import { bucketPrice } from './footprint.js';
 export function computeMarketProfile(
   candles: OHLCVCandle[],
   tickSize: number,
-  valueAreaPercent: number = 0.70,
-  ibPeriodMinutes: number = 60,
+  valueAreaPercent: number = DEFAULT_VALUE_AREA_PERCENT,
+  ibPeriodMinutes: number = DEFAULT_IB_PERIOD_MINUTES,
 ): MarketProfile {
   if (tickSize <= 0) {
     throw new RangeError(`TPO tickSize must be > 0, got ${tickSize}`);

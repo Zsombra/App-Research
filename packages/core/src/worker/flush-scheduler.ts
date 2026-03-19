@@ -1,5 +1,8 @@
 import type { WorkerOutboundMessage } from '@terminal/types';
 
+const DEFAULT_FLUSH_INTERVAL_MS = 100;
+const DEFAULT_MAX_BUFFER_SIZE = 1000;
+
 /**
  * Configuration for the FlushScheduler.
  */
@@ -29,8 +32,8 @@ export class FlushScheduler {
   private flushTimer: ReturnType<typeof setInterval> | null = null;
 
   constructor(config: FlushSchedulerConfig) {
-    this.flushInterval = config.flushInterval ?? 100;
-    this.maxBufferSize = config.maxBufferSize ?? 1000;
+    this.flushInterval = config.flushInterval ?? DEFAULT_FLUSH_INTERVAL_MS;
+    this.maxBufferSize = config.maxBufferSize ?? DEFAULT_MAX_BUFFER_SIZE;
     this.onFlush = config.onFlush;
   }
 

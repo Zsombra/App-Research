@@ -2,6 +2,13 @@ import { ConnectionStatus } from '@terminal/types';
 import type { IWebSocket, WSMessageEvent, WSCloseEvent } from './websocket-types.js';
 import { getWebSocketConstructor, WS_OPEN, WS_CONNECTING } from './websocket-types.js';
 
+const DEFAULT_MAX_RECONNECT_ATTEMPTS = 10;
+const DEFAULT_INBOUND_TIMEOUT_MS = 60_000;
+const BACKOFF_BASE_DELAY_MS = 1000;
+const BACKOFF_MAX_DELAY_MS = 30_000;
+const BACKOFF_JITTER = 0.5;
+const MESSAGE_RATE_INTERVAL_MS = 1000;
+
 /**
  * Configuration for the WebSocketManager.
  */
@@ -51,9 +58,9 @@ export class WebSocketManager {
   constructor(config: WebSocketManagerConfig) {
     this.url = config.url;
     this.heartbeatInterval = config.heartbeatInterval ?? 0;
-    this.maxReconnectAttempts = config.maxReconnectAttempts ?? 10;
+    this.maxReconnectAttempts = config.maxReconnectAttempts ?? DEFAULT_MAX_RECONNECT_ATTEMPTS;
     this.pingPayload = config.pingPayload ?? null;
-    this.inboundTimeout = config.inboundTimeout ?? 60_000;
+    this.inboundTimeout = config.inboundTimeout ?? DEFAULT_INBOUND_TIMEOUT_MS;
   }
 
   /** Current connection state. */
@@ -194,9 +201,9 @@ export class WebSocketManager {
    * delay = min(baseDelay * 2^attempt, maxDelay) * (1 + jitter * random())
    */
   private computeBackoff(attempt: number): number {
-    const baseDelay = 1000;
-    const maxDelay = 30_000;
-    const jitter = 0.5;
+    const baseDelay = BACKOFF_BASE_DELAY_MS;
+    const maxDelay = BACKOFF_MAX_DELAY_MS;
+    const jitter = BACKOFF_JITTER;
     const exponential = Math.min(baseDelay * Math.pow(2, attempt), maxDelay);
     return exponential * (1 + jitter * Math.random());
   }
@@ -250,7 +257,7 @@ export class WebSocketManager {
     this.messageCountResetTimer = setInterval(() => {
       this._messagesPerSecond = this.messageCount;
       this.messageCount = 0;
-    }, 1000);
+    }, MESSAGE_RATE_INTERVAL_MS);
   }
 
   private clearAllTimers(): void {

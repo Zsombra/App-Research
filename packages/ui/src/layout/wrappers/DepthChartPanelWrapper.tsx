@@ -4,6 +4,6 @@ import type { PanelConfig } from '@terminal/types';
 import { DepthChartPanel } from '../../panels/DepthChartPanel.js';
 
 export default function DepthChartPanelWrapper(props: IDockviewPanelProps): React.JSX.Element {
-  const config = props.params as unknown as PanelConfig;
+  const config = props.params as PanelConfig;
   return <DepthChartPanel config={config} />;
 }

@@ -12,6 +12,8 @@ import type {
   SLTPAlgorithm,
 } from '@terminal/types';
 
+const DEFAULT_SL_TP_WIDTH_RATIO = 0.002;
+
 // ─── Algorithm 1: Liquidation Level Math ─────────────────────────────
 
 /**
@@ -36,7 +38,7 @@ export function computeLiquidationLevels(
         if (liqPrice > 0) {
           clusters.push({
             price: liqPrice,
-            width: pos.entryPrice * 0.002,
+            width: pos.entryPrice * DEFAULT_SL_TP_WIDTH_RATIO,
             intensity: (pos.size ?? 1) / Math.max(1, lev),
             sources: ['liquidation-math'],
             type: 'stop-loss',
@@ -47,7 +49,7 @@ export function computeLiquidationLevels(
         const liqPrice = pos.entryPrice * (1 + 1 / lev);
         clusters.push({
           price: liqPrice,
-          width: pos.entryPrice * 0.002,
+          width: pos.entryPrice * DEFAULT_SL_TP_WIDTH_RATIO,
           intensity: (pos.size ?? 1) / Math.max(1, lev),
           sources: ['liquidation-math'],
           type: 'stop-loss',
@@ -313,7 +315,7 @@ export function detectHistoricalSweeps(
     // Sweep zones are high-probability SL zones (stops get hunted here)
     clusters.push({
       price,
-      width: price * 0.002,
+      width: price * DEFAULT_SL_TP_WIDTH_RATIO,
       intensity,
       sources: ['historical-sweep'],
       type: 'stop-loss',
@@ -321,7 +323,7 @@ export function detectHistoricalSweeps(
     });
     clusters.push({
       price,
-      width: price * 0.002,
+      width: price * DEFAULT_SL_TP_WIDTH_RATIO,
       intensity,
       sources: ['historical-sweep'],
       type: 'stop-loss',
