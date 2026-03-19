@@ -8,12 +8,12 @@ import {
 import { useMarketStore, useTimeframe, useBarType } from '../stores/market-store.js';
 
 /** Commonly used timeframes shown in the compact bar. */
-const QUICK_TIMEFRAMES: CandleTimeframe[] = [
+const QUICK_TIMEFRAMES: readonly CandleTimeframe[] = [
   '1s', '5s', '1m', '5m', '15m', '1h', '4h', '1d',
-];
+] as const;
 
 /** Custom bar type options. */
-const CUSTOM_BAR_OPTIONS: { type: BarType; label: string; config: CustomBarConfig }[] = [
+const CUSTOM_BAR_OPTIONS: readonly { type: BarType; label: string; config: CustomBarConfig }[] = [
   { type: 'tick', label: 'Tick', config: DEFAULT_TICK_BAR_CONFIG },
   { type: 'volume', label: 'Vol', config: DEFAULT_VOLUME_BAR_CONFIG },
   { type: 'range', label: 'Range', config: DEFAULT_RANGE_BAR_CONFIG },

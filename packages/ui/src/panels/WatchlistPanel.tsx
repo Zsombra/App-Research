@@ -2,6 +2,7 @@ import React, { useState, useCallback } from 'react';
 import type { PanelConfig, Ticker } from '@terminal/types';
 import { useMarketStore } from '../stores/market-store.js';
 import { useSymbolStore, useActiveSymbol, useWatchlist } from '../stores/symbol-store.js';
+import { COLOR_BULLISH, COLOR_BEARISH, COLOR_NEUTRAL } from '../theme-colors.js';
 
 interface WatchlistPanelProps {
   config: PanelConfig;
@@ -20,8 +21,8 @@ const WatchlistRow = React.memo(function WatchlistRow({
   const removeFromWatchlist = useSymbolStore((s) => s.removeFromWatchlist);
 
   const changeColor = ticker
-    ? ticker.changePercent24h >= 0 ? '#26a69a' : '#ef5350'
-    : '#555';
+    ? ticker.changePercent24h >= 0 ? COLOR_BULLISH : COLOR_BEARISH
+    : COLOR_NEUTRAL;
 
   return (
     <div

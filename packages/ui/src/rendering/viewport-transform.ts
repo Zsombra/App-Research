@@ -1,5 +1,14 @@
 import type { OHLCVCandle } from '@terminal/types';
 
+/** Minimum horizontal scale (pixels per ms) to prevent extreme zoom-out. */
+const MIN_SCALE_X = 1e-8;
+/** Maximum horizontal scale (pixels per ms) to prevent extreme zoom-in. */
+const MAX_SCALE_X = 1;
+/** Minimum vertical scale (pixels per price unit) to prevent extreme zoom-out. */
+const MIN_SCALE_Y = 1e-6;
+/** Maximum vertical scale (pixels per price unit) to prevent extreme zoom-in. */
+const MAX_SCALE_Y = 1e6;
+
 /**
  * Maps between data coordinates (time, price) and pixel coordinates.
  * Supports pan and zoom operations. Generates orthographic projection
@@ -155,13 +164,8 @@ export class ViewportTransform {
     this._scaleY *= factor;
 
     // Clamp scales to prevent extreme zoom
-    const minScaleX = 1e-8;
-    const maxScaleX = 1;
-    this._scaleX = Math.max(minScaleX, Math.min(maxScaleX, this._scaleX));
-
-    const minScaleY = 1e-6;
-    const maxScaleY = 1e6;
-    this._scaleY = Math.max(minScaleY, Math.min(maxScaleY, this._scaleY));
+    this._scaleX = Math.max(MIN_SCALE_X, Math.min(MAX_SCALE_X, this._scaleX));
+    this._scaleY = Math.max(MIN_SCALE_Y, Math.min(MAX_SCALE_Y, this._scaleY));
 
     // Adjust origin so the center point stays in the same pixel position
     this._originX = centerTime - centerPixelX / this._scaleX;
@@ -173,7 +177,7 @@ export class ViewportTransform {
    * @param candles - Array of OHLCV candles to fit
    * @param paddingPercent - Percentage of padding to add (default 5%)
    */
-  fitToData(candles: OHLCVCandle[], paddingPercent: number = 0.05): void {
+  fitToData(candles: readonly OHLCVCandle[], paddingPercent: number = 0.05): void {
     if (candles.length === 0) return;
 
     let minTime = Infinity;

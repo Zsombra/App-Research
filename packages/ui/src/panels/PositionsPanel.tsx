@@ -1,6 +1,13 @@
 import React, { useEffect } from 'react';
 import type { PanelConfig, Position, Order } from '@terminal/types';
 import { useAllPositions, useOrders, useOrderStore } from '../stores/order-store.js';
+import { COLOR_BULLISH, COLOR_BEARISH } from '../theme-colors.js';
+
+/** Maximum number of orders to display in the panel. */
+const MAX_DISPLAYED_ORDERS = 20;
+
+/** Interval in ms for updating mark prices from market data. */
+const MARK_PRICE_UPDATE_INTERVAL_MS = 1000;
 
 interface PositionsPanelProps {
   config: PanelConfig;
@@ -8,8 +15,8 @@ interface PositionsPanelProps {
 
 const PositionRow = React.memo(function PositionRow({ pos }: { pos: Position }) {
   const isLong = pos.quantity > 0;
-  const sideColor = isLong ? '#26a69a' : '#ef5350';
-  const pnlColor = pos.unrealizedPnl >= 0 ? '#26a69a' : '#ef5350';
+  const sideColor = isLong ? COLOR_BULLISH : COLOR_BEARISH;
+  const pnlColor = pos.unrealizedPnl >= 0 ? COLOR_BULLISH : COLOR_BEARISH;
 
   return (
     <div style={{ display: 'flex', padding: '3px 8px', gap: 4, alignItems: 'center' }}>
@@ -29,7 +36,7 @@ const PositionRow = React.memo(function PositionRow({ pos }: { pos: Position }) 
 
 const OrderRow = React.memo(function OrderRow({ order }: { order: Order }) {
   const cancelOrder = useOrderStore((s) => s.cancelOrder);
-  const sideColor = order.side === 'buy' ? '#26a69a' : '#ef5350';
+  const sideColor = order.side === 'buy' ? COLOR_BULLISH : COLOR_BEARISH;
 
   return (
     <div style={{ display: 'flex', padding: '3px 8px', gap: 4, alignItems: 'center' }}>
@@ -49,8 +56,8 @@ const OrderRow = React.memo(function OrderRow({ order }: { order: Order }) {
           style={{
             padding: '1px 6px',
             background: 'transparent',
-            border: '1px solid #ef5350',
-            color: '#ef5350',
+            border: `1px solid ${COLOR_BEARISH}`,
+            color: COLOR_BEARISH,
             cursor: 'pointer',
             fontSize: 10,
             borderRadius: 2,
@@ -74,11 +81,11 @@ export function PositionsPanel({ config }: PositionsPanelProps): React.JSX.Eleme
 
   // Update mark prices every second
   useEffect(() => {
-    const interval = setInterval(updateMarkPrices, 1000);
+    const interval = setInterval(updateMarkPrices, MARK_PRICE_UPDATE_INTERVAL_MS);
     return () => clearInterval(interval);
   }, [updateMarkPrices]);
 
-  const recentOrders = orders.slice(0, 20);
+  const recentOrders = orders.slice(0, MAX_DISPLAYED_ORDERS);
 
   return (
     <div style={{ height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column', background: '#0a0a0e', color: '#ccc', fontSize: 12 }}>

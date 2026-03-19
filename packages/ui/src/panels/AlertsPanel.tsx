@@ -3,6 +3,7 @@ import { useAlertStore, startAlertChecker } from '../stores/alert-store.js';
 import type { AlertCondition } from '../stores/alert-store.js';
 import { useActiveSymbol } from '../stores/symbol-store.js';
 import { useMarketStore } from '../stores/market-store.js';
+import { COLOR_BULLISH, COLOR_BEARISH, COLOR_WARNING } from '../theme-colors.js';
 
 export function AlertsPanel(): React.JSX.Element {
   const activeSymbol = useActiveSymbol();
@@ -105,12 +106,12 @@ export function AlertsPanel(): React.JSX.Element {
 }
 
 const AlertRow = React.memo(function AlertRow({ alert, onRemove }: { alert: { id: string; symbol: string; condition: AlertCondition; targetPrice: number; triggered: boolean }; onRemove: (id: string) => void }): React.JSX.Element {
-  const color = alert.triggered ? '#ffb300' : alert.condition === 'above' ? '#26a69a' : '#ef5350';
+  const color = alert.triggered ? COLOR_WARNING : alert.condition === 'above' ? COLOR_BULLISH : COLOR_BEARISH;
   return (
     <div style={{ display: 'flex', alignItems: 'center', padding: '3px 8px', gap: 6, opacity: alert.triggered ? 0.6 : 1 }}>
-      <span style={{ width: 8, height: 8, borderRadius: '50%', background: alert.triggered ? '#ffb300' : '#333', flexShrink: 0 }} />
+      <span style={{ width: 8, height: 8, borderRadius: '50%', background: alert.triggered ? COLOR_WARNING : '#333', flexShrink: 0 }} />
       <span style={{ flex: 1, color }}>{alert.symbol} {alert.condition} {alert.targetPrice.toFixed(2)}</span>
-      {alert.triggered && <span style={{ color: '#ffb300', fontSize: 10 }}>FIRED</span>}
+      {alert.triggered && <span style={{ color: COLOR_WARNING, fontSize: 10 }}>FIRED</span>}
       <button
         onClick={() => onRemove(alert.id)}
         style={{ width: 16, height: 16, padding: 0, background: 'transparent', border: 'none', color: '#444', cursor: 'pointer', fontSize: 12, lineHeight: '16px' }}

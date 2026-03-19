@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTicker, useConnectionStatus } from '../stores/market-store.js';
 import type { ExchangeId } from '@terminal/types';
+import { COLOR_BULLISH, COLOR_BEARISH, COLOR_CAUTION } from '../theme-colors.js';
 
 interface TickerBarProps {
   symbol: string;
@@ -15,9 +16,9 @@ export function TickerBar({ symbol, exchange }: TickerBarProps): React.JSX.Eleme
   const status = useConnectionStatus(exchange);
 
   const statusColor =
-    status === 'connected' ? '#26a69a' :
-    status === 'connecting' || status === 'reconnecting' ? '#ffa726' :
-    '#ef5350';
+    status === 'connected' ? COLOR_BULLISH :
+    status === 'connecting' || status === 'reconnecting' ? COLOR_CAUTION :
+    COLOR_BEARISH;
 
   return (
     <div
@@ -41,7 +42,7 @@ export function TickerBar({ symbol, exchange }: TickerBarProps): React.JSX.Eleme
           </span>
           <span
             style={{
-              color: ticker.changePercent24h >= 0 ? '#26a69a' : '#ef5350',
+              color: ticker.changePercent24h >= 0 ? COLOR_BULLISH : COLOR_BEARISH,
               fontWeight: 600,
             }}
           >

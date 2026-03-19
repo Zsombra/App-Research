@@ -2,12 +2,13 @@ import React, { useState, useCallback } from 'react';
 import type { PanelConfig, OrderSide, OrderType } from '@terminal/types';
 import { useTicker } from '../stores/market-store.js';
 import { useOrderStore, usePosition } from '../stores/order-store.js';
+import { COLOR_BULLISH, COLOR_BEARISH, COLOR_MUTED } from '../theme-colors.js';
 
 interface OrderEntryPanelProps {
   config: PanelConfig;
 }
 
-const QUICK_SIZES = [0.001, 0.01, 0.1, 0.5, 1.0];
+const QUICK_SIZES = [0.001, 0.01, 0.1, 0.5, 1.0] as const;
 
 /**
  * Order entry form with market/limit order support.
@@ -20,7 +21,6 @@ export function OrderEntryPanel({ config }: OrderEntryPanelProps): React.JSX.Ele
   const placeOrder = useOrderStore((s) => s.placeOrder);
 
   const [orderType, setOrderType] = useState<OrderType>('market');
-  const [_side, setSide] = useState<OrderSide>('buy');
   const [quantity, setQuantity] = useState('0.01');
   const [limitPrice, setLimitPrice] = useState('');
 
@@ -41,7 +41,6 @@ export function OrderEntryPanel({ config }: OrderEntryPanelProps): React.JSX.Ele
       params.price = price;
     }
 
-    setSide(submitSide);
     placeOrder(params);
   }, [symbol, orderType, quantity, limitPrice, placeOrder]);
 
@@ -52,7 +51,7 @@ export function OrderEntryPanel({ config }: OrderEntryPanelProps): React.JSX.Ele
   }, [ticker]);
 
   const posQty = position?.quantity ?? 0;
-  const posColor = posQty > 0 ? '#26a69a' : posQty < 0 ? '#ef5350' : '#888';
+  const posColor = posQty > 0 ? COLOR_BULLISH : posQty < 0 ? COLOR_BEARISH : COLOR_MUTED;
 
   return (
     <div style={{ height: '100%', overflow: 'auto', background: '#0a0a0e', color: '#ccc', fontSize: 12, padding: 8 }}>
@@ -179,7 +178,7 @@ export function OrderEntryPanel({ config }: OrderEntryPanelProps): React.JSX.Ele
           style={{
             flex: 1,
             padding: '8px 0',
-            background: '#26a69a',
+            background: COLOR_BULLISH,
             border: 'none',
             color: '#fff',
             cursor: 'pointer',
@@ -195,7 +194,7 @@ export function OrderEntryPanel({ config }: OrderEntryPanelProps): React.JSX.Ele
           style={{
             flex: 1,
             padding: '8px 0',
-            background: '#ef5350',
+            background: COLOR_BEARISH,
             border: 'none',
             color: '#fff',
             cursor: 'pointer',
@@ -224,13 +223,13 @@ export function OrderEntryPanel({ config }: OrderEntryPanelProps): React.JSX.Ele
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 2 }}>
               <span style={{ color: '#666' }}>uPnL</span>
-              <span style={{ color: position.unrealizedPnl >= 0 ? '#26a69a' : '#ef5350' }}>
+              <span style={{ color: position.unrealizedPnl >= 0 ? COLOR_BULLISH : COLOR_BEARISH }}>
                 {position.unrealizedPnl >= 0 ? '+' : ''}{position.unrealizedPnl.toFixed(2)}
               </span>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span style={{ color: '#666' }}>rPnL</span>
-              <span style={{ color: position.realizedPnl >= 0 ? '#26a69a' : '#ef5350' }}>
+              <span style={{ color: position.realizedPnl >= 0 ? COLOR_BULLISH : COLOR_BEARISH }}>
                 {position.realizedPnl >= 0 ? '+' : ''}{position.realizedPnl.toFixed(2)}
               </span>
             </div>

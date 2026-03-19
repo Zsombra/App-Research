@@ -2,14 +2,14 @@ import React from 'react';
 import type { ExchangeId, CandleTimeframe } from '@terminal/types';
 import { useSettingsStore } from '../stores/settings-store.js';
 
-const EXCHANGES: { id: ExchangeId; label: string }[] = [
+const EXCHANGES: readonly { id: ExchangeId; label: string }[] = [
   { id: 'simulated', label: 'Simulated' },
   { id: 'binance', label: 'Binance' },
   { id: 'bybit', label: 'Bybit' },
   { id: 'coinbase', label: 'Coinbase' },
 ];
 
-const TIMEFRAMES: CandleTimeframe[] = ['1s', '5s', '1m', '5m', '15m', '1h', '4h', '1d'];
+const TIMEFRAMES: readonly CandleTimeframe[] = ['1s', '5s', '1m', '5m', '15m', '1h', '4h', '1d'] as const;
 
 interface SettingsRowProps {
   label: string;

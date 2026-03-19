@@ -7,21 +7,32 @@ interface DepthChartPanelProps {
   config: PanelConfig;
 }
 
+import { COLOR_BULLISH, COLOR_BEARISH, COLOR_ACCENT } from '../theme-colors.js';
+
 /** Colors matching the terminal theme */
 const BID_COLOR = 'rgba(38, 166, 154, 0.6)';
-const BID_LINE = '#26a69a';
+const BID_LINE = COLOR_BULLISH;
 const ASK_COLOR = 'rgba(239, 83, 80, 0.6)';
-const ASK_LINE = '#ef5350';
+const ASK_LINE = COLOR_BEARISH;
 const GRID_COLOR = '#1a1a22';
 const TEXT_COLOR = '#555';
-const MID_COLOR = '#5c6bc0';
+const MID_COLOR = COLOR_ACCENT;
+
+/** Maximum number of orderbook levels to include in the depth chart. */
+const DEPTH_MAX_LEVELS = 40;
+
+/** Number of price tick labels on the X axis. */
+const PRICE_TICK_COUNT = 5;
+
+/** Padding around the depth chart content area. */
+const CHART_PADDING = { top: 20, bottom: 24, left: 8, right: 8 } as const;
 
 interface CumulativeLevel {
   price: number;
   cumSize: number;
 }
 
-function buildCumulativeBids(ob: OrderbookSnapshot, maxLevels: number): CumulativeLevel[] {
+function buildCumulativeBids(ob: Readonly<OrderbookSnapshot>, maxLevels: number): CumulativeLevel[] {
   const result: CumulativeLevel[] = [];
   let cum = 0;
   const levels = ob.bids.slice(0, maxLevels);
@@ -32,7 +43,7 @@ function buildCumulativeBids(ob: OrderbookSnapshot, maxLevels: number): Cumulati
   return result;
 }
 
-function buildCumulativeAsks(ob: OrderbookSnapshot, maxLevels: number): CumulativeLevel[] {
+function buildCumulativeAsks(ob: Readonly<OrderbookSnapshot>, maxLevels: number): CumulativeLevel[] {
   const result: CumulativeLevel[] = [];
   let cum = 0;
   const levels = ob.asks.slice(0, maxLevels);
@@ -59,9 +70,8 @@ function renderDepthChart(
     return;
   }
 
-  const maxLevels = 40;
-  const bids = buildCumulativeBids(ob, maxLevels);
-  const asks = buildCumulativeAsks(ob, maxLevels);
+  const bids = buildCumulativeBids(ob, DEPTH_MAX_LEVELS);
+  const asks = buildCumulativeAsks(ob, DEPTH_MAX_LEVELS);
 
   if (bids.length === 0 || asks.length === 0) return;
 
@@ -76,7 +86,7 @@ function renderDepthChart(
   const priceMax = lastAsk.price;
   const priceRange = priceMax - priceMin || 1;
 
-  const pad = { top: 20, bottom: 24, left: 8, right: 8 };
+  const pad = CHART_PADDING;
   const cw = width - pad.left - pad.right;
   const ch = height - pad.top - pad.bottom;
 
@@ -105,9 +115,8 @@ function renderDepthChart(
   ctx.fillStyle = TEXT_COLOR;
   ctx.font = '9px monospace';
   ctx.textAlign = 'center';
-  const priceTicks = 5;
-  for (let i = 0; i <= priceTicks; i++) {
-    const p = priceMin + (priceRange / priceTicks) * i;
+  for (let i = 0; i <= PRICE_TICK_COUNT; i++) {
+    const p = priceMin + (priceRange / PRICE_TICK_COUNT) * i;
     const x = priceToX(p);
     ctx.fillText(formatAxisPrice(p), x, height - pad.bottom + 14);
   }

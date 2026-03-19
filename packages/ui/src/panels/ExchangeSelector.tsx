@@ -6,7 +6,7 @@ import { useSymbolStore } from '../stores/symbol-store.js';
 import { getWorkerBridge } from '../worker/worker-bridge.js';
 
 /** Exchanges available for connection. */
-const AVAILABLE_EXCHANGES: { id: ExchangeId; label: string }[] = [
+const AVAILABLE_EXCHANGES: readonly { id: ExchangeId; label: string }[] = [
   { id: 'simulated', label: 'Simulated' },
   { id: 'binance', label: 'Binance' },
   { id: 'bybit', label: 'Bybit' },
