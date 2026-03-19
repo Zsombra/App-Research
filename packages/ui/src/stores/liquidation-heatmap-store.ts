@@ -34,12 +34,11 @@ export const useLiquidationHeatmapStore = create<LiquidationHeatmapState>((set, 
   addLiquidation: (event) => {
     const state = get();
     const events = new Map(state.events);
-    const symbolEvents = [...(events.get(event.symbol) ?? []), event];
-
-    // Trim to max events
-    if (symbolEvents.length > state.config.maxEvents) {
-      symbolEvents.splice(0, symbolEvents.length - state.config.maxEvents);
-    }
+    const appended = [...(events.get(event.symbol) ?? []), event];
+    // Trim to max events using slice for immutability
+    const symbolEvents = appended.length > state.config.maxEvents
+      ? appended.slice(-state.config.maxEvents)
+      : appended;
 
     events.set(event.symbol, symbolEvents);
     set({ events });

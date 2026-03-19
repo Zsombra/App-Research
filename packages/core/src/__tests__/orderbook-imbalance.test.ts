@@ -63,7 +63,7 @@ describe('computeOrderbookImbalance', () => {
       bids: [],
       asks: [],
     }));
-    expect(result.bidAskRatio).toBe(1);
+    expect(result.bidAskRatio).toBe(0);
     expect(result.totalBidVolume).toBe(0);
   });
 

@@ -259,7 +259,10 @@ export class CoinbaseAdapter extends BaseExchangeAdapter {
       const symbol = this.toNormalizedSymbol(exchangeSymbol);
       if (!symbol) continue;
 
-      const price = parseFloat(t['price'] as string);
+      if (typeof t['price'] !== 'string') continue;
+      const price = parseFloat(t['price']);
+      if (isNaN(price)) continue;
+
       const priceChangePercent = parseFloat(t['price_percentage_change_24h'] as string) || 0;
       const high = parseFloat(t['high_24_h'] as string) || price;
       const low = parseFloat(t['low_24_h'] as string) || price;
@@ -268,8 +271,6 @@ export class CoinbaseAdapter extends BaseExchangeAdapter {
       const bestBidSize = parseFloat(t['best_bid_quantity'] as string) || 0;
       const bestAsk = parseFloat(t['best_ask'] as string) || price;
       const bestAskSize = parseFloat(t['best_ask_quantity'] as string) || 0;
-
-      if (isNaN(price)) continue;
 
       const ticker: Ticker = {
         exchange: 'coinbase',

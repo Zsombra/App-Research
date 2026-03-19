@@ -42,7 +42,7 @@ export function aggregateTrade(
   maxCandles: number = 500
 ): OHLCVCandle[] {
   if (maxCandles < 1) {
-    return candles;
+    throw new RangeError(`maxCandles must be >= 1, got ${maxCandles}`);
   }
 
   const intervalMs = timeframeToMs(timeframe);

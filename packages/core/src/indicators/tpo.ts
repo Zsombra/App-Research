@@ -20,6 +20,10 @@ export function computeMarketProfile(
   valueAreaPercent: number = 0.70,
   ibPeriodMinutes: number = 60,
 ): MarketProfile {
+  if (tickSize <= 0) {
+    throw new RangeError(`TPO tickSize must be > 0, got ${tickSize}`);
+  }
+
   if (candles.length === 0) {
     return {
       sessionStart: 0,

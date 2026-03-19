@@ -39,7 +39,7 @@ export function computeVWAP(
     cumV += candle.volume;
     cumPV2 += tp * tp * candle.volume;
 
-    if (cumV === 0) {
+    if (cumV < 1e-15) {
       result[i] = {
         timestamp: candle.timestamp,
         data: { vwap: null, upper: null, lower: null },

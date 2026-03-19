@@ -68,11 +68,11 @@ export const useHeatmapStore = create<HeatmapState>((set, get) => ({
         return {};
       }
 
-      const updated = [...existing, column];
-      // Trim old columns
-      if (updated.length > prev.config.maxColumns) {
-        updated.splice(0, updated.length - prev.config.maxColumns);
-      }
+      // Trim old columns using slice for immutability
+      const appended = [...existing, column];
+      const updated = appended.length > prev.config.maxColumns
+        ? appended.slice(-prev.config.maxColumns)
+        : appended;
       columns.set(symbol, updated);
 
       // Update max liquidity for normalization

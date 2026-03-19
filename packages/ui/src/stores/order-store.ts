@@ -205,7 +205,7 @@ function updatePosition(positions: Map<string, Position>, fill: Fill): void {
     // Adding to position — average entry price
     const totalCost = existing.entryPrice * Math.abs(existing.quantity) + fill.price * fill.quantity;
     const totalQty = Math.abs(existing.quantity) + fill.quantity;
-    const avgEntry = totalCost / totalQty;
+    const avgEntry = totalQty > 0 ? totalCost / totalQty : fill.price;
 
     positions.set(fill.symbol, {
       ...existing,

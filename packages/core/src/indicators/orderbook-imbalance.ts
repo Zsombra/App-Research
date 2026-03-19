@@ -136,7 +136,7 @@ export function computeOrderbookImbalance(
   const totalBidVolume = topBids.reduce((sum, l) => sum + l.size, 0);
   const totalAskVolume = topAsks.reduce((sum, l) => sum + l.size, 0);
 
-  const bidAskRatio = totalAskVolume > 0 ? totalBidVolume / totalAskVolume : totalBidVolume > 0 ? Infinity : 1;
+  const bidAskRatio = totalAskVolume > 0 ? totalBidVolume / totalAskVolume : totalBidVolume > 0 ? Infinity : 0;
 
   const stackedImbalances = detectStackedImbalances(topBids, topAsks);
 
