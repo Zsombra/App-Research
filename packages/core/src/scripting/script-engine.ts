@@ -1,9 +1,12 @@
 import type { OHLCVCandle, ScriptResult, ScriptPlot } from '@terminal/types';
 
+/** Default maximum execution time for scripts in milliseconds. */
+const DEFAULT_SCRIPT_TIMEOUT_MS = 100;
+
 /**
  * Helper: compute SMA on an array of numbers.
  */
-function smaHelper(values: number[], period: number): (number | null)[] {
+function smaHelper(values: readonly number[], period: number): (number | null)[] {
   const result: (number | null)[] = [];
   let sum = 0;
   for (let i = 0; i < values.length; i++) {
@@ -23,8 +26,9 @@ function smaHelper(values: number[], period: number): (number | null)[] {
 /**
  * Helper: compute EMA on an array of numbers.
  */
-function emaHelper(values: number[], period: number): (number | null)[] {
+function emaHelper(values: readonly number[], period: number): (number | null)[] {
   const result: (number | null)[] = [];
+  // EMA smoothing factor: k = 2 / (period + 1)
   const k = 2 / (period + 1);
   let ema: number | null = null;
 
@@ -50,7 +54,7 @@ function emaHelper(values: number[], period: number): (number | null)[] {
 /**
  * Helper: detect crossover of a over b at the latest point.
  */
-function crossoverHelper(a: number[], b: number[]): boolean {
+function crossoverHelper(a: readonly number[], b: readonly number[]): boolean {
   if (a.length < 2 || b.length < 2) return false;
   const len = Math.min(a.length, b.length);
   return (a[len - 1] as number) > (b[len - 1] as number) && (a[len - 2] as number) <= (b[len - 2] as number);
@@ -59,7 +63,7 @@ function crossoverHelper(a: number[], b: number[]): boolean {
 /**
  * Helper: detect crossunder of a below b at the latest point.
  */
-function crossunderHelper(a: number[], b: number[]): boolean {
+function crossunderHelper(a: readonly number[], b: readonly number[]): boolean {
   if (a.length < 2 || b.length < 2) return false;
   const len = Math.min(a.length, b.length);
   return (a[len - 1] as number) < (b[len - 1] as number) && (a[len - 2] as number) >= (b[len - 2] as number);
@@ -79,9 +83,9 @@ function crossunderHelper(a: number[], b: number[]): boolean {
  */
 export function executeScript(
   source: string,
-  candles: OHLCVCandle[],
+  candles: readonly OHLCVCandle[],
   symbol: string,
-  timeout: number = 100,
+  timeout: number = DEFAULT_SCRIPT_TIMEOUT_MS,
 ): ScriptResult {
   const safeTimeout = Math.max(1, timeout);
   const plots: ScriptPlot[] = [];

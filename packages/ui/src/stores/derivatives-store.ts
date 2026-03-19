@@ -1,7 +1,10 @@
 import { create } from 'zustand';
 import type { LiquidationEvent, OpenInterestPoint } from '@terminal/types';
 
+/** Maximum number of recent liquidation events kept per symbol. */
 const MAX_LIQUIDATIONS = 200;
+
+/** Maximum number of open interest data points kept per symbol. */
 const MAX_OI_POINTS = 500;
 
 export interface DerivativesState {

@@ -3,6 +3,9 @@ import type { MarketplaceIndicator, InstalledIndicator, MarketplaceSortBy } from
 
 const STORAGE_KEY = 'terminal-installed-indicators-v1';
 
+/** Milliseconds in one day, used for relative timestamp calculations. */
+const MS_PER_DAY = 86_400_000;
+
 function loadInstalled(): InstalledIndicator[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -27,7 +30,7 @@ function saveInstalled(indicators: InstalledIndicator[]): void {
  * Built-in community indicators shipped with the app.
  * Used as fallback when the marketplace API is unavailable.
  */
-function getBuiltInIndicators(): MarketplaceIndicator[] {
+function getBuiltInIndicators(): readonly MarketplaceIndicator[] {
   return [
     {
       id: 'builtin-ema-ribbon',
@@ -40,8 +43,8 @@ function getBuiltInIndicators(): MarketplaceIndicator[] {
       installs: 1200,
       rating: 4.5,
       ratingCount: 48,
-      publishedAt: Date.now() - 90 * 86_400_000,
-      updatedAt: Date.now() - 30 * 86_400_000,
+      publishedAt: Date.now() - 90 * MS_PER_DAY,
+      updatedAt: Date.now() - 30 * MS_PER_DAY,
       tags: ['ema', 'ribbon', 'trend'],
     },
     {
@@ -55,8 +58,8 @@ function getBuiltInIndicators(): MarketplaceIndicator[] {
       installs: 980,
       rating: 4.3,
       ratingCount: 32,
-      publishedAt: Date.now() - 60 * 86_400_000,
-      updatedAt: Date.now() - 15 * 86_400_000,
+      publishedAt: Date.now() - 60 * MS_PER_DAY,
+      updatedAt: Date.now() - 15 * MS_PER_DAY,
       tags: ['volume', 'profile', 'session'],
     },
     {
@@ -70,8 +73,8 @@ function getBuiltInIndicators(): MarketplaceIndicator[] {
       installs: 750,
       rating: 4.7,
       ratingCount: 25,
-      publishedAt: Date.now() - 45 * 86_400_000,
-      updatedAt: Date.now() - 10 * 86_400_000,
+      publishedAt: Date.now() - 45 * MS_PER_DAY,
+      updatedAt: Date.now() - 10 * MS_PER_DAY,
       tags: ['delta', 'divergence', 'orderflow', 'reversal'],
     },
     {
@@ -85,8 +88,8 @@ function getBuiltInIndicators(): MarketplaceIndicator[] {
       installs: 620,
       rating: 4.2,
       ratingCount: 19,
-      publishedAt: Date.now() - 30 * 86_400_000,
-      updatedAt: Date.now() - 5 * 86_400_000,
+      publishedAt: Date.now() - 30 * MS_PER_DAY,
+      updatedAt: Date.now() - 5 * MS_PER_DAY,
       tags: ['rsi', 'divergence', 'momentum'],
     },
     {
@@ -100,8 +103,8 @@ function getBuiltInIndicators(): MarketplaceIndicator[] {
       installs: 540,
       rating: 4.1,
       ratingCount: 15,
-      publishedAt: Date.now() - 20 * 86_400_000,
-      updatedAt: Date.now() - 3 * 86_400_000,
+      publishedAt: Date.now() - 20 * MS_PER_DAY,
+      updatedAt: Date.now() - 3 * MS_PER_DAY,
       tags: ['atr', 'bands', 'volatility'],
     },
   ];
@@ -153,7 +156,7 @@ export const useMarketplaceStore = create<MarketplaceState>((set, get) => ({
 
   setAvailable: (indicators) => set({ available: indicators }),
 
-  install: (indicator) => {
+  install: (indicator: Readonly<MarketplaceIndicator>) => {
     const state = get();
     // Don't install duplicates
     if (state.installed.some((i) => i.indicatorId === indicator.id)) return;

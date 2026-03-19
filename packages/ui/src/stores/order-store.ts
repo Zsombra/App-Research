@@ -5,6 +5,9 @@ import { useMarketStore } from './market-store.js';
 /** Fee rate for simulated trades (0.1% taker). */
 const FEE_RATE = 0.001;
 
+/** Threshold below which a position is considered fully closed. */
+const MIN_POSITION_SIZE = 1e-8;
+
 let orderCounter = 0;
 let fillCounter = 0;
 
@@ -183,7 +186,7 @@ function updatePosition(positions: Map<string, Position>, fill: Fill): void {
     // Position flipped — realize PnL on the closed portion
     const realizedPnl = (fill.price - existing.entryPrice) * existing.quantity;
 
-    if (Math.abs(newQty) < 0.00000001) {
+    if (Math.abs(newQty) < MIN_POSITION_SIZE) {
       // Fully closed
       positions.delete(fill.symbol);
     } else {
@@ -218,7 +221,7 @@ function updatePosition(positions: Map<string, Position>, fill: Fill): void {
     const realizedPnl = (fill.price - existing.entryPrice) * Math.abs(signedQty) *
       (existing.quantity > 0 ? 1 : -1);
 
-    if (Math.abs(newQty) < 0.00000001) {
+    if (Math.abs(newQty) < MIN_POSITION_SIZE) {
       positions.delete(fill.symbol);
     } else {
       positions.set(fill.symbol, {

@@ -10,6 +10,15 @@ import { BybitAdapter } from '../adapters/bybit/bybit-adapter.js';
 import { CoinbaseAdapter } from '../adapters/coinbase/coinbase-adapter.js';
 import { SimulatedAdapter } from '../adapters/simulated/simulated-adapter.js';
 
+/** Default interval in ms for flushing batched messages to the main thread. */
+const DEFAULT_FLUSH_INTERVAL_MS = 100;
+
+/** Maximum number of messages to buffer before forcing a flush. */
+const DEFAULT_MAX_BUFFER_SIZE = 1000;
+
+/** Maximum time in ms to wait for an exchange adapter to connect. */
+const CONNECT_TIMEOUT_MS = 15_000;
+
 /**
  * Creates an adapter instance for the given exchange ID.
  * Returns null for exchanges not yet implemented.
@@ -47,8 +56,8 @@ export class DataWorker {
   ) {
     this.postMessage = postMessageFn;
     this.flushScheduler = new FlushScheduler({
-      flushInterval: flushInterval ?? 100,
-      maxBufferSize: 1000,
+      flushInterval: flushInterval ?? DEFAULT_FLUSH_INTERVAL_MS,
+      maxBufferSize: DEFAULT_MAX_BUFFER_SIZE,
       onFlush: (messages: WorkerOutboundMessage[]) => {
         for (const msg of messages) {
           this.postMessage(msg);
@@ -103,8 +112,8 @@ export class DataWorker {
   private handleSubscribe(message: {
     type: 'subscribe';
     symbol: string;
-    exchanges: ExchangeId[];
-    topics: Array<'trades' | 'orderbook' | 'ticker' | 'liquidations'>;
+    exchanges: readonly ExchangeId[];
+    topics: ReadonlyArray<'trades' | 'orderbook' | 'ticker' | 'liquidations'>;
   }): void {
     for (const exchangeId of message.exchanges) {
       const adapter = this.getOrCreateAdapter(exchangeId);
@@ -189,7 +198,6 @@ export class DataWorker {
     this.adapters.set(exchangeId, adapter);
 
     // Connect the adapter with a timeout to avoid hanging indefinitely
-    const CONNECT_TIMEOUT_MS = 15_000;
     const connectWithTimeout = Promise.race([
       adapter.connect(),
       new Promise<never>((_, reject) =>

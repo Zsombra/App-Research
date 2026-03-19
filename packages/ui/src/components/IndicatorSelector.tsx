@@ -3,7 +3,7 @@ import type { IndicatorKind } from '@terminal/types';
 import { INDICATOR_DEFAULTS } from '@terminal/types';
 import { useIndicatorStore, useIndicatorConfigs } from '../stores/indicator-store.js';
 
-const AVAILABLE_INDICATORS: { kind: IndicatorKind; label: string }[] = [
+const AVAILABLE_INDICATORS: readonly { kind: IndicatorKind; label: string }[] = [
   { kind: 'sma', label: 'SMA' },
   { kind: 'ema', label: 'EMA' },
   { kind: 'rsi', label: 'RSI' },
@@ -15,7 +15,7 @@ const AVAILABLE_INDICATORS: { kind: IndicatorKind; label: string }[] = [
   { kind: 'vwap-rolling', label: 'VWAP Rolling' },
 ];
 
-function formatParams(params: Record<string, number>): string {
+function formatParams(params: Readonly<Record<string, number>>): string {
   return Object.values(params).join(', ');
 }
 

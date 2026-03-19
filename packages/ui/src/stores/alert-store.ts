@@ -77,13 +77,16 @@ export const useAlertStore = create<AlertState>((set, get) => ({
   },
 }));
 
+/** Interval in ms between alert price checks. */
+const ALERT_CHECK_INTERVAL_MS = 500;
+
 /**
  * Start a periodic alert checker. Returns cleanup function.
- * Check every 500ms — lightweight since it only reads from stores.
+ * Lightweight since it only reads from stores.
  */
 export function startAlertChecker(): () => void {
   const interval = setInterval(() => {
     useAlertStore.getState().checkAlerts();
-  }, 500);
+  }, ALERT_CHECK_INTERVAL_MS);
   return () => clearInterval(interval);
 }
