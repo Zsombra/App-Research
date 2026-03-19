@@ -83,6 +83,7 @@ export function executeScript(
   symbol: string,
   timeout: number = 100,
 ): ScriptResult {
+  const safeTimeout = Math.max(1, timeout);
   const plots: ScriptPlot[] = [];
   const alerts: string[] = [];
 
@@ -131,11 +132,11 @@ export function executeScript(
     fn(ctx);
     const elapsed = Date.now() - startTime;
 
-    if (elapsed > timeout) {
+    if (elapsed > safeTimeout) {
       return {
         plots,
         alerts,
-        error: `Script took ${elapsed}ms (limit: ${timeout}ms)`,
+        error: `Script took ${elapsed}ms (limit: ${safeTimeout}ms)`,
       };
     }
 

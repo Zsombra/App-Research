@@ -49,6 +49,21 @@ describe('derivatives-store edge cases', () => {
       expect(history.length).toBeLessThanOrEqual(500);
     });
 
+    it('OI history trimming does not mutate previous array reference (slice not splice)', () => {
+      // Fill to capacity
+      for (let i = 0; i < 500; i++) {
+        useDerivativesStore.getState().updateOpenInterest('BTC/USDT', 1000 + i, i);
+      }
+      const historyBefore = useDerivativesStore.getState().openInterestHistory.get('BTC/USDT')!;
+      const lengthBefore = historyBefore.length;
+
+      // Trigger trim
+      useDerivativesStore.getState().updateOpenInterest('BTC/USDT', 2000, 501);
+
+      // Previous reference should be unchanged (immutable)
+      expect(historyBefore.length).toBe(lengthBefore);
+    });
+
     it('zero OI is a valid value', () => {
       useDerivativesStore.getState().updateOpenInterest('BTC/USDT', 100000, 1000);
       useDerivativesStore.getState().updateOpenInterest('BTC/USDT', 0, 2000);

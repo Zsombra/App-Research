@@ -20,7 +20,7 @@ export function AlertsPanel(): React.JSX.Element {
 
   const handleAdd = () => {
     const price = parseFloat(targetPrice);
-    if (isNaN(price) || price <= 0) return;
+    if (!Number.isFinite(price) || price <= 0) return;
     addAlert(activeSymbol, condition, price);
     setTargetPrice('');
   };

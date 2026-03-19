@@ -45,16 +45,16 @@ export const useDerivativesStore = create<DerivativesState>((set) => ({
       currentOI.set(symbol, oi);
 
       const openInterestHistory = new Map(state.openInterestHistory);
-      const history = [...(openInterestHistory.get(symbol) ?? [])];
-      history.push({
+      const existing = openInterestHistory.get(symbol) ?? [];
+      const history = [...existing, {
         timestamp,
         openInterest: oi,
         change: oi - prevOI,
-      });
-      if (history.length > MAX_OI_POINTS) {
-        history.splice(0, history.length - MAX_OI_POINTS);
-      }
-      openInterestHistory.set(symbol, history);
+      }];
+      const trimmed = history.length > MAX_OI_POINTS
+        ? history.slice(-MAX_OI_POINTS)
+        : history;
+      openInterestHistory.set(symbol, trimmed);
 
       return { currentOI, openInterestHistory };
     });

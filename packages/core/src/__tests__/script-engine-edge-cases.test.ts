@@ -283,6 +283,38 @@ describe('executeScript edge cases', () => {
   });
 
   // -------------------------------------------------------------------------
+  // Timeout edge cases (safeTimeout)
+  // -------------------------------------------------------------------------
+  describe('safeTimeout clamping', () => {
+    it('negative timeout is clamped to 1ms (does not crash)', () => {
+      const result = executeScript(
+        'plot(candles.close, { label: "Close" });',
+        makeCandles(3),
+        'BTC/USDT',
+        -100,
+      );
+      // Should not crash or produce negative limit messages
+      expect(result.plots.length).toBeGreaterThanOrEqual(0);
+      if (result.error) {
+        expect(result.error).not.toContain('-100');
+      }
+    });
+
+    it('zero timeout is clamped to 1ms (does not crash)', () => {
+      const result = executeScript(
+        'plot(candles.close, { label: "Close" });',
+        makeCandles(3),
+        'BTC/USDT',
+        0,
+      );
+      expect(result.plots.length).toBeGreaterThanOrEqual(0);
+      if (result.error) {
+        expect(result.error).not.toContain('0ms');
+      }
+    });
+  });
+
+  // -------------------------------------------------------------------------
   // Candle data access
   // -------------------------------------------------------------------------
   describe('candle data access', () => {

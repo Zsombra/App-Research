@@ -26,7 +26,7 @@ export function OrderEntryPanel({ config }: OrderEntryPanelProps): React.JSX.Ele
 
   const handleSubmitWithSide = useCallback((submitSide: OrderSide) => {
     const qty = parseFloat(quantity);
-    if (isNaN(qty) || qty <= 0) return;
+    if (!Number.isFinite(qty) || qty <= 0) return;
 
     const params: Parameters<typeof placeOrder>[0] = {
       symbol,
@@ -37,7 +37,7 @@ export function OrderEntryPanel({ config }: OrderEntryPanelProps): React.JSX.Ele
 
     if (orderType === 'limit') {
       const price = parseFloat(limitPrice);
-      if (isNaN(price) || price <= 0) return;
+      if (!Number.isFinite(price) || price <= 0) return;
       params.price = price;
     }
 

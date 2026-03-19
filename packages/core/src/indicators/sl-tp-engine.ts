@@ -137,6 +137,7 @@ export function clusterSwingPoints(
     const group: SwingPoint[] = [sorted[i]!];
     for (let j = i + 1; j < sorted.length; j++) {
       if (visited[j]) continue;
+      if (sorted[i]!.price === 0) continue;
       if (Math.abs(sorted[j]!.price - sorted[i]!.price) / sorted[i]!.price <= eps) {
         visited[j] = true;
         group.push(sorted[j]!);
@@ -353,6 +354,7 @@ export function dbscanCluster(
     const neighbors: number[] = [i];
     for (let j = 0; j < sorted.length; j++) {
       if (j === i || visited[j]) continue;
+      if (sorted[i]! === 0) continue;
       if (Math.abs(sorted[j]! - sorted[i]!) / sorted[i]! <= eps) {
         neighbors.push(j);
       }

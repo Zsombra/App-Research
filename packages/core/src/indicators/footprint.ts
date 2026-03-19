@@ -38,6 +38,7 @@ function findCandleTimestamp(
  * Bucket a price to the nearest tick size.
  */
 export function bucketPrice(price: number, tickSize: number): number {
+  if (tickSize <= 0) return price;
   return Math.floor(price / tickSize) * tickSize;
 }
 
@@ -90,6 +91,10 @@ export function buildFootprintFromTrades(
   tickSize: number,
 ): FootprintCandle[] {
   if (candles.length === 0) return [];
+  if (tickSize <= 0) return candles.map((c) => ({
+    timestamp: c.timestamp, open: c.open, high: c.high, low: c.low, close: c.close,
+    volume: c.volume, levels: [], tickSize: 1, maxLevelVolume: 0,
+  }));
 
   // Build a map of candle timestamp -> trade accumulation
   const candleMap = new Map<number, Map<number, { buy: number; sell: number; count: number }>>();
