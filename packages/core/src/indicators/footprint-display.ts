@@ -127,9 +127,12 @@ export function computeFootprintCumulativeDelta(levels: readonly FootprintLevel[
   return cumDelta;
 }
 
+const FORMAT_MILLION = 1_000_000;
+const FORMAT_THOUSAND = 1_000;
+
 function formatVolume(vol: number): string {
   const abs = Math.abs(vol);
-  if (abs >= 1_000_000) return (vol / 1_000_000).toFixed(1) + 'M';
-  if (abs >= 1_000) return (vol / 1_000).toFixed(1) + 'K';
+  if (abs >= FORMAT_MILLION) return (vol / FORMAT_MILLION).toFixed(1) + 'M';
+  if (abs >= FORMAT_THOUSAND) return (vol / FORMAT_THOUSAND).toFixed(1) + 'K';
   return vol.toFixed(0);
 }

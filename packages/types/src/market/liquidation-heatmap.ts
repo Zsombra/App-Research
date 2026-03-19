@@ -49,12 +49,15 @@ export const DEFAULT_LIQUIDATION_HEATMAP_CONFIG: LiquidationHeatmapConfig = {
   maxEvents: 5000,
 };
 
+/** Target number of price buckets for auto-detecting bucket size. */
+const PRICE_BUCKET_TARGET = 50;
+
 /**
  * Build a liquidation heatmap from a list of liquidation events.
  */
 export function buildLiquidationHeatmap(
-  events: LiquidationEvent[],
-  config: LiquidationHeatmapConfig,
+  events: readonly LiquidationEvent[],
+  config: Readonly<LiquidationHeatmapConfig>,
 ): LiquidationHeatmap {
   if (events.length === 0) {
     return { cells: [], maxVolume: 0, priceBucketSize: config.priceBucketSize || 1, timeBucketMs: config.timeBucketMs };
@@ -70,8 +73,7 @@ export function buildLiquidationHeatmap(
       if (e.price > maxP) maxP = e.price;
     }
     const range = maxP - minP;
-    // Target ~50 price buckets
-    priceBucket = range > 0 ? range / 50 : 1;
+    priceBucket = range > 0 ? range / PRICE_BUCKET_TARGET : 1;
   }
 
   const timeBucket = config.timeBucketMs;

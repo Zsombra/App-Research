@@ -1,11 +1,17 @@
 import type { NormalizedTrade, OHLCVCandle, FootprintCandle, FootprintLevel } from '@terminal/types';
 
+/** Target number of price levels per candle when auto-detecting tick size. */
+const TARGET_FOOTPRINT_LEVELS = 30;
+
+/** Default candle interval when fewer than 2 candles are available. */
+const DEFAULT_CANDLE_INTERVAL_MS = 60_000;
+
 /**
  * Find the candle timestamp a trade belongs to via binary search.
  * Returns null if the trade doesn't fall within any candle.
  */
 function findCandleTimestamp(
-  sortedTimestamps: number[],
+  sortedTimestamps: readonly number[],
   tradeTime: number,
   intervalMs: number,
 ): number | null {
@@ -63,8 +69,8 @@ export function autoTickSize(candles: readonly OHLCVCandle[]): number {
   if (count === 0) return 1;
   const avgRange = totalRange / count;
 
-  // Target ~30 levels per candle
-  const raw = avgRange / 30;
+  // Target ~TARGET_FOOTPRINT_LEVELS levels per candle
+  const raw = avgRange / TARGET_FOOTPRINT_LEVELS;
 
   // Guard against log10(0) or log10(negative) → -Infinity
   if (raw <= 0) return 1;
@@ -105,8 +111,8 @@ export function buildFootprintFromTrades(
     candleMap.set(candle.timestamp, new Map());
   }
 
-  // Find candle interval from first two candles or default to 60s
-  let intervalMs = 60_000;
+  // Find candle interval from first two candles or default
+  let intervalMs = DEFAULT_CANDLE_INTERVAL_MS;
   if (candles.length >= 2) {
     intervalMs = (candles[1] as OHLCVCandle).timestamp - (candles[0] as OHLCVCandle).timestamp;
   }

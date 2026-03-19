@@ -21,8 +21,8 @@ export interface IndicatorState {
 
   addIndicator: (kind: IndicatorKind, paramsOverride?: Record<string, number>) => string;
   removeIndicator: (id: string) => void;
-  updateParams: (id: string, params: Record<string, number>) => void;
-  recompute: (symbol: string, candles: OHLCVCandle[]) => void;
+  updateParams: (id: string, params: Readonly<Record<string, number>>) => void;
+  recompute: (symbol: string, candles: readonly OHLCVCandle[]) => void;
 }
 
 export const useIndicatorStore = create<IndicatorState>((set, get) => ({

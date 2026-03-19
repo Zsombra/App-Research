@@ -18,6 +18,7 @@ const MAX_CLUSTER_INTENSITY_DIVISOR = 10;
 const SWEEP_INTENSITY_DIVISOR = 5;
 const RECENT_CANDLE_COUNT = 20;
 const ROUND_NUMBER_INTENSITY = 0.15;
+const PRICE_BUCKET_TARGET = 50;
 
 // ─── Algorithm 1: Liquidation Level Math ─────────────────────────────
 
@@ -164,7 +165,7 @@ export function clusterSwingPoints(
     if (isHigh) {
       clusters.push({
         price: avgPrice,
-        width: priceRange || avgPrice * 0.001,
+        width: priceRange || avgPrice * MIN_PRICE_WIDTH_RATIO,
         intensity,
         sources: ['swing-cluster'],
         type: 'stop-loss',
@@ -172,7 +173,7 @@ export function clusterSwingPoints(
       });
       clusters.push({
         price: avgPrice,
-        width: priceRange || avgPrice * 0.001,
+        width: priceRange || avgPrice * MIN_PRICE_WIDTH_RATIO,
         intensity,
         sources: ['swing-cluster'],
         type: 'take-profit',
@@ -181,7 +182,7 @@ export function clusterSwingPoints(
     } else {
       clusters.push({
         price: avgPrice,
-        width: priceRange || avgPrice * 0.001,
+        width: priceRange || avgPrice * MIN_PRICE_WIDTH_RATIO,
         intensity,
         sources: ['swing-cluster'],
         type: 'stop-loss',
@@ -189,7 +190,7 @@ export function clusterSwingPoints(
       });
       clusters.push({
         price: avgPrice,
-        width: priceRange || avgPrice * 0.001,
+        width: priceRange || avgPrice * MIN_PRICE_WIDTH_RATIO,
         intensity,
         sources: ['swing-cluster'],
         type: 'take-profit',
@@ -250,7 +251,7 @@ export function computeRoundNumberLevels(
 
   for (let level = startLevel; level <= high; level += roundInterval) {
     // Skip if too close to current price (within 0.1%)
-    if (Math.abs(level - currentPrice) / currentPrice < 0.001) continue;
+    if (Math.abs(level - currentPrice) / currentPrice < MIN_PRICE_WIDTH_RATIO) continue;
 
     const isBelowPrice = level < currentPrice;
 
@@ -467,7 +468,7 @@ export function computeCompositeScores(
 
     result.push({
       price,
-      width: maxWidth || price * 0.002,
+      width: maxWidth || price * DEFAULT_SL_TP_WIDTH_RATIO,
       intensity: Math.min(1, weightedSum),
       sources: [...sources, 'composite'],
       type: type as StopTakeType,
@@ -486,9 +487,9 @@ export function computeCompositeScores(
  * Exchange-agnostic: works with any OHLCV data and optional position info.
  */
 export function computeSLTPHeatmap(
-  candles: OHLCVCandle[],
-  config: SLTPConfig,
-  positions?: EstimatedPosition[],
+  candles: readonly OHLCVCandle[],
+  config: Readonly<SLTPConfig>,
+  positions?: readonly EstimatedPosition[],
 ): SLTPHeatmap {
   if (candles.length === 0) {
     return { cells: [], maxIntensity: 0, priceBucketSize: config.priceBucketSize || 1, slClusters: [], tpClusters: [] };
@@ -506,7 +507,7 @@ export function computeSLTPHeatmap(
       if (c.low < minP) minP = c.low;
       if (c.high > maxP) maxP = c.high;
     }
-    priceBucket = (maxP - minP) / 50 || 1;
+    priceBucket = (maxP - minP) / PRICE_BUCKET_TARGET || 1;
   }
 
   const algorithms = config.algorithms;
@@ -542,7 +543,7 @@ export function computeSLTPHeatmap(
 
   // Algorithm 4: Historical Sweep
   if (algorithms.includes('historical-sweep')) {
-    allClusters.push(...detectHistoricalSweeps(candles, swings, 0.001));
+    allClusters.push(...detectHistoricalSweeps(candles, swings, MIN_PRICE_WIDTH_RATIO));
   }
 
   // Algorithm 5: DBSCAN
@@ -576,8 +577,8 @@ export function computeSLTPHeatmap(
  * when real position data is not available.
  */
 function generateEstimatedPositions(
-  candles: OHLCVCandle[],
-  leverageLevels: number[],
+  candles: readonly OHLCVCandle[],
+  leverageLevels: readonly number[],
 ): EstimatedPosition[] {
   const positions: EstimatedPosition[] = [];
   // Use recent candle closes as estimated entry prices

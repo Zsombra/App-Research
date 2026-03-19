@@ -4,7 +4,7 @@ export type IndicatorKind = 'sma' | 'ema' | 'rsi' | 'macd' | 'bollinger' | 'cvd'
 /** Whether an indicator renders overlaid on price or in a separate pane. */
 export type IndicatorPlacement = 'overlay' | 'separate';
 
-/** Maps each indicator kind to its placement. */
+/** Maps each indicator kind to where it renders (overlay on price chart or separate pane). */
 export const INDICATOR_PLACEMENT: Record<IndicatorKind, IndicatorPlacement> = {
   sma: 'overlay',
   ema: 'overlay',
@@ -81,7 +81,7 @@ export interface IndicatorConfig {
 }
 
 /** Default color palette for indicators. */
-export const INDICATOR_COLORS: string[] = [
+export const INDICATOR_COLORS: readonly string[] = [
   '#FFD700', // gold
   '#00BCD4', // cyan
   '#FF6EC7', // magenta

@@ -35,17 +35,19 @@ export interface RangeBarConfig {
 /** Union of all custom bar configurations. */
 export type CustomBarConfig = TickBarConfig | VolumeBarConfig | RangeBarConfig;
 
-/** Default configs for each bar type. */
+/** Default config for tick bars: 100 trades per bar. */
 export const DEFAULT_TICK_BAR_CONFIG: TickBarConfig = {
   type: 'tick',
   tickCount: 100,
 };
 
+/** Default config for volume bars: 10 units of base currency per bar. */
 export const DEFAULT_VOLUME_BAR_CONFIG: VolumeBarConfig = {
   type: 'volume',
   volumeThreshold: 10,
 };
 
+/** Default config for range bars: $10 price movement per bar. */
 export const DEFAULT_RANGE_BAR_CONFIG: RangeBarConfig = {
   type: 'range',
   rangeSize: 10,
