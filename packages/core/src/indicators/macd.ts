@@ -38,7 +38,8 @@ export function computeMACD(
   let signalReady = false;
 
   for (let i = 0; i < len; i++) {
-    const close = candles[i]!.close;
+    const candle = candles[i] as OHLCVCandle;
+    const close = candle.close;
 
     // Fast EMA
     if (!fastReady) {
@@ -63,7 +64,7 @@ export function computeMACD(
     }
 
     if (!fastReady || !slowReady) {
-      result[i] = { timestamp: candles[i]!.timestamp, data: { ...nullPoint } };
+      result[i] = { timestamp: candle.timestamp, data: { ...nullPoint } };
       continue;
     }
 
@@ -77,19 +78,19 @@ export function computeMACD(
         signalEma = signalSum / signalPeriod;
         signalReady = true;
         result[i] = {
-          timestamp: candles[i]!.timestamp,
+          timestamp: candle.timestamp,
           data: { macd: macdLine, signal: signalEma, histogram: macdLine - signalEma },
         };
       } else {
         result[i] = {
-          timestamp: candles[i]!.timestamp,
+          timestamp: candle.timestamp,
           data: { macd: macdLine, signal: null, histogram: null },
         };
       }
     } else {
       signalEma = (macdLine - signalEma) * signalMult + signalEma;
       result[i] = {
-        timestamp: candles[i]!.timestamp,
+        timestamp: candle.timestamp,
         data: { macd: macdLine, signal: signalEma, histogram: macdLine - signalEma },
       };
     }

@@ -343,7 +343,7 @@ export class OscillatorPaneRenderer extends BaseRenderer {
     let hi = len;
     while (lo < hi) {
       const mid = (lo + hi) >>> 1;
-      if (points[mid]!.timestamp < startTime) lo = mid + 1;
+      if ((points[mid] as { timestamp: number; value: number | null }).timestamp < startTime) lo = mid + 1;
       else hi = mid;
     }
     const visStart = Math.max(0, lo - 1);
@@ -352,7 +352,7 @@ export class OscillatorPaneRenderer extends BaseRenderer {
     hi = len;
     while (lo < hi) {
       const mid = (lo + hi) >>> 1;
-      if (points[mid]!.timestamp <= endTime) lo = mid + 1;
+      if ((points[mid] as { timestamp: number; value: number | null }).timestamp <= endTime) lo = mid + 1;
       else hi = mid;
     }
     const visEnd = Math.min(len, lo + 1);
@@ -361,7 +361,7 @@ export class OscillatorPaneRenderer extends BaseRenderer {
     let prevY: number | null = null;
 
     for (let i = visStart; i < visEnd; i++) {
-      const pt = points[i]!;
+      const pt = points[i] as { timestamp: number; value: number | null };
       if (pt.value === null) { prevX = null; prevY = null; continue; }
 
       const px = this.viewport.dataToPixelX(pt.timestamp);

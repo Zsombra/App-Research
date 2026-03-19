@@ -18,9 +18,10 @@ export function computeBollinger(
   const result: IndicatorPoint<BollingerOutput>[] = new Array(len);
 
   for (let i = 0; i < len; i++) {
+    const candle = candles[i] as OHLCVCandle;
     if (i < period - 1) {
       result[i] = {
-        timestamp: candles[i]!.timestamp,
+        timestamp: candle.timestamp,
         data: { upper: null, middle: null, lower: null },
       };
       continue;
@@ -29,19 +30,19 @@ export function computeBollinger(
     // Calculate SMA and standard deviation over the window
     let sum = 0;
     for (let j = i - period + 1; j <= i; j++) {
-      sum += candles[j]!.close;
+      sum += (candles[j] as OHLCVCandle).close;
     }
     const mean = sum / period;
 
     let variance = 0;
     for (let j = i - period + 1; j <= i; j++) {
-      const diff = candles[j]!.close - mean;
+      const diff = (candles[j] as OHLCVCandle).close - mean;
       variance += diff * diff;
     }
     const sd = Math.sqrt(variance / period);
 
     result[i] = {
-      timestamp: candles[i]!.timestamp,
+      timestamp: candle.timestamp,
       data: {
         upper: mean + stdDev * sd,
         middle: mean,

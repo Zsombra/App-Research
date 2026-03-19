@@ -34,7 +34,7 @@ export function transformFootprintLevels(
   if (levels.length === 0) return [];
 
   // Find POC (highest total volume level)
-  let pocPrice = levels[0]!.price;
+  let pocPrice = (levels[0] as FootprintLevel).price;
   let pocVol = 0;
   let maxTotal = 0;
 

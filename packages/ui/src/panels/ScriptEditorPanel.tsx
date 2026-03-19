@@ -31,13 +31,13 @@ export function ScriptEditorPanel(): React.JSX.Element {
   const store = useScriptStore.getState;
 
   const [activeScriptId, setActiveScriptId] = useState<string | null>(
-    scripts.length > 0 ? scripts[0]!.id : null
+    scripts.length > 0 ? (scripts[0] as { id: string }).id : null
   );
   const [editSource, setEditSource] = useState(
-    scripts.length > 0 ? scripts[0]!.source : DEFAULT_SCRIPT
+    scripts.length > 0 ? (scripts[0] as { source: string }).source : DEFAULT_SCRIPT
   );
   const [editName, setEditName] = useState(
-    scripts.length > 0 ? scripts[0]!.name : 'New Script'
+    scripts.length > 0 ? (scripts[0] as { name: string }).name : 'New Script'
   );
 
   const activeScript = activeScriptId

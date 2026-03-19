@@ -65,10 +65,15 @@ function renderDepthChart(
 
   if (bids.length === 0 || asks.length === 0) return;
 
-  const midPrice = (bids[0]!.price + asks[0]!.price) / 2;
-  const maxCum = Math.max(bids[bids.length - 1]!.cumSize, asks[asks.length - 1]!.cumSize) || 1;
-  const priceMin = bids[bids.length - 1]!.price;
-  const priceMax = asks[asks.length - 1]!.price;
+  const firstBid = bids[0] as CumulativeLevel;
+  const lastBid = bids[bids.length - 1] as CumulativeLevel;
+  const firstAsk = asks[0] as CumulativeLevel;
+  const lastAsk = asks[asks.length - 1] as CumulativeLevel;
+
+  const midPrice = (firstBid.price + firstAsk.price) / 2;
+  const maxCum = Math.max(lastBid.cumSize, lastAsk.cumSize) || 1;
+  const priceMin = lastBid.price;
+  const priceMax = lastAsk.price;
   const priceRange = priceMax - priceMin || 1;
 
   const pad = { top: 20, bottom: 24, left: 8, right: 8 };
@@ -109,19 +114,19 @@ function renderDepthChart(
 
   // Draw bid curve (right to left, filled)
   ctx.beginPath();
-  ctx.moveTo(priceToX(bids[0]!.price), sizeToY(0));
+  ctx.moveTo(priceToX(firstBid.price), sizeToY(0));
   for (const lvl of bids) {
     ctx.lineTo(priceToX(lvl.price), sizeToY(lvl.cumSize));
   }
   // Close area
-  ctx.lineTo(priceToX(bids[bids.length - 1]!.price), sizeToY(0));
+  ctx.lineTo(priceToX(lastBid.price), sizeToY(0));
   ctx.closePath();
   ctx.fillStyle = BID_COLOR;
   ctx.fill();
 
   // Bid line
   ctx.beginPath();
-  ctx.moveTo(priceToX(bids[0]!.price), sizeToY(0));
+  ctx.moveTo(priceToX(firstBid.price), sizeToY(0));
   for (const lvl of bids) {
     ctx.lineTo(priceToX(lvl.price), sizeToY(lvl.cumSize));
   }
@@ -131,18 +136,18 @@ function renderDepthChart(
 
   // Draw ask curve (left to right, filled)
   ctx.beginPath();
-  ctx.moveTo(priceToX(asks[0]!.price), sizeToY(0));
+  ctx.moveTo(priceToX(firstAsk.price), sizeToY(0));
   for (const lvl of asks) {
     ctx.lineTo(priceToX(lvl.price), sizeToY(lvl.cumSize));
   }
-  ctx.lineTo(priceToX(asks[asks.length - 1]!.price), sizeToY(0));
+  ctx.lineTo(priceToX(lastAsk.price), sizeToY(0));
   ctx.closePath();
   ctx.fillStyle = ASK_COLOR;
   ctx.fill();
 
   // Ask line
   ctx.beginPath();
-  ctx.moveTo(priceToX(asks[0]!.price), sizeToY(0));
+  ctx.moveTo(priceToX(firstAsk.price), sizeToY(0));
   for (const lvl of asks) {
     ctx.lineTo(priceToX(lvl.price), sizeToY(lvl.cumSize));
   }

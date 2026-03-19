@@ -7,9 +7,9 @@ function smaHelper(values: number[], period: number): (number | null)[] {
   const result: (number | null)[] = [];
   let sum = 0;
   for (let i = 0; i < values.length; i++) {
-    sum += values[i]!;
+    sum += values[i] as number;
     if (i >= period) {
-      sum -= values[i - period]!;
+      sum -= values[i - period] as number;
     }
     if (i >= period - 1) {
       result.push(sum / period);
@@ -35,12 +35,12 @@ function emaHelper(values: number[], period: number): (number | null)[] {
       // Seed with SMA
       let sum = 0;
       for (let j = i - period + 1; j <= i; j++) {
-        sum += values[j]!;
+        sum += values[j] as number;
       }
       ema = sum / period;
       result.push(ema);
     } else {
-      ema = values[i]! * k + ema * (1 - k);
+      ema = (values[i] as number) * k + ema * (1 - k);
       result.push(ema);
     }
   }
@@ -53,7 +53,7 @@ function emaHelper(values: number[], period: number): (number | null)[] {
 function crossoverHelper(a: number[], b: number[]): boolean {
   if (a.length < 2 || b.length < 2) return false;
   const len = Math.min(a.length, b.length);
-  return a[len - 1]! > b[len - 1]! && a[len - 2]! <= b[len - 2]!;
+  return (a[len - 1] as number) > (b[len - 1] as number) && (a[len - 2] as number) <= (b[len - 2] as number);
 }
 
 /**
@@ -62,7 +62,7 @@ function crossoverHelper(a: number[], b: number[]): boolean {
 function crossunderHelper(a: number[], b: number[]): boolean {
   if (a.length < 2 || b.length < 2) return false;
   const len = Math.min(a.length, b.length);
-  return a[len - 1]! < b[len - 1]! && a[len - 2]! >= b[len - 2]!;
+  return (a[len - 1] as number) < (b[len - 1] as number) && (a[len - 2] as number) >= (b[len - 2] as number);
 }
 
 /**

@@ -71,9 +71,11 @@ export function OrderbookPanel({ config }: OrderbookPanelProps): React.JSX.Eleme
     let sp = '—';
     let spPct = '';
     if (a.length > 0 && b.length > 0) {
-      const spreadVal = a[0]!.price - b[0]!.price;
+      const topAsk = a[0] as { price: number; size: number };
+      const topBid = b[0] as { price: number; size: number };
+      const spreadVal = topAsk.price - topBid.price;
       sp = spreadVal.toFixed(2);
-      spPct = a[0]!.price > 0 ? `(${((spreadVal / a[0]!.price) * 100).toFixed(3)}%)` : '';
+      spPct = topAsk.price > 0 ? `(${((spreadVal / topAsk.price) * 100).toFixed(3)}%)` : '';
     }
 
     return { asks: a.reverse(), bids: b, maxSize: max, spread: sp, spreadPercent: spPct };

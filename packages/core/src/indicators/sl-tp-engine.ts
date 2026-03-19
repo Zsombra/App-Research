@@ -76,12 +76,12 @@ export function detectSwingPoints(
   const len = candles.length;
 
   for (let i = strength; i < len - strength; i++) {
-    const candle = candles[i]!;
+    const candle = candles[i] as OHLCVCandle;
 
     // Check swing high
     let isSwingHigh = true;
     for (let j = 1; j <= strength; j++) {
-      if (candles[i - j]!.high >= candle.high || candles[i + j]!.high >= candle.high) {
+      if ((candles[i - j] as OHLCVCandle).high >= candle.high || (candles[i + j] as OHLCVCandle).high >= candle.high) {
         isSwingHigh = false;
         break;
       }
@@ -98,7 +98,7 @@ export function detectSwingPoints(
     // Check swing low
     let isSwingLow = true;
     for (let j = 1; j <= strength; j++) {
-      if (candles[i - j]!.low <= candle.low || candles[i + j]!.low <= candle.low) {
+      if ((candles[i - j] as OHLCVCandle).low <= candle.low || (candles[i + j] as OHLCVCandle).low <= candle.low) {
         isSwingLow = false;
         break;
       }
@@ -135,19 +135,19 @@ export function clusterSwingPoints(
     if (visited[i]) continue;
     visited[i] = true;
 
-    const group: SwingPoint[] = [sorted[i]!];
+    const group: SwingPoint[] = [sorted[i] as SwingPoint];
     for (let j = i + 1; j < sorted.length; j++) {
       if (visited[j]) continue;
-      if (sorted[i]!.price === 0) continue;
-      if (Math.abs(sorted[j]!.price - sorted[i]!.price) / sorted[i]!.price <= eps) {
+      if ((sorted[i] as SwingPoint).price === 0) continue;
+      if (Math.abs((sorted[j] as SwingPoint).price - (sorted[i] as SwingPoint).price) / (sorted[i] as SwingPoint).price <= eps) {
         visited[j] = true;
-        group.push(sorted[j]!);
+        group.push(sorted[j] as SwingPoint);
       }
     }
 
     const avgPrice = group.reduce((s, p) => s + p.price, 0) / group.length;
     const priceRange = group.length > 1
-      ? group[group.length - 1]!.price - group[0]!.price
+      ? (group[group.length - 1] as SwingPoint).price - (group[0] as SwingPoint).price
       : avgPrice * 0.001;
     const intensity = Math.min(1, group.length / 10);
 
@@ -208,8 +208,8 @@ export function computeATR(candles: OHLCVCandle[], period: number): number {
   let count = 0;
 
   for (let i = start; i < candles.length; i++) {
-    const c = candles[i]!;
-    const prev = candles[i - 1]!;
+    const c = candles[i] as OHLCVCandle;
+    const prev = candles[i - 1] as OHLCVCandle;
     const tr = Math.max(
       c.high - c.low,
       Math.abs(c.high - prev.close),
@@ -357,8 +357,8 @@ export function dbscanCluster(
     const neighbors: number[] = [i];
     for (let j = 0; j < sorted.length; j++) {
       if (j === i || visited[j]) continue;
-      if (sorted[i]! === 0) continue;
-      if (Math.abs(sorted[j]! - sorted[i]!) / sorted[i]! <= eps) {
+      if ((sorted[i] as number) === 0) continue;
+      if (Math.abs((sorted[j] as number) - (sorted[i] as number)) / (sorted[i] as number) <= eps) {
         neighbors.push(j);
       }
     }
@@ -366,7 +366,7 @@ export function dbscanCluster(
     if (neighbors.length >= minPoints) {
       // Mark all neighbors as visited
       for (const idx of neighbors) visited[idx] = true;
-      clusters.push(neighbors.map((idx) => sorted[idx]!));
+      clusters.push(neighbors.map((idx) => sorted[idx] as number));
     }
   }
 
@@ -390,7 +390,7 @@ export function dbscanSLTPClusters(
   for (const cluster of denseClusters) {
     const avgPrice = cluster.reduce((s, p) => s + p, 0) / cluster.length;
     const width = cluster.length > 1
-      ? cluster[cluster.length - 1]! - cluster[0]!
+      ? (cluster[cluster.length - 1] as number) - (cluster[0] as number)
       : avgPrice * 0.001;
     const intensity = Math.min(1, cluster.length / 10);
 
@@ -487,7 +487,7 @@ export function computeSLTPHeatmap(
     return { cells: [], maxIntensity: 0, priceBucketSize: config.priceBucketSize || 1, slClusters: [], tpClusters: [] };
   }
 
-  const currentPrice = candles[candles.length - 1]!.close;
+  const currentPrice = (candles[candles.length - 1] as OHLCVCandle).close;
   const allClusters: SLTPCluster[] = [];
 
   // Auto-detect bucket size

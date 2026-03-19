@@ -167,7 +167,7 @@ export class LiquidationHeatmapRenderer extends BaseRenderer {
 
     this.instanceCount = count;
     if (count > 0) {
-      this.instanceBuffer!.subdata(data.subarray(0, count * 8));
+      (this.instanceBuffer as REGL.Buffer).subdata(data.subarray(0, count * 8));
     }
     this.markDirty();
   }

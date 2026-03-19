@@ -214,7 +214,7 @@ export class VolumeProfileRenderer extends BaseRenderer {
     // Find max total volume for normalization
     let maxVol = 0;
     for (let i = 0; i < this.numBins; i++) {
-      const total = buyVolumes[i]! + sellVolumes[i]!;
+      const total = (buyVolumes[i] as number) + (sellVolumes[i] as number);
       if (total > maxVol) maxVol = total;
     }
     if (maxVol === 0) {
@@ -230,13 +230,13 @@ export class VolumeProfileRenderer extends BaseRenderer {
     const data = new Float32Array(this.numBins * FLOATS_PER_INSTANCE);
 
     for (let i = 0; i < this.numBins; i++) {
-      const total = buyVolumes[i]! + sellVolumes[i]!;
+      const total = (buyVolumes[i] as number) + (sellVolumes[i] as number);
       if (total <= 0) continue;
 
       const price = priceLow + (i + 0.5) * binSize;
       const priceY = this.viewport.dataToPixelY(price);
       const barWidth = (total / maxVol) * maxBarWidthPx;
-      const buyRatio = buyVolumes[i]! / total;
+      const buyRatio = (buyVolumes[i] as number) / total;
 
       const idx = this.barCount * FLOATS_PER_INSTANCE;
       data[idx] = priceY;

@@ -116,15 +116,15 @@ export function ChartPanel({ panelId, candles, symbol }: ChartPanelProps): React
       chartManager.setCandles(candles);
     } else if (candles.length === prevCount) {
       // Same count — just update the last (forming) candle
-      chartManager.updateLastCandle(candles[candles.length - 1]!);
+      chartManager.updateLastCandle(candles[candles.length - 1] as OHLCVCandle);
     } else {
       // New candle(s) appeared — append new ones and update last
       for (let i = prevCount; i < candles.length - 1; i++) {
-        chartManager.appendCandle(candles[i]!);
+        chartManager.appendCandle(candles[i] as OHLCVCandle);
       }
       // The very last candle might be forming
       if (candles.length > prevCount) {
-        chartManager.appendCandle(candles[candles.length - 1]!);
+        chartManager.appendCandle(candles[candles.length - 1] as OHLCVCandle);
       }
     }
 
@@ -219,7 +219,7 @@ export function ChartPanel({ panelId, candles, symbol }: ChartPanelProps): React
     }
 
     // Use the first separate indicator to configure the pane
-    const first = separateSeries[0]!;
+    const first = separateSeries[0] as typeof separateSeries[number];
     const { indicators } = useIndicatorStore.getState();
 
     if (first.kind === 'rsi') {

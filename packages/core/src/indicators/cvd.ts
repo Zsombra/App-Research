@@ -14,7 +14,7 @@ export function computeCVD(
   let cumulative = 0;
 
   for (let i = 0; i < len; i++) {
-    const candle = candles[i]!;
+    const candle = candles[i] as OHLCVCandle;
     const delta = candle.buyVolume - candle.sellVolume;
     cumulative += delta;
 

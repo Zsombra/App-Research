@@ -16,11 +16,11 @@ export function clusterByTime(
   if (trades.length === 0) return [];
 
   const clusters: TimeCluster[] = [];
-  let clusterTrades: NormalizedTrade[] = [trades[0]!];
+  let clusterTrades: NormalizedTrade[] = [trades[0] as NormalizedTrade];
 
   for (let i = 1; i < trades.length; i++) {
-    const trade = trades[i]!;
-    const prevTrade = trades[i - 1]!;
+    const trade = trades[i] as NormalizedTrade;
+    const prevTrade = trades[i - 1] as NormalizedTrade;
 
     if (trade.timestamp - prevTrade.timestamp <= config.maxGapMs) {
       clusterTrades.push(trade);
@@ -61,15 +61,18 @@ function buildCluster(trades: NormalizedTrade[]): TimeCluster {
     }
   }
 
+  const first = trades[0] as NormalizedTrade;
+  const last = trades[trades.length - 1] as NormalizedTrade;
+
   return {
-    startTime: trades[0]!.timestamp,
-    endTime: trades[trades.length - 1]!.timestamp,
+    startTime: first.timestamp,
+    endTime: last.timestamp,
     tradeCount: trades.length,
     totalCost,
     totalAmount,
     buyCost,
     sellCost,
-    vwap: totalCost > 0 ? costTimesPrice / totalCost : trades[0]!.price,
+    vwap: totalCost > 0 ? costTimesPrice / totalCost : first.price,
   };
 }
 

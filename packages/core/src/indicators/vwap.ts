@@ -23,7 +23,7 @@ export function computeVWAP(
   let prevDay = -1;
 
   for (let i = 0; i < len; i++) {
-    const candle = candles[i]!;
+    const candle = candles[i] as OHLCVCandle;
     const tp = (candle.high + candle.low + candle.close) / 3;
 
     // Check for day boundary reset (UTC)

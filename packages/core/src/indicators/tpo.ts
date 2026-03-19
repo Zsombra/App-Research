@@ -40,8 +40,8 @@ export function computeMarketProfile(
     };
   }
 
-  const sessionStart = candles[0]!.timestamp;
-  const sessionEnd = candles[candles.length - 1]!.timestamp;
+  const sessionStart = (candles[0] as OHLCVCandle).timestamp;
+  const sessionEnd = (candles[candles.length - 1] as OHLCVCandle).timestamp;
   const ibEndTime = sessionStart + ibPeriodMinutes * 60_000;
 
   // Accumulate TPO counts and volume per price level
@@ -113,28 +113,28 @@ export function computeMarketProfile(
   const vaTarget = totalVolume * valueAreaPercent;
 
   const pocIndex = rows.findIndex((r) => r.price === poc);
-  let vaVolume = pocIndex >= 0 ? rows[pocIndex]!.volume : 0;
+  let vaVolume = pocIndex >= 0 ? (rows[pocIndex] as TPORow).volume : 0;
   let vaHighIdx = pocIndex;
   let vaLowIdx = pocIndex;
 
   while (vaVolume < vaTarget && (vaHighIdx < rows.length - 1 || vaLowIdx > 0)) {
-    const upVol = vaHighIdx < rows.length - 1 ? rows[vaHighIdx + 1]!.volume : 0;
-    const downVol = vaLowIdx > 0 ? rows[vaLowIdx - 1]!.volume : 0;
+    const upVol = vaHighIdx < rows.length - 1 ? (rows[vaHighIdx + 1] as TPORow).volume : 0;
+    const downVol = vaLowIdx > 0 ? (rows[vaLowIdx - 1] as TPORow).volume : 0;
 
     if (upVol >= downVol && vaHighIdx < rows.length - 1) {
       vaHighIdx++;
-      vaVolume += rows[vaHighIdx]!.volume;
+      vaVolume += (rows[vaHighIdx] as TPORow).volume;
     } else if (vaLowIdx > 0) {
       vaLowIdx--;
-      vaVolume += rows[vaLowIdx]!.volume;
+      vaVolume += (rows[vaLowIdx] as TPORow).volume;
     } else {
       vaHighIdx++;
-      vaVolume += rows[vaHighIdx]!.volume;
+      vaVolume += (rows[vaHighIdx] as TPORow).volume;
     }
   }
 
-  const vah = vaHighIdx >= 0 && vaHighIdx < rows.length ? rows[vaHighIdx]!.price : globalHigh;
-  const val = vaLowIdx >= 0 && vaLowIdx < rows.length ? rows[vaLowIdx]!.price : globalLow;
+  const vah = vaHighIdx >= 0 && vaHighIdx < rows.length ? (rows[vaHighIdx] as TPORow).price : globalHigh;
+  const val = vaLowIdx >= 0 && vaLowIdx < rows.length ? (rows[vaLowIdx] as TPORow).price : globalLow;
 
   // Handle edge case where no IB candles exist
   if (ibHigh === -Infinity) ibHigh = globalHigh;

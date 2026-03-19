@@ -55,7 +55,7 @@ export function clusterTradeSizes(
   const centroids: number[] = [];
   for (let i = 0; i < k; i++) {
     const idx = Math.floor(((i + 0.5) / k) * sorted.length);
-    centroids.push(sorted[Math.min(idx, sorted.length - 1)]!);
+    centroids.push(sorted[Math.min(idx, sorted.length - 1)] as number);
   }
 
   // K-Means iterations
@@ -68,10 +68,11 @@ export function clusterTradeSizes(
 
     // Assign each value to nearest centroid
     for (let i = 0; i < values.length; i++) {
+      const val = values[i] as number;
       let bestCluster = 0;
-      let bestDist = Math.abs(values[i]! - centroids[0]!);
+      let bestDist = Math.abs(val - (centroids[0] as number));
       for (let c = 1; c < k; c++) {
-        const dist = Math.abs(values[i]! - centroids[c]!);
+        const dist = Math.abs(val - (centroids[c] as number));
         if (dist < bestDist) {
           bestDist = dist;
           bestCluster = c;
@@ -89,22 +90,22 @@ export function clusterTradeSizes(
     const sums: number[] = new Array(k).fill(0);
     const counts: number[] = new Array(k).fill(0);
     for (let i = 0; i < values.length; i++) {
-      const c = assignments[i]!;
-      sums[c]! += values[i]!;
-      counts[c]!++;
+      const c = assignments[i] as number;
+      sums[c] = (sums[c] as number) + (values[i] as number);
+      counts[c] = (counts[c] as number) + 1;
     }
     for (let c = 0; c < k; c++) {
-      if (counts[c]! > 0) {
-        centroids[c] = sums[c]! / counts[c]!;
+      if ((counts[c] as number) > 0) {
+        centroids[c] = (sums[c] as number) / (counts[c] as number);
       }
     }
   }
 
   // Sort clusters by centroid ascending and build results
-  const clusterIndices = centroids.map((_, i) => i).sort((a, b) => centroids[a]! - centroids[b]!);
+  const clusterIndices = centroids.map((_, i) => i).sort((a, b) => (centroids[a] as number) - (centroids[b] as number));
   const indexMap: number[] = new Array(k).fill(0); // old cluster index → new sorted index
   for (let newIdx = 0; newIdx < clusterIndices.length; newIdx++) {
-    indexMap[clusterIndices[newIdx]!] = newIdx;
+    indexMap[clusterIndices[newIdx] as number] = newIdx;
   }
 
   // Build cluster summaries
@@ -113,20 +114,20 @@ export function clusterTradeSizes(
     clusterStats.push({ count: 0, totalVol: 0, min: Infinity, max: -Infinity });
   }
   for (let i = 0; i < values.length; i++) {
-    const newIdx = indexMap[assignments[i]!]!;
-    const stat = clusterStats[newIdx]!;
-    const v = values[i]!;
+    const newIdx = indexMap[assignments[i] as number] as number;
+    const stat = clusterStats[newIdx] as { count: number; totalVol: number; min: number; max: number };
+    const v = values[i] as number;
     stat.count++;
     stat.totalVol += v;
     if (v < stat.min) stat.min = v;
     if (v > stat.max) stat.max = v;
   }
 
-  const sortedCentroids = clusterIndices.map((i) => centroids[i]!);
+  const sortedCentroids = clusterIndices.map((i) => centroids[i] as number);
 
   const clusters: TradeSizeCluster[] = clusterStats.map((stat, i) => ({
-    bucket: BUCKET_LABELS[Math.min(i, BUCKET_LABELS.length - 1)]!,
-    centroid: sortedCentroids[i]!,
+    bucket: BUCKET_LABELS[Math.min(i, BUCKET_LABELS.length - 1)] as TradeSizeBucket,
+    centroid: sortedCentroids[i] as number,
     count: stat.count,
     totalVolume: stat.totalVol,
     min: stat.min === Infinity ? 0 : stat.min,
@@ -135,7 +136,7 @@ export function clusterTradeSizes(
 
   const classifications: TradeClassification[] = trades.map((t, i) => ({
     tradeId: t.id,
-    bucket: BUCKET_LABELS[Math.min(indexMap[assignments[i]!]!, BUCKET_LABELS.length - 1)]!,
+    bucket: BUCKET_LABELS[Math.min(indexMap[assignments[i] as number] as number, BUCKET_LABELS.length - 1)] as TradeSizeBucket,
     cost: config.useCost ? t.cost : t.amount,
   }));
 

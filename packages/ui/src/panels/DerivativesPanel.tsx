@@ -30,7 +30,7 @@ export function DerivativesPanel(): React.JSX.Element {
 
   // OI change
   const oiChange = oiHistory.length >= 2
-    ? oiHistory[oiHistory.length - 1]!.openInterest - oiHistory[0]!.openInterest
+    ? (oiHistory[oiHistory.length - 1] as { openInterest: number }).openInterest - (oiHistory[0] as { openInterest: number }).openInterest
     : 0;
 
   // Recent liquidation stats

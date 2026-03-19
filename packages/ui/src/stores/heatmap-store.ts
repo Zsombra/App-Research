@@ -63,7 +63,7 @@ export const useHeatmapStore = create<HeatmapState>((set, get) => ({
       const existing = columns.get(symbol) ?? [];
 
       // Check capture interval - skip if too close to last column
-      const lastTs = existing.length > 0 ? existing[existing.length - 1]!.timestamp : 0;
+      const lastTs = existing.length > 0 ? (existing[existing.length - 1] as HeatmapColumn).timestamp : 0;
       if (snapshot.timestamp - lastTs < prev.config.captureIntervalMs) {
         return {};
       }

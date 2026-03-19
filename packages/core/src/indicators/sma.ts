@@ -17,20 +17,22 @@ export function computeSMA(
   let sum = 0;
 
   for (let i = 0; i < len; i++) {
-    sum += candles[i]!.close;
+    const candle = candles[i] as OHLCVCandle;
+    sum += candle.close;
 
     if (i >= period) {
-      sum -= candles[i - period]!.close;
+      const prev = candles[i - period] as OHLCVCandle;
+      sum -= prev.close;
     }
 
     if (i >= period - 1) {
       result[i] = {
-        timestamp: candles[i]!.timestamp,
+        timestamp: candle.timestamp,
         data: { value: sum / period },
       };
     } else {
       result[i] = {
-        timestamp: candles[i]!.timestamp,
+        timestamp: candle.timestamp,
         data: { value: null },
       };
     }

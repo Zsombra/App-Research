@@ -334,7 +334,7 @@ export class CandlestickRenderer extends BaseRenderer {
     const wickData = new Float32Array(this.visibleCount * WICK_FLOATS_PER_INSTANCE);
 
     for (let i = 0; i < this.visibleCount; i++) {
-      const candle = this.candles[this.visibleStart + i]!;
+      const candle = this.candles[this.visibleStart + i] as OHLCVCandle;
 
       const centerX = this.viewport.dataToPixelX(candle.timestamp);
       const openY = this.viewport.dataToPixelY(candle.open);
@@ -369,7 +369,7 @@ export class CandlestickRenderer extends BaseRenderer {
     let hi = this.candles.length;
     while (lo < hi) {
       const mid = (lo + hi) >>> 1;
-      if (this.candles[mid]!.timestamp < timestamp) {
+      if ((this.candles[mid] as OHLCVCandle).timestamp < timestamp) {
         lo = mid + 1;
       } else {
         hi = mid;
@@ -385,7 +385,7 @@ export class CandlestickRenderer extends BaseRenderer {
     let hi = this.candles.length;
     while (lo < hi) {
       const mid = (lo + hi) >>> 1;
-      if (this.candles[mid]!.timestamp <= timestamp) {
+      if ((this.candles[mid] as OHLCVCandle).timestamp <= timestamp) {
         lo = mid + 1;
       } else {
         hi = mid;

@@ -219,7 +219,7 @@ export class BinanceAdapter extends BaseExchangeAdapter {
     // Resolve symbol from stream name (e.g., "btcusdt@depth20@100ms" → "BTC/USDT")
     let resolvedSymbol: string | null = null;
     if (streamName) {
-      const exchangeSymbol = streamName.split('@')[0]!.toUpperCase();
+      const exchangeSymbol = (streamName.split('@')[0] as string).toUpperCase();
       resolvedSymbol = this.toNormalizedSymbol(exchangeSymbol);
     }
 

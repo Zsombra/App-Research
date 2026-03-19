@@ -15,7 +15,7 @@ function findCandleTimestamp(
 
   while (lo <= hi) {
     const mid = (lo + hi) >>> 1;
-    if (sortedTimestamps[mid]! <= tradeTime) {
+    if ((sortedTimestamps[mid] as number) <= tradeTime) {
       lo = mid + 1;
     } else {
       hi = mid - 1;
@@ -24,7 +24,7 @@ function findCandleTimestamp(
 
   // hi is now the index of the last timestamp <= tradeTime
   if (hi < 0) return null;
-  const candleTs = sortedTimestamps[hi]!;
+  const candleTs = sortedTimestamps[hi] as number;
 
   // Check if trade falls within this candle's time window
   if (tradeTime >= candleTs && tradeTime < candleTs + intervalMs) {
@@ -108,7 +108,7 @@ export function buildFootprintFromTrades(
   // Find candle interval from first two candles or default to 60s
   let intervalMs = 60_000;
   if (candles.length >= 2) {
-    intervalMs = candles[1]!.timestamp - candles[0]!.timestamp;
+    intervalMs = (candles[1] as OHLCVCandle).timestamp - (candles[0] as OHLCVCandle).timestamp;
   }
 
   // Build sorted timestamp array for binary search

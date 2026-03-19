@@ -18,11 +18,11 @@ export function computeRSI(
   if (len === 0) return result;
 
   // First candle has no change
-  result[0] = { timestamp: candles[0]!.timestamp, data: { value: null } };
+  result[0] = { timestamp: (candles[0] as OHLCVCandle).timestamp, data: { value: null } };
 
   if (len < period + 1) {
     for (let i = 1; i < len; i++) {
-      result[i] = { timestamp: candles[i]!.timestamp, data: { value: null } };
+      result[i] = { timestamp: (candles[i] as OHLCVCandle).timestamp, data: { value: null } };
     }
     return result;
   }
@@ -32,10 +32,10 @@ export function computeRSI(
   let avgLoss = 0;
 
   for (let i = 1; i <= period; i++) {
-    const change = candles[i]!.close - candles[i - 1]!.close;
+    const change = (candles[i] as OHLCVCandle).close - (candles[i - 1] as OHLCVCandle).close;
     if (change > 0) avgGain += change;
     else avgLoss += Math.abs(change);
-    result[i] = { timestamp: candles[i]!.timestamp, data: { value: null } };
+    result[i] = { timestamp: (candles[i] as OHLCVCandle).timestamp, data: { value: null } };
   }
 
   avgGain /= period;
@@ -44,11 +44,11 @@ export function computeRSI(
   // First RSI value
   const rs = avgLoss === 0 ? 100 : avgGain / avgLoss;
   const rsi = avgLoss === 0 ? 100 : 100 - 100 / (1 + rs);
-  result[period] = { timestamp: candles[period]!.timestamp, data: { value: rsi } };
+  result[period] = { timestamp: (candles[period] as OHLCVCandle).timestamp, data: { value: rsi } };
 
   // Subsequent values using Wilder smoothing
   for (let i = period + 1; i < len; i++) {
-    const change = candles[i]!.close - candles[i - 1]!.close;
+    const change = (candles[i] as OHLCVCandle).close - (candles[i - 1] as OHLCVCandle).close;
     const gain = change > 0 ? change : 0;
     const loss = change < 0 ? Math.abs(change) : 0;
 
@@ -58,7 +58,7 @@ export function computeRSI(
     const currentRs = avgLoss === 0 ? 100 : avgGain / avgLoss;
     const currentRsi = avgLoss === 0 ? 100 : 100 - 100 / (1 + currentRs);
 
-    result[i] = { timestamp: candles[i]!.timestamp, data: { value: currentRsi } };
+    result[i] = { timestamp: (candles[i] as OHLCVCandle).timestamp, data: { value: currentRsi } };
   }
 
   return result;

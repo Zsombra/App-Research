@@ -18,7 +18,7 @@ export function computeAnchoredVWAP(
   let cumPV2 = 0;
 
   for (let i = 0; i < len; i++) {
-    const candle = candles[i]!;
+    const candle = candles[i] as OHLCVCandle;
 
     if (i < anchorIndex) {
       result[i] = {
@@ -75,16 +75,17 @@ export function computeRollingVWAP(
     let cumPV2 = 0;
 
     for (let j = windowStart; j <= i; j++) {
-      const c = candles[j]!;
+      const c = candles[j] as OHLCVCandle;
       const tp = (c.high + c.low + c.close) / 3;
       cumPV += tp * c.volume;
       cumV += c.volume;
       cumPV2 += tp * tp * c.volume;
     }
 
+    const candle = candles[i] as OHLCVCandle;
     if (cumV === 0) {
       result[i] = {
-        timestamp: candles[i]!.timestamp,
+        timestamp: candle.timestamp,
         data: { vwap: null, upper: null, lower: null },
       };
       continue;
@@ -95,7 +96,7 @@ export function computeRollingVWAP(
     const sd = Math.sqrt(Math.max(0, variance));
 
     result[i] = {
-      timestamp: candles[i]!.timestamp,
+      timestamp: candle.timestamp,
       data: { vwap, upper: vwap + sd, lower: vwap - sd },
     };
   }

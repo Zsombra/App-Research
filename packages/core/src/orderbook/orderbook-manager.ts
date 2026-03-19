@@ -182,13 +182,13 @@ export class OrderbookManager {
     if (this.bidsMap.size > this.maxDepth) {
       const sortedBids = Array.from(this.bidsMap.keys()).sort((a, b) => b - a);
       for (let i = this.maxDepth; i < sortedBids.length; i++) {
-        this.bidsMap.delete(sortedBids[i]!);
+        this.bidsMap.delete(sortedBids[i] as number);
       }
     }
     if (this.asksMap.size > this.maxDepth) {
       const sortedAsks = Array.from(this.asksMap.keys()).sort((a, b) => a - b);
       for (let i = this.maxDepth; i < sortedAsks.length; i++) {
-        this.asksMap.delete(sortedAsks[i]!);
+        this.asksMap.delete(sortedAsks[i] as number);
       }
     }
   }

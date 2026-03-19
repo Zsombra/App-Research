@@ -215,7 +215,7 @@ export class VolumeBarRenderer extends BaseRenderer {
     // Find max volume for normalization
     this.maxVisibleVolume = 0;
     for (let i = 0; i < this.visibleCount; i++) {
-      const vol = this.candles[this.visibleStart + i]!.volume;
+      const vol = (this.candles[this.visibleStart + i] as OHLCVCandle).volume;
       if (vol > this.maxVisibleVolume) this.maxVisibleVolume = vol;
     }
     if (this.maxVisibleVolume === 0) this.maxVisibleVolume = 1;
@@ -223,7 +223,7 @@ export class VolumeBarRenderer extends BaseRenderer {
     const data = new Float32Array(this.visibleCount * FLOATS_PER_INSTANCE);
 
     for (let i = 0; i < this.visibleCount; i++) {
-      const candle = this.candles[this.visibleStart + i]!;
+      const candle = this.candles[this.visibleStart + i] as OHLCVCandle;
       const idx = i * FLOATS_PER_INSTANCE;
 
       data[idx] = this.viewport.dataToPixelX(candle.timestamp);
@@ -240,7 +240,7 @@ export class VolumeBarRenderer extends BaseRenderer {
     let hi = this.candles.length;
     while (lo < hi) {
       const mid = (lo + hi) >>> 1;
-      if (this.candles[mid]!.timestamp < timestamp) lo = mid + 1;
+      if ((this.candles[mid] as OHLCVCandle).timestamp < timestamp) lo = mid + 1;
       else hi = mid;
     }
     return Math.max(0, lo - 1);
@@ -251,7 +251,7 @@ export class VolumeBarRenderer extends BaseRenderer {
     let hi = this.candles.length;
     while (lo < hi) {
       const mid = (lo + hi) >>> 1;
-      if (this.candles[mid]!.timestamp <= timestamp) lo = mid + 1;
+      if ((this.candles[mid] as OHLCVCandle).timestamp <= timestamp) lo = mid + 1;
       else hi = mid;
     }
     return Math.min(this.candles.length, lo + 1);

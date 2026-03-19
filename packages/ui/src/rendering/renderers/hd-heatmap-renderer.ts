@@ -190,7 +190,7 @@ export class HDHeatmapRenderer extends BaseRenderer {
     const startIdx = Math.max(0, this.columns.length - colCount);
 
     for (let ci = 0; ci < colCount; ci++) {
-      const col = this.columns[startIdx + ci]!;
+      const col = this.columns[startIdx + ci] as HeatmapColumn;
       const texX = ci;
 
       // Bids → red channel
@@ -233,8 +233,8 @@ export class HDHeatmapRenderer extends BaseRenderer {
     const startIdx = Math.max(0, this.columns.length - colCount);
 
     // Time range of the texture data
-    const t0 = this.columns[startIdx]!.timestamp;
-    const t1 = this.columns[this.columns.length - 1]!.timestamp + this.columnIntervalMs;
+    const t0 = (this.columns[startIdx] as HeatmapColumn).timestamp;
+    const t1 = (this.columns[this.columns.length - 1] as HeatmapColumn).timestamp + this.columnIntervalMs;
 
     // Map to pixel space then clip space
     const px0 = this.viewport.dataToPixelX(t0);

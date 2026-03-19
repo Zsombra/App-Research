@@ -20,21 +20,22 @@ export function computeEMA(
   let sum = 0;
 
   for (let i = 0; i < len; i++) {
-    const close = candles[i]!.close;
+    const candle = candles[i] as OHLCVCandle;
+    const close = candle.close;
 
     if (i < period - 1) {
       // Accumulating for initial SMA seed
       sum += close;
-      result[i] = { timestamp: candles[i]!.timestamp, data: { value: null } };
+      result[i] = { timestamp: candle.timestamp, data: { value: null } };
     } else if (i === period - 1) {
       // Seed EMA with SMA
       sum += close;
       ema = sum / period;
-      result[i] = { timestamp: candles[i]!.timestamp, data: { value: ema } };
+      result[i] = { timestamp: candle.timestamp, data: { value: ema } };
     } else {
       // Standard EMA formula
       ema = (close - ema) * multiplier + ema;
-      result[i] = { timestamp: candles[i]!.timestamp, data: { value: ema } };
+      result[i] = { timestamp: candle.timestamp, data: { value: ema } };
     }
   }
 

@@ -106,8 +106,8 @@ export function buildRangeBars(
  * Build a single OHLCV candle from a batch of trades.
  */
 function buildBarFromTrades(trades: NormalizedTrade[]): OHLCVCandle {
-  const first = trades[0]!;
-  const last = trades[trades.length - 1]!;
+  const first = trades[0] as NormalizedTrade;
+  const last = trades[trades.length - 1] as NormalizedTrade;
 
   let high = first.price;
   let low = first.price;

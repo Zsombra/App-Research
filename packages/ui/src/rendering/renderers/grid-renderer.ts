@@ -220,7 +220,7 @@ export class GridRenderer extends BaseRenderer {
       data[offset++] = this.viewport.canvasHeight;
     }
 
-    this.positionBuffer!.subdata(data);
+    (this.positionBuffer as REGL.Buffer).subdata(data);
   }
 }
 

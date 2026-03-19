@@ -71,8 +71,8 @@ export function detectStackedImbalances(
   const askImbs: StackedImbalance[] = [];
 
   for (let i = 0; i < levels; i++) {
-    const bid = bids[i]!;
-    const ask = asks[i]!;
+    const bid = bids[i] as PriceLevel;
+    const ask = asks[i] as PriceLevel;
 
     if (bid.size > 0 && ask.size > 0) {
       const bidRatio = bid.size / ask.size;
