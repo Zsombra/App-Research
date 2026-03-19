@@ -81,4 +81,30 @@ describe('computeMACD', () => {
     const lastPoint = result[result.length - 1]!;
     expect(lastPoint.data.macd).toBeCloseTo(0, 5);
   });
+
+  it('should return all nulls when fewer candles than slowPeriod', () => {
+    const candles = makeCandles([10, 20, 30]);
+    const result = computeMACD(candles, fastPeriod, slowPeriod, signalPeriod);
+    for (const point of result) {
+      expect(point.data.macd).toBeNull();
+      expect(point.data.signal).toBeNull();
+    }
+  });
+
+  it('should produce positive MACD during strong uptrend', () => {
+    const closes = Array.from({ length: 50 }, (_, i) => 100 + i * 2);
+    const candles = makeCandles(closes);
+    const result = computeMACD(candles, fastPeriod, slowPeriod, signalPeriod);
+    const last = result[49]!;
+    // Fast EMA reacts quicker to uptrend → MACD > 0
+    expect(last.data.macd).toBeGreaterThan(0);
+  });
+
+  it('should produce negative MACD during strong downtrend', () => {
+    const closes = Array.from({ length: 50 }, (_, i) => 200 - i * 2);
+    const candles = makeCandles(closes);
+    const result = computeMACD(candles, fastPeriod, slowPeriod, signalPeriod);
+    const last = result[49]!;
+    expect(last.data.macd).toBeLessThan(0);
+  });
 });

@@ -9,6 +9,9 @@ export function computeRSI(
   candles: OHLCVCandle[],
   period: number
 ): IndicatorPoint<RSIOutput>[] {
+  if (period < 1) {
+    throw new RangeError(`RSI period must be >= 1, got ${period}`);
+  }
   const len = candles.length;
   const result: IndicatorPoint<RSIOutput>[] = new Array(len);
 

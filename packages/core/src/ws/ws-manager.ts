@@ -242,6 +242,9 @@ export class WebSocketManager {
   }
 
   private startMessageRateMonitor(): void {
+    if (this.messageCountResetTimer !== null) {
+      clearInterval(this.messageCountResetTimer);
+    }
     this.messageCount = 0;
     this._messagesPerSecond = 0;
     this.messageCountResetTimer = setInterval(() => {

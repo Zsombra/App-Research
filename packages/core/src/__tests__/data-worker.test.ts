@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import type { WorkerInboundMessage } from '@terminal/types';
 import { DataWorker } from '../worker/data-worker.js';
 
 // Stub WebSocket for adapters
@@ -58,37 +59,39 @@ describe('DataWorker', () => {
   });
 
   it('should handle set-timeframe message (no-op)', () => {
-    expect(() => {
-      worker.handleMessage({
-        type: 'set-timeframe',
-        timeframe: '1m',
-      } as any);
-    }).not.toThrow();
+    const msg: WorkerInboundMessage = {
+      type: 'set-timeframe',
+      symbol: 'BTC/USDT',
+      timeframe: '1m',
+    };
+    expect(() => worker.handleMessage(msg)).not.toThrow();
   });
 
   it('should handle request-snapshot message (no-op)', () => {
-    expect(() => {
-      worker.handleMessage({
-        type: 'request-snapshot',
-        symbol: 'ETH/USDT',
-      } as any);
-    }).not.toThrow();
+    const msg: WorkerInboundMessage = {
+      type: 'request-snapshot',
+      symbol: 'ETH/USDT',
+      topic: 'trades',
+    };
+    expect(() => worker.handleMessage(msg)).not.toThrow();
   });
 
   it('should handle add-indicator message (no-op)', () => {
-    expect(() => {
-      worker.handleMessage({
-        type: 'add-indicator',
-      } as any);
-    }).not.toThrow();
+    const msg: WorkerInboundMessage = {
+      type: 'add-indicator',
+      id: 'test-ind-1',
+      kind: 'sma',
+      params: { period: 20 },
+    };
+    expect(() => worker.handleMessage(msg)).not.toThrow();
   });
 
   it('should handle remove-indicator message (no-op)', () => {
-    expect(() => {
-      worker.handleMessage({
-        type: 'remove-indicator',
-      } as any);
-    }).not.toThrow();
+    const msg: WorkerInboundMessage = {
+      type: 'remove-indicator',
+      id: 'test-ind-1',
+    };
+    expect(() => worker.handleMessage(msg)).not.toThrow();
   });
 
   it('should create adapters for all supported exchanges', () => {
@@ -130,7 +133,7 @@ describe('DataWorker', () => {
       worker.handleMessage({
         type: 'subscribe',
         symbol: 'BTC/USDT',
-        exchanges: ['unknown_exchange' as any],
+        exchanges: ['okx'],
         topics: ['trades'],
       });
     }).not.toThrow();

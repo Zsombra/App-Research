@@ -72,4 +72,27 @@ describe('computeSMA', () => {
     expect(result[0]!.data.value).toBeNull();
     expect(result[1]!.data.value).toBeNull();
   });
+
+  it('should throw RangeError for period < 1', () => {
+    const candles = makeCandles([10, 20, 30]);
+    expect(() => computeSMA(candles, 0)).toThrow(RangeError);
+    expect(() => computeSMA(candles, -1)).toThrow(RangeError);
+  });
+
+  it('should handle single candle with period=1', () => {
+    const candles = makeCandles([42]);
+    const result = computeSMA(candles, 1);
+    expect(result).toHaveLength(1);
+    expect(result[0]!.data.value).toBeCloseTo(42);
+  });
+
+  it('should produce correct SMA with large period equal to candle count', () => {
+    const candles = makeCandles([10, 20, 30, 40, 50]);
+    const result = computeSMA(candles, 5);
+    // Only last point should have a value: avg = 30
+    for (let i = 0; i < 4; i++) {
+      expect(result[i]!.data.value).toBeNull();
+    }
+    expect(result[4]!.data.value).toBeCloseTo(30);
+  });
 });

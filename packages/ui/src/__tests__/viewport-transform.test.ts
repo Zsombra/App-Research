@@ -217,6 +217,22 @@ describe('ViewportTransform', () => {
       expect(priceRange.high).toBeGreaterThanOrEqual(300);
     });
 
+    it('should handle single candle (zero time range)', () => {
+      const vt = new ViewportTransform({ canvasWidth: 800, canvasHeight: 600 });
+      const candles = [
+        makeCandle({ timestamp: 1000, open: 100, high: 200, low: 50, close: 150 }),
+      ];
+      vt.fitToData(candles);
+
+      // Should not produce NaN or Infinity scales
+      expect(Number.isFinite(vt.scaleX)).toBe(true);
+      expect(Number.isFinite(vt.scaleY)).toBe(true);
+
+      const timeRange = vt.getVisibleTimeRange();
+      expect(Number.isFinite(timeRange.start)).toBe(true);
+      expect(Number.isFinite(timeRange.end)).toBe(true);
+    });
+
     it('should respect custom padding', () => {
       const vt = new ViewportTransform({ canvasWidth: 800, canvasHeight: 600 });
       const candles = [

@@ -154,9 +154,11 @@ export class CoinbaseAdapter extends BaseExchangeAdapter {
       const symbol = this.toNormalizedSymbol(exchangeSymbol);
       if (!symbol) continue;
 
-      const price = parseFloat(t['price'] as string);
-      const amount = parseFloat(t['size'] as string);
-      const side = (t['side'] as string)?.toLowerCase();
+      if (typeof t['price'] !== 'string' || typeof t['size'] !== 'string') continue;
+      const price = parseFloat(t['price']);
+      const amount = parseFloat(t['size']);
+      const rawSide = typeof t['side'] === 'string' ? t['side'].toLowerCase() : undefined;
+      const side = rawSide === 'sell' ? 'sell' as const : 'buy' as const;
       const time = t['time'] as string;
 
       if (isNaN(price) || isNaN(amount)) continue;
@@ -167,7 +169,7 @@ export class CoinbaseAdapter extends BaseExchangeAdapter {
         symbol,
         price,
         amount,
-        side: side === 'sell' ? 'sell' : 'buy',
+        side,
         timestamp: time ? new Date(time).getTime() : Date.now(),
         isMaker: false,
         cost: price * amount,

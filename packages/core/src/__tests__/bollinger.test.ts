@@ -95,4 +95,24 @@ describe('computeBollinger', () => {
     // 2x stdDev should give 2x bandwidth
     expect(bandwidth2).toBeCloseTo(bandwidth1 * 2);
   });
+
+  it('should widen bands during high volatility', () => {
+    const stable = makeCandles([100, 100, 100, 100, 100]);
+    const volatile = makeCandles([80, 120, 80, 120, 80]);
+    const stableResult = computeBollinger(stable, 3, 2);
+    const volatileResult = computeBollinger(volatile, 3, 2);
+
+    const stableBW = stableResult[2]!.data.upper! - stableResult[2]!.data.lower!;
+    const volatileBW = volatileResult[2]!.data.upper! - volatileResult[2]!.data.lower!;
+    expect(volatileBW).toBeGreaterThan(stableBW);
+  });
+
+  it('should handle period=1 (bands collapse to price)', () => {
+    const candles = makeCandles([100, 200, 300]);
+    const result = computeBollinger(candles, 1, 2);
+    // With period=1, SMA=close, stddev=0
+    expect(result[0]!.data.middle).toBeCloseTo(100);
+    expect(result[0]!.data.upper).toBeCloseTo(100);
+    expect(result[0]!.data.lower).toBeCloseTo(100);
+  });
 });

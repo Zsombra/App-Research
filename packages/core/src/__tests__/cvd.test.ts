@@ -74,4 +74,36 @@ describe('computeCVD', () => {
     const result = computeCVD([]);
     expect(result).toHaveLength(0);
   });
+
+  it('should handle zero volume candle', () => {
+    const candles = makeCandles([
+      { close: 100, buyVol: 0, sellVol: 0 },
+      { close: 101, buyVol: 10, sellVol: 5 },
+    ]);
+    const result = computeCVD(candles);
+    expect(result[0]!.data.delta).toBeCloseTo(0);
+    expect(result[0]!.data.value).toBeCloseTo(0);
+    expect(result[1]!.data.delta).toBeCloseTo(5);
+    expect(result[1]!.data.value).toBeCloseTo(5);
+  });
+
+  it('should handle single candle', () => {
+    const candles = makeCandles([{ close: 100, buyVol: 7, sellVol: 3 }]);
+    const result = computeCVD(candles);
+    expect(result).toHaveLength(1);
+    expect(result[0]!.data.delta).toBeCloseTo(4);
+    expect(result[0]!.data.value).toBeCloseTo(4);
+  });
+
+  it('should accumulate correctly over many candles', () => {
+    const data = Array.from({ length: 100 }, (_, i) => ({
+      close: 100 + i,
+      buyVol: 10,
+      sellVol: 5,
+    }));
+    const candles = makeCandles(data);
+    const result = computeCVD(candles);
+    // Each candle has delta=5, so CVD after 100 candles = 500
+    expect(result[99]!.data.value).toBeCloseTo(500);
+  });
 });

@@ -8,6 +8,9 @@ export function computeSMA(
   candles: OHLCVCandle[],
   period: number
 ): IndicatorPoint<SMAOutput>[] {
+  if (period < 1) {
+    throw new RangeError(`SMA period must be >= 1, got ${period}`);
+  }
   const len = candles.length;
   const result: IndicatorPoint<SMAOutput>[] = new Array(len);
 

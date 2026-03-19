@@ -201,4 +201,73 @@ describe('FlushScheduler', () => {
     // The message enqueued after stop won't be flushed by interval
     expect(flushed).toHaveLength(0);
   });
+
+  it('should allow restart after stop', () => {
+    const flushed: WorkerOutboundMessage[][] = [];
+
+    const scheduler = new FlushScheduler({
+      flushInterval: 100,
+      onFlush: (messages) => flushed.push([...messages]),
+    });
+    scheduler.start();
+    scheduler.stop();
+    scheduler.start(); // restart
+
+    scheduler.enqueue({
+      type: 'trade-batch',
+      symbol: 'BTC/USDT',
+      trades: [],
+    });
+
+    vi.advanceTimersByTime(100);
+    expect(flushed).toHaveLength(1);
+    scheduler.stop();
+  });
+
+  it('should use default maxBufferSize of 1000', () => {
+    const flushed: WorkerOutboundMessage[][] = [];
+
+    const scheduler = new FlushScheduler({
+      flushInterval: 10000,
+      onFlush: (messages) => flushed.push([...messages]),
+    });
+    scheduler.start();
+
+    const msg: WorkerOutboundMessage = {
+      type: 'trade-batch',
+      symbol: 'BTC/USDT',
+      trades: [],
+    };
+
+    // Enqueue 999 — should not flush
+    for (let i = 0; i < 999; i++) {
+      scheduler.enqueue(msg);
+    }
+    expect(flushed).toHaveLength(0);
+
+    // 1000th should trigger flush
+    scheduler.enqueue(msg);
+    expect(flushed).toHaveLength(1);
+    expect(flushed[0]).toHaveLength(1000);
+    scheduler.stop();
+  });
+
+  it('should handle stop called multiple times', () => {
+    const flushed: WorkerOutboundMessage[][] = [];
+
+    const scheduler = new FlushScheduler({
+      flushInterval: 100,
+      onFlush: (messages) => flushed.push([...messages]),
+    });
+    scheduler.start();
+    scheduler.enqueue({
+      type: 'trade-batch',
+      symbol: 'BTC/USDT',
+      trades: [],
+    });
+
+    scheduler.stop();
+    scheduler.stop(); // double stop
+    expect(flushed).toHaveLength(1); // only flushed once
+  });
 });

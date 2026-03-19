@@ -80,4 +80,36 @@ describe('computeRSI', () => {
     expect(result[1]!.data.value).toBeNull();
     expect(result[2]!.data.value).toBeNull();
   });
+
+  it('should throw RangeError for period < 1', () => {
+    const candles = makeCandles([10, 20, 30]);
+    expect(() => computeRSI(candles, 0)).toThrow(RangeError);
+    expect(() => computeRSI(candles, -1)).toThrow(RangeError);
+  });
+
+  it('should return ~50 for flat market (no change)', () => {
+    // All closes the same → no gains, no losses → RSI undefined edge case
+    // Implementation treats this as 100 (no loss)
+    const candles = makeCandles(Array.from({ length: 20 }, () => 100));
+    const result = computeRSI(candles, 14);
+    expect(result[14]!.data.value).toBe(100);
+  });
+
+  it('should handle alternating up/down moves', () => {
+    const closes = Array.from({ length: 30 }, (_, i) => 100 + (i % 2 === 0 ? 5 : -5));
+    const candles = makeCandles(closes);
+    const result = computeRSI(candles, 14);
+
+    // Alternating should produce ~50 RSI
+    const rsi = result[29]!.data.value!;
+    expect(rsi).toBeGreaterThan(30);
+    expect(rsi).toBeLessThan(70);
+  });
+
+  it('should handle single candle input', () => {
+    const candles = makeCandles([100]);
+    const result = computeRSI(candles, 14);
+    expect(result).toHaveLength(1);
+    expect(result[0]!.data.value).toBeNull();
+  });
 });

@@ -66,6 +66,28 @@ describe('computeOrderbookImbalance', () => {
     expect(result.bidAskRatio).toBe(1);
     expect(result.totalBidVolume).toBe(0);
   });
+
+  it('should return Infinity ratio when asks are empty but bids exist', () => {
+    const result = computeOrderbookImbalance(makeSnapshot({
+      bids: [{ price: 100, size: 10 }],
+      asks: [],
+    }));
+    expect(result.bidAskRatio).toBe(Infinity);
+    expect(result.totalBidVolume).toBe(10);
+    expect(result.totalAskVolume).toBe(0);
+  });
+
+  it('should respect depthLevels parameter', () => {
+    const result = computeOrderbookImbalance(makeSnapshot(), 2);
+    // Only first 2 levels: bids 10+8=18, asks 10+8=18
+    expect(result.totalBidVolume).toBe(18);
+    expect(result.totalAskVolume).toBe(18);
+  });
+
+  it('should always return empty absorptions array', () => {
+    const result = computeOrderbookImbalance(makeSnapshot());
+    expect(result.absorptions).toHaveLength(0);
+  });
 });
 
 describe('detectStackedImbalances', () => {

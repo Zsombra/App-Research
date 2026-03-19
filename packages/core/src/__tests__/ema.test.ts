@@ -68,4 +68,24 @@ describe('computeEMA', () => {
     const result = computeEMA([], 3);
     expect(result).toHaveLength(0);
   });
+
+  it('should throw RangeError for period < 1', () => {
+    const candles = makeCandles([10, 20, 30]);
+    expect(() => computeEMA(candles, 0)).toThrow(RangeError);
+    expect(() => computeEMA(candles, -5)).toThrow(RangeError);
+  });
+
+  it('should converge towards constant price', () => {
+    // After many candles at same price, EMA should converge
+    const candles = makeCandles(Array.from({ length: 50 }, () => 100));
+    const result = computeEMA(candles, 10);
+    expect(result[49]!.data.value).toBeCloseTo(100, 5);
+  });
+
+  it('should return all nulls when fewer candles than period', () => {
+    const candles = makeCandles([10, 20]);
+    const result = computeEMA(candles, 5);
+    expect(result[0]!.data.value).toBeNull();
+    expect(result[1]!.data.value).toBeNull();
+  });
 });

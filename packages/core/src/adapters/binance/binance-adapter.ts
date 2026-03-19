@@ -172,8 +172,11 @@ export class BinanceAdapter extends BaseExchangeAdapter {
    * - `s` -> symbol (exchange format)
    */
   private handleAggTrade(msg: Record<string, unknown>): void {
-    const price = parseFloat(msg['p'] as string);
-    const amount = parseFloat(msg['q'] as string);
+    if (typeof msg['p'] !== 'string' || typeof msg['q'] !== 'string') {
+      return;
+    }
+    const price = parseFloat(msg['p']);
+    const amount = parseFloat(msg['q']);
     const isBuyerMaker = msg['m'] as boolean;
     const timestamp = msg['T'] as number;
     const id = String(msg['a']);

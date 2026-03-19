@@ -9,6 +9,9 @@ export function computeEMA(
   candles: OHLCVCandle[],
   period: number
 ): IndicatorPoint<EMAOutput>[] {
+  if (period < 1) {
+    throw new RangeError(`EMA period must be >= 1, got ${period}`);
+  }
   const len = candles.length;
   const result: IndicatorPoint<EMAOutput>[] = new Array(len);
   const multiplier = 2 / (period + 1);

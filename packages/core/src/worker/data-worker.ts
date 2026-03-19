@@ -198,6 +198,7 @@ export class DataWorker {
     ]);
 
     connectWithTimeout.catch((err: unknown) => {
+      this.adapters.delete(exchangeId);
       const errorMessage = err instanceof Error ? err.message : String(err);
       this.postMessage({
         type: 'error',
