@@ -6,12 +6,19 @@ export default tseslint.config(
   },
   ...tseslint.configs.recommended,
   {
+    languageOptions: {
+      parserOptions: {
+        project: ['./packages/*/tsconfig.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
     rules: {
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/no-unused-vars': [
         'error',
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
       ],
+      '@typescript-eslint/no-floating-promises': 'error',
     },
   },
 );

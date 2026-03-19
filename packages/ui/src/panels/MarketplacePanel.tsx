@@ -28,7 +28,7 @@ export function MarketplacePanel({ panelId }: MarketplacePanelProps): React.JSX.
 
   // Fetch marketplace indicators on mount
   useEffect(() => {
-    fetchAvailable();
+    void fetchAvailable();
   }, [fetchAvailable]);
 
   const installedIds = new Set(installed.map((i) => i.indicatorId));

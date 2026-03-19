@@ -1,9 +1,8 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect } from 'react';
 import { useActiveSymbol } from '../stores/symbol-store.js';
 import { useCandles } from '../stores/market-store.js';
 import {
   useSLTPHeatmapStore,
-  useSLTPHeatmap,
   useSLClusters,
   useTPClusters,
 } from '../stores/sl-tp-heatmap-store.js';

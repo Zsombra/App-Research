@@ -23,7 +23,8 @@ export function buildServer() {
  */
 async function main() {
   const server = buildServer();
-  const port = Number(process.env['PORT']) || 3001;
+  const parsed = Number(process.env['PORT']);
+  const port = Number.isFinite(parsed) ? parsed : 3001;
   const host = process.env['HOST'] || '127.0.0.1';
 
   const shutdown = async (signal: string) => {

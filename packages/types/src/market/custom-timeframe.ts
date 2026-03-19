@@ -1,4 +1,3 @@
-import type { OHLCVCandle } from './candle.js';
 
 /**
  * Custom bar type definitions beyond standard time-based intervals.

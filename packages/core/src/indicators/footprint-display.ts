@@ -1,4 +1,4 @@
-import type { FootprintCandle, FootprintLevel } from '@terminal/types';
+import type { FootprintLevel } from '@terminal/types';
 import type { FootprintDisplayMode } from '@terminal/types';
 
 /**
