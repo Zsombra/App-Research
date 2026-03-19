@@ -30,7 +30,7 @@ export const useIndicatorStore = create<IndicatorState>((set, get) => ({
     const id = `${kind}-${++idCounter}`;
     const params = { ...INDICATOR_DEFAULTS[kind], ...paramsOverride };
     const colorIndex = get().indicators.size % INDICATOR_COLORS.length;
-    const color = INDICATOR_COLORS[colorIndex]!;
+    const color = INDICATOR_COLORS[colorIndex] ?? '#FFD700';
     const config: IndicatorConfig = { id, kind, params, color };
 
     set((state) => {

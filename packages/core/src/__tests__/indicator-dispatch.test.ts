@@ -90,4 +90,61 @@ describe('computeIndicator dispatch', () => {
     expect(computeIndicator('bollinger', candles, {})).toHaveLength(candles.length);
     expect(computeIndicator('cvd', candles, {})).toHaveLength(candles.length);
   });
+
+  it('should return null data for insufficient SMA data', () => {
+    const result = computeIndicator('sma', candles, { period: 20 });
+    // First 19 points should have null value (need 20 candles)
+    for (let i = 0; i < 19; i++) {
+      expect((result[i] as IndicatorPoint<{ value: number | null }>).data.value).toBeNull();
+    }
+    // 20th point should have a value
+    expect((result[19] as IndicatorPoint<{ value: number | null }>).data.value).not.toBeNull();
+  });
+
+  it('should return null data for insufficient EMA data', () => {
+    const result = computeIndicator('ema', candles, { period: 10 });
+    for (let i = 0; i < 9; i++) {
+      expect((result[i] as IndicatorPoint<{ value: number | null }>).data.value).toBeNull();
+    }
+    expect((result[9] as IndicatorPoint<{ value: number | null }>).data.value).not.toBeNull();
+  });
+
+  it('should dispatch with default params when empty object is given', () => {
+    // SMA defaults to period=20
+    const sma = computeIndicator('sma', candles, {});
+    expect(sma).toHaveLength(candles.length);
+    expect((sma[19] as IndicatorPoint<{ value: number | null }>).data.value).not.toBeNull();
+
+    // EMA defaults to period=20
+    const ema = computeIndicator('ema', candles, {});
+    expect(ema).toHaveLength(candles.length);
+
+    // RSI defaults to period=14
+    const rsi = computeIndicator('rsi', candles, {});
+    expect(rsi).toHaveLength(candles.length);
+  });
+
+  it('should return correct timestamps matching candle timestamps', () => {
+    const result = computeIndicator('sma', candles, { period: 5 });
+    for (let i = 0; i < candles.length; i++) {
+      expect(result[i]!.timestamp).toBe(candles[i]!.timestamp);
+    }
+  });
+
+  it('should handle single candle input', () => {
+    const single = [makeCandle(100, 50, 1700000000000)];
+    const sma = computeIndicator('sma', single, { period: 1 });
+    expect(sma).toHaveLength(1);
+
+    const cvd = computeIndicator('cvd', single, {});
+    expect(cvd).toHaveLength(1);
+  });
+
+  it('should handle empty candles array', () => {
+    const empty: OHLCVCandle[] = [];
+    expect(computeIndicator('sma', empty, { period: 5 })).toHaveLength(0);
+    expect(computeIndicator('rsi', empty, {})).toHaveLength(0);
+    expect(computeIndicator('macd', empty, {})).toHaveLength(0);
+    expect(computeIndicator('vwap', empty, {})).toHaveLength(0);
+  });
 });

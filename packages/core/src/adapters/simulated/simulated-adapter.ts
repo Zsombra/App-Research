@@ -8,6 +8,27 @@ import type {
 } from '@terminal/types';
 import { BaseExchangeAdapter } from '../base-adapter.js';
 
+/** Simulated adapter timing and market model constants. */
+const SIM_CONNECT_DELAY_MS = 50;
+const SIM_TRADE_INTERVAL_MIN_MS = 200;
+const SIM_TRADE_INTERVAL_RANGE_MS = 300;
+const SIM_ORDERBOOK_INTERVAL_MS = 250;
+const SIM_TICKER_INTERVAL_MS = 1000;
+const SIM_VOLATILITY = 0.0002;
+const SIM_UPWARD_BIAS = 0.48;
+const SIM_TRADE_AMOUNT_MIN = 0.001;
+const SIM_TRADE_AMOUNT_RANGE = 2;
+const SIM_SPREAD_FACTOR = 0.0001;
+const SIM_ORDERBOOK_DEPTH = 20;
+
+/** Default base prices for common simulated symbols. */
+const SIM_BASE_PRICES: Record<string, { base: number; range: number }> = {
+  BTC: { base: 65000, range: 2000 },
+  ETH: { base: 3400, range: 100 },
+  SOL: { base: 140, range: 10 },
+};
+const SIM_DEFAULT_BASE_PRICE = { base: 100, range: 50 };
+
 /**
  * Simulated exchange adapter that generates realistic market data
  * for development, testing, and demo purposes.
@@ -32,7 +53,7 @@ export class SimulatedAdapter extends BaseExchangeAdapter {
   async connect(): Promise<void> {
     this.setStatus(ConnectionStatus.Connecting);
     // Simulate brief connection delay
-    await new Promise((resolve) => setTimeout(resolve, 50));
+    await new Promise((resolve) => setTimeout(resolve, SIM_CONNECT_DELAY_MS));
     this.setStatus(ConnectionStatus.Connected);
   }
 
@@ -55,7 +76,7 @@ export class SimulatedAdapter extends BaseExchangeAdapter {
       for (let i = 0; i < count; i++) {
         this.emitTrade(symbol);
       }
-    }, 200 + Math.random() * 300); // 200-500ms between batches
+    }, SIM_TRADE_INTERVAL_MIN_MS + Math.random() * SIM_TRADE_INTERVAL_RANGE_MS);
 
     this.tradeIntervals.set(symbol, interval);
   }
@@ -69,7 +90,7 @@ export class SimulatedAdapter extends BaseExchangeAdapter {
 
     const interval = setInterval(() => {
       this.emitOrderbook(symbol);
-    }, 250);
+    }, SIM_ORDERBOOK_INTERVAL_MS);
 
     this.orderbookIntervals.set(symbol, interval);
   }
@@ -83,7 +104,7 @@ export class SimulatedAdapter extends BaseExchangeAdapter {
 
     const interval = setInterval(() => {
       this.emitTicker(symbol);
-    }, 1000);
+    }, SIM_TICKER_INTERVAL_MS);
 
     this.tickerIntervals.set(symbol, interval);
   }
@@ -133,20 +154,20 @@ export class SimulatedAdapter extends BaseExchangeAdapter {
   }
 
   private getBasePrice(symbol: string): number {
-    if (symbol.startsWith('BTC')) return 65000 + Math.random() * 2000;
-    if (symbol.startsWith('ETH')) return 3400 + Math.random() * 100;
-    if (symbol.startsWith('SOL')) return 140 + Math.random() * 10;
-    return 100 + Math.random() * 50;
+    for (const [prefix, cfg] of Object.entries(SIM_BASE_PRICES)) {
+      if (symbol.startsWith(prefix)) return cfg.base + Math.random() * cfg.range;
+    }
+    return SIM_DEFAULT_BASE_PRICE.base + Math.random() * SIM_DEFAULT_BASE_PRICE.range;
   }
 
   private emitTrade(symbol: string): void {
     const price = this.prices.get(symbol) ?? 100;
-    const volatility = price * 0.0002; // 0.02% per trade
-    const change = (Math.random() - 0.48) * volatility; // slight upward bias
+    const volatility = price * SIM_VOLATILITY;
+    const change = (Math.random() - SIM_UPWARD_BIAS) * volatility;
     const newPrice = price + change;
     this.prices.set(symbol, newPrice);
 
-    const amount = 0.001 + Math.random() * 2;
+    const amount = SIM_TRADE_AMOUNT_MIN + Math.random() * SIM_TRADE_AMOUNT_RANGE;
     const side = Math.random() > 0.5 ? 'buy' : 'sell';
 
     // Update daily stats
@@ -176,12 +197,12 @@ export class SimulatedAdapter extends BaseExchangeAdapter {
 
   private emitOrderbook(symbol: string): void {
     const midPrice = this.prices.get(symbol) ?? 100;
-    const spread = midPrice * 0.0001; // 0.01% spread
+    const spread = midPrice * SIM_SPREAD_FACTOR;
 
     const bids: PriceLevel[] = [];
     const asks: PriceLevel[] = [];
 
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < SIM_ORDERBOOK_DEPTH; i++) {
       const bidOffset = spread * (0.5 + i * 0.5) + Math.random() * spread * 0.2;
       const askOffset = spread * (0.5 + i * 0.5) + Math.random() * spread * 0.2;
 

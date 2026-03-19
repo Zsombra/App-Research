@@ -41,6 +41,10 @@ export function aggregateTrade(
   timeframe: CandleTimeframe,
   maxCandles: number = 500
 ): OHLCVCandle[] {
+  if (maxCandles < 1) {
+    return candles;
+  }
+
   const intervalMs = timeframeToMs(timeframe);
   const candleTimestamp = floorToCandle(trade.timestamp, intervalMs);
 
