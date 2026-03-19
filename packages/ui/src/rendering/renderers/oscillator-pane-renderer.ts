@@ -38,6 +38,18 @@ const MAX_SEGMENTS = 50_000;
 /** Number of floats per histogram bar instance. */
 const HIST_FLOATS_PER_INSTANCE = 3; // centerX, height (signed), barWidth
 
+/** Default width of histogram bars in pixels. */
+const HISTOGRAM_BAR_WIDTH_PX = 4;
+
+/** Default histogram bar color (green). */
+const HISTOGRAM_DEFAULT_COLOR: readonly [number, number, number, number] = [0.173, 0.714, 0.463, 0.6];
+
+/** Reference line alpha embedded in fragment shader. */
+const REFERENCE_LINE_ALPHA = 0.12;
+
+/** Minimum length threshold for discarding degenerate line segments (GLSL). */
+const MIN_LINE_LENGTH = 0.001;
+
 /**
  * Renders oscillator indicators (RSI, MACD) in a separate pane
  * at the bottom of the chart canvas.
@@ -99,7 +111,7 @@ export class OscillatorPaneRenderer extends BaseRenderer {
         void main() {
           vec2 dir = a_p2 - a_p1;
           float len = length(dir);
-          if (len < 0.001) { gl_Position = vec4(-2.0, -2.0, 0.0, 1.0); return; }
+          if (len < ${MIN_LINE_LENGTH}) { gl_Position = vec4(-2.0, -2.0, 0.0, 1.0); return; }
           vec2 forward = dir / len;
           vec2 perp = vec2(-forward.y, forward.x);
           vec2 pos = mix(a_p1, a_p2, a_quad.x) + perp * a_quad.y * u_lineWidth;
@@ -196,7 +208,7 @@ export class OscillatorPaneRenderer extends BaseRenderer {
       `,
       frag: `
         precision mediump float;
-        void main() { gl_FragColor = vec4(1.0, 1.0, 1.0, 0.12); }
+        void main() { gl_FragColor = vec4(1.0, 1.0, 1.0, ${REFERENCE_LINE_ALPHA}); }
       `,
       attributes: {
         a_pos: { buffer: this.refLineBuffer as REGL.Buffer },
@@ -312,7 +324,7 @@ export class OscillatorPaneRenderer extends BaseRenderer {
 
     const { start, end } = this.viewport.getVisibleTimeRange();
     const data: number[] = [];
-    const barWidth = 4;
+    const barWidth = HISTOGRAM_BAR_WIDTH_PX;
 
     for (const bar of this.histogram) {
       if (bar.timestamp < start || bar.timestamp > end) continue;
@@ -325,8 +337,7 @@ export class OscillatorPaneRenderer extends BaseRenderer {
 
     this.histVisibleCount = data.length / HIST_FLOATS_PER_INSTANCE;
     this.histInstanceBuffer.subdata(new Float32Array(data));
-    // Green for positive, red for negative — use green as default
-    this.currentColor = [0.173, 0.714, 0.463, 0.6];
+    this.currentColor = [...HISTOGRAM_DEFAULT_COLOR] as [number, number, number, number];
     this.drawHistCommand();
   }
 

@@ -178,7 +178,7 @@ export class BybitAdapter extends BaseExchangeAdapter {
    */
   private handlePublicTrade(
     topic: string,
-    trades: Array<Record<string, unknown>>
+    trades: readonly Record<string, unknown>[],
   ): void {
     const exchangeSymbol = topic.replace('publicTrade.', '');
     const symbol = this.toNormalizedSymbol(exchangeSymbol);
@@ -303,14 +303,14 @@ export class BybitAdapter extends BaseExchangeAdapter {
   }
 
   /** Sends a subscribe message to Bybit. */
-  private sendSubscribe(args: string[]): void {
+  private sendSubscribe(args: readonly string[]): void {
     this.wsManager.send(
       JSON.stringify({ op: 'subscribe', args })
     );
   }
 
   /** Sends an unsubscribe message to Bybit. */
-  private sendUnsubscribe(args: string[]): void {
+  private sendUnsubscribe(args: readonly string[]): void {
     this.wsManager.send(
       JSON.stringify({ op: 'unsubscribe', args })
     );

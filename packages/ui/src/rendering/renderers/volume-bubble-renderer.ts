@@ -16,6 +16,20 @@ const MAX_BUBBLES = 10_000;
 /** Number of vertices per circle approximation. */
 const CIRCLE_SEGMENTS = 16;
 
+/** Minimum bubble radius in pixels. */
+const BUBBLE_RADIUS_MIN = 3;
+/** Maximum additional radius based on trade size. */
+const BUBBLE_RADIUS_RANGE = 17;
+/** Minimum bubble alpha. */
+const BUBBLE_ALPHA_MIN = 0.3;
+/** Alpha range added proportionally to trade size. */
+const BUBBLE_ALPHA_RANGE = 0.4;
+
+/** Buy bubble color (green). */
+const BUBBLE_COLOR_BUY = { r: 0.173, g: 0.714, b: 0.463 } as const;
+/** Sell bubble color (red). */
+const BUBBLE_COLOR_SELL = { r: 0.914, g: 0.278, b: 0.278 } as const;
+
 /**
  * Renders volume bubbles on the chart.
  * Each trade above a threshold is shown as a circle sized by volume.
@@ -172,21 +186,20 @@ export class VolumeBubbleRenderer extends BaseRenderer {
       const cx = this.viewport.dataToPixelX(trade.timestamp);
       const cy = this.viewport.dataToPixelY(trade.price);
 
-      // Radius based on trade size (3-20 pixels)
       const sizeNorm = Math.sqrt(trade.amount / maxSize);
-      const radius = 3 + sizeNorm * 17;
+      const radius = BUBBLE_RADIUS_MIN + sizeNorm * BUBBLE_RADIUS_RANGE;
 
-      // Color: green for buy, red for sell
       const isBuy = trade.side === 'buy';
-      const alpha = 0.3 + sizeNorm * 0.4;
+      const color = isBuy ? BUBBLE_COLOR_BUY : BUBBLE_COLOR_SELL;
+      const alpha = BUBBLE_ALPHA_MIN + sizeNorm * BUBBLE_ALPHA_RANGE;
 
       const offset = count * FLOATS_PER_INSTANCE;
       data[offset] = cx;
       data[offset + 1] = cy;
       data[offset + 2] = radius;
-      data[offset + 3] = isBuy ? 0.173 : 0.914;
-      data[offset + 4] = isBuy ? 0.714 : 0.278;
-      data[offset + 5] = isBuy ? 0.463 : 0.278;
+      data[offset + 3] = color.r;
+      data[offset + 4] = color.g;
+      data[offset + 5] = color.b;
       data[offset + 6] = alpha;
 
       count++;

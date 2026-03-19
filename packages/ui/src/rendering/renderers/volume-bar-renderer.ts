@@ -13,6 +13,12 @@ const DEFAULT_MAX_BARS = 50_000;
 /** Fraction of canvas height used for volume pane (bottom 20%). */
 const VOLUME_PANE_FRACTION = 0.20;
 
+/** Default bar width in pixels when no option provided. */
+const DEFAULT_BAR_WIDTH_PX = 6;
+
+/** Opacity of volume bars. */
+const VOLUME_BAR_OPACITY = 0.35;
+
 /**
  * Renders volume bars at the bottom of the chart canvas using instanced rendering.
  * Bars are colored bullish/bearish based on candle close vs open.
@@ -38,7 +44,7 @@ export class VolumeBarRenderer extends BaseRenderer {
   ) {
     super(ctx, viewport);
     this.maxBars = options?.maxBars ?? DEFAULT_MAX_BARS;
-    this.barWidthPx = options?.barWidthPx ?? 6;
+    this.barWidthPx = options?.barWidthPx ?? DEFAULT_BAR_WIDTH_PX;
   }
 
   init(): void {
@@ -143,7 +149,7 @@ export class VolumeBarRenderer extends BaseRenderer {
           const c = this.getThemeColors().bearish;
           return [c[0], c[1], c[2]];
         },
-        u_opacity: 0.35,
+        u_opacity: VOLUME_BAR_OPACITY,
       },
       count: 6,
       instances: () => this.visibleCount,

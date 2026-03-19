@@ -9,6 +9,16 @@ import type { ViewportTransform } from '../viewport-transform.js';
  */
 const MAX_CELLS = 100_000;
 
+/** Floats per liquidation cell instance. */
+const FLOATS_PER_INSTANCE = 8;
+
+/** Base alpha for liquidation cells. */
+const LIQUIDATION_ALPHA_BASE = 0.15;
+/** Alpha range added proportionally to intensity. */
+const LIQUIDATION_ALPHA_RANGE = 0.55;
+/** Blue channel intensity multiplier. */
+const LIQUIDATION_BLUE_FACTOR = 0.3;
+
 /**
  * Liquidation heatmap renderer.
  * Renders liquidation events as colored cells on the price chart.
@@ -28,8 +38,7 @@ export class LiquidationHeatmapRenderer extends BaseRenderer {
 
   constructor(ctx: RenderingContext, viewport: ViewportTransform) {
     super(ctx, viewport);
-    // 8 floats per instance: centerX, centerY, width, height, r, g, b, a
-    this.instanceData = new Float32Array(MAX_CELLS * 8);
+    this.instanceData = new Float32Array(MAX_CELLS * FLOATS_PER_INSTANCE);
   }
 
   init(): void {
@@ -38,7 +47,7 @@ export class LiquidationHeatmapRenderer extends BaseRenderer {
     this.instanceBuffer = regl.buffer({
       usage: 'dynamic',
       type: 'float',
-      length: MAX_CELLS * 8 * 4,
+      length: MAX_CELLS * FLOATS_PER_INSTANCE * 4,
     });
 
     this.drawCommand = regl({
@@ -150,10 +159,10 @@ export class LiquidationHeatmapRenderer extends BaseRenderer {
 
       const r = shortRatio * (0.6 + intensity * 0.4);
       const g = longRatio * (0.4 + intensity * 0.6);
-      const b = intensity * 0.3;
-      const a = 0.15 + intensity * 0.55;
+      const b = intensity * LIQUIDATION_BLUE_FACTOR;
+      const a = LIQUIDATION_ALPHA_BASE + intensity * LIQUIDATION_ALPHA_RANGE;
 
-      const off = count * 8;
+      const off = count * FLOATS_PER_INSTANCE;
       data[off] = cx;
       data[off + 1] = cy;
       data[off + 2] = cw;
@@ -167,7 +176,7 @@ export class LiquidationHeatmapRenderer extends BaseRenderer {
 
     this.instanceCount = count;
     if (count > 0) {
-      (this.instanceBuffer as REGL.Buffer).subdata(data.subarray(0, count * 8));
+      (this.instanceBuffer as REGL.Buffer).subdata(data.subarray(0, count * FLOATS_PER_INSTANCE));
     }
     this.markDirty();
   }

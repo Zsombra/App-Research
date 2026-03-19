@@ -1,5 +1,8 @@
 import type { NormalizedTrade, OHLCVCandle, CandleTimeframe } from '@terminal/types';
 
+/** Default maximum number of candles to retain per symbol. */
+const DEFAULT_MAX_CANDLES = 500;
+
 /** Returns the interval duration in milliseconds for a given timeframe. */
 export function timeframeToMs(tf: CandleTimeframe): number {
   const map: Record<CandleTimeframe, number> = {
@@ -38,9 +41,9 @@ export function floorToCandle(timestamp: number, intervalMs: number): number {
  */
 export function aggregateTrade(
   candles: OHLCVCandle[],
-  trade: NormalizedTrade,
+  trade: Readonly<NormalizedTrade>,
   timeframe: CandleTimeframe,
-  maxCandles: number = 500
+  maxCandles: number = DEFAULT_MAX_CANDLES
 ): OHLCVCandle[] {
   if (maxCandles < 1) {
     throw new RangeError(`maxCandles must be >= 1, got ${maxCandles}`);

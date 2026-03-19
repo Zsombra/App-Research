@@ -21,6 +21,7 @@ import { aggregateTrade } from './candle-aggregator.js';
 import { buildTickBars, buildVolumeBars, buildRangeBars } from '@terminal/core';
 import { useIndicatorStore } from './indicator-store.js';
 
+/** Maximum recent trades kept per symbol to bound memory usage. */
 const MAX_TRADES = 500;
 const DEFAULT_TIMEFRAME: CandleTimeframe = '1m';
 

@@ -13,6 +13,9 @@ import { OrderbookManager } from '../../orderbook/orderbook-manager.js';
 /** Coinbase Advanced Trade WebSocket feed URL. */
 const DEFAULT_WS_URL = 'wss://advanced-trade-ws.coinbase.com';
 
+/** Default orderbook depth for Coinbase level2 subscriptions. */
+const COINBASE_ORDERBOOK_DEPTH = 25;
+
 /**
  * Coinbase exchange adapter.
  *
@@ -76,7 +79,7 @@ export class CoinbaseAdapter extends BaseExchangeAdapter {
     if (!this.orderbookManagers.has(symbol)) {
       this.orderbookManagers.set(
         symbol,
-        new OrderbookManager({ symbol, exchange: 'coinbase', maxDepth: 25 })
+        new OrderbookManager({ symbol, exchange: 'coinbase', maxDepth: COINBASE_ORDERBOOK_DEPTH })
       );
     }
     this.sendSubscribe('level2', [exchangeSymbol]);
@@ -145,7 +148,7 @@ export class CoinbaseAdapter extends BaseExchangeAdapter {
    * Event format:
    * { type: "snapshot"|"update", trades: [{ trade_id, product_id, price, size, side, time }] }
    */
-  private handleMarketTrades(event: Record<string, unknown>): void {
+  private handleMarketTrades(event: Readonly<Record<string, unknown>>): void {
     const trades = event['trades'] as Array<Record<string, unknown>> | undefined;
     if (!trades) return;
 
@@ -186,7 +189,7 @@ export class CoinbaseAdapter extends BaseExchangeAdapter {
    * Event format:
    * { type: "snapshot"|"update", product_id, updates: [{ side, price_level, new_quantity }] }
    */
-  private handleLevel2(event: Record<string, unknown>): void {
+  private handleLevel2(event: Readonly<Record<string, unknown>>): void {
     const exchangeSymbol = event['product_id'] as string;
     const symbol = this.toNormalizedSymbol(exchangeSymbol);
     if (!symbol) return;
@@ -250,7 +253,7 @@ export class CoinbaseAdapter extends BaseExchangeAdapter {
    * Event format:
    * { type: "snapshot"|"update", tickers: [{ product_id, price, volume_24_h, ... }] }
    */
-  private handleTicker(event: Record<string, unknown>): void {
+  private handleTicker(event: Readonly<Record<string, unknown>>): void {
     const tickers = event['tickers'] as Array<Record<string, unknown>> | undefined;
     if (!tickers) return;
 
@@ -294,7 +297,7 @@ export class CoinbaseAdapter extends BaseExchangeAdapter {
     }
   }
 
-  private sendSubscribe(channel: string, productIds: string[]): void {
+  private sendSubscribe(channel: string, productIds: readonly string[]): void {
     this.wsManager.send(JSON.stringify({
       type: 'subscribe',
       product_ids: productIds,
@@ -302,7 +305,7 @@ export class CoinbaseAdapter extends BaseExchangeAdapter {
     }));
   }
 
-  private sendUnsubscribe(channel: string, productIds: string[]): void {
+  private sendUnsubscribe(channel: string, productIds: readonly string[]): void {
     this.wsManager.send(JSON.stringify({
       type: 'unsubscribe',
       product_ids: productIds,

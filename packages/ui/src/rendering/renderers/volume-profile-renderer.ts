@@ -13,6 +13,12 @@ const DEFAULT_NUM_BINS = 50;
 /** Maximum width of a volume profile bar as fraction of canvas width. */
 const MAX_BAR_WIDTH_FRACTION = 0.25;
 
+/** Bar height as fraction of bin height (with slight padding). */
+const BAR_HEIGHT_FRACTION = 0.85;
+
+/** Alpha for volume profile bars. */
+const VOLUME_PROFILE_BAR_ALPHA = 0.25;
+
 /**
  * Renders a session volume profile as horizontal bars on the right side
  * of the chart. Each bar represents the total volume traded at a price
@@ -135,8 +141,8 @@ export class VolumeProfileRenderer extends BaseRenderer {
         u_canvasWidth: () => this.viewport.canvasWidth,
         u_isBuy: isBuyPortion,
         u_color: isBuyPortion
-          ? () => [this.getThemeColors().bullish[0], this.getThemeColors().bullish[1], this.getThemeColors().bullish[2], 0.25]
-          : () => [this.getThemeColors().bearish[0], this.getThemeColors().bearish[1], this.getThemeColors().bearish[2], 0.25],
+          ? () => [this.getThemeColors().bullish[0], this.getThemeColors().bullish[1], this.getThemeColors().bullish[2], VOLUME_PROFILE_BAR_ALPHA]
+          : () => [this.getThemeColors().bearish[0], this.getThemeColors().bearish[1], this.getThemeColors().bearish[2], VOLUME_PROFILE_BAR_ALPHA],
       },
       count: 6,
       instances: () => this.barCount,
@@ -224,7 +230,7 @@ export class VolumeProfileRenderer extends BaseRenderer {
 
     // Build instance data
     const maxBarWidthPx = this.viewport.canvasWidth * MAX_BAR_WIDTH_FRACTION;
-    const barHeightPx = Math.max(1, (this.viewport.canvasHeight / this.numBins) * 0.85);
+    const barHeightPx = Math.max(1, (this.viewport.canvasHeight / this.numBins) * BAR_HEIGHT_FRACTION);
     this.barCount = 0;
 
     const data = new Float32Array(this.numBins * FLOATS_PER_INSTANCE);

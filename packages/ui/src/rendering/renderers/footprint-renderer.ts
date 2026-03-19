@@ -13,6 +13,29 @@ const FLOATS_PER_INSTANCE = 8;
 /** Maximum number of footprint cells to render. */
 const MAX_CELLS = 100_000;
 
+// --- Footprint cell colors (sRGB 0-1) ---
+/** Bullish / ask-dominant green. */
+const COLOR_BULLISH = { r: 0.173, g: 0.714, b: 0.463 } as const;
+/** Bearish / bid-dominant red. */
+const COLOR_BEARISH = { r: 0.914, g: 0.278, b: 0.278 } as const;
+/** Balanced bid/ask yellow. */
+const COLOR_BALANCED = { r: 0.6, g: 0.6, b: 0.2 } as const;
+/** Total-volume mode blue-purple. */
+const COLOR_TOTAL_VOLUME = { r: 0.388, g: 0.400, b: 0.753 } as const;
+
+/** Threshold above which buy side is considered dominant. */
+const BUY_DOMINANT_THRESHOLD = 0.6;
+/** Threshold below which sell side is considered dominant. */
+const SELL_DOMINANT_THRESHOLD = 0.4;
+
+/** Minimum alpha for cells (at zero intensity). */
+const CELL_ALPHA_MIN = 0.15;
+/** Alpha range added proportionally to intensity. */
+const CELL_ALPHA_RANGE = 0.7;
+
+/** Fraction of candle slot used for cell width. */
+const CELL_WIDTH_FRACTION = 0.8;
+
 /**
  * WebGL renderer for footprint chart cells.
  * Each cell represents buy/sell volume at a specific price level within a candle.
@@ -172,7 +195,7 @@ export class FootprintRenderer extends BaseRenderer {
     }
 
     // Cell width in pixels: use 80% of candle slot
-    const cellWidthPx = Math.max(2, this.candleWidthMs * this.viewport.scaleX * 0.8);
+    const cellWidthPx = Math.max(2, this.candleWidthMs * this.viewport.scaleX * CELL_WIDTH_FRACTION);
     const halfCandleMs = this.candleWidthMs / 2;
 
     for (const fp of this.footprints) {
@@ -196,47 +219,41 @@ export class FootprintRenderer extends BaseRenderer {
 
         switch (this.displayMode) {
           case 'bid-ask': {
-            // Bid side (sell) = red tint, Ask side (buy) = green tint
-            // Color based on which side dominates
             const buyRatio = level.buyVolume / totalVol;
-            if (buyRatio > 0.6) {
-              r = 0.173; g = 0.714; b = 0.463; // green (ask-dominant)
-            } else if (buyRatio < 0.4) {
-              r = 0.914; g = 0.278; b = 0.278; // red (bid-dominant)
+            if (buyRatio > BUY_DOMINANT_THRESHOLD) {
+              ({ r, g, b } = COLOR_BULLISH);
+            } else if (buyRatio < SELL_DOMINANT_THRESHOLD) {
+              ({ r, g, b } = COLOR_BEARISH);
             } else {
-              r = 0.6; g = 0.6; b = 0.2; // yellow (balanced)
+              ({ r, g, b } = COLOR_BALANCED);
             }
             break;
           }
           case 'total-volume': {
-            // Single color (blue-purple) with intensity based on volume
-            r = 0.388; g = 0.400; b = 0.753;
+            ({ r, g, b } = COLOR_TOTAL_VOLUME);
             break;
           }
           case 'bid-ask-delta': {
-            // Bid|Ask layout with delta gradient coloring
             const normalizedDelta = this.globalMaxVolume > 0 ? delta / this.globalMaxVolume : 0;
             if (normalizedDelta >= 0) {
-              r = 0.173; g = 0.4 + 0.314 * Math.min(1, normalizedDelta * 2); b = 0.463;
+              r = COLOR_BULLISH.r; g = 0.4 + 0.314 * Math.min(1, normalizedDelta * 2); b = COLOR_BULLISH.b;
             } else {
-              r = 0.914; g = 0.278 * (1 + normalizedDelta); b = 0.278;
+              r = COLOR_BEARISH.r; g = COLOR_BEARISH.g * (1 + normalizedDelta); b = COLOR_BEARISH.b;
             }
             break;
           }
           case 'delta':
           default: {
-            // Original delta coloring: positive = green, negative = red
             if (delta >= 0) {
-              r = 0.173; g = 0.714; b = 0.463;
+              ({ r, g, b } = COLOR_BULLISH);
             } else {
-              r = 0.914; g = 0.278; b = 0.278;
+              ({ r, g, b } = COLOR_BEARISH);
             }
             break;
           }
         }
 
-        // Alpha based on volume intensity
-        const alpha = 0.15 + intensity * 0.7;
+        const alpha = CELL_ALPHA_MIN + intensity * CELL_ALPHA_RANGE;
 
         const offset = cellCount * FLOATS_PER_INSTANCE;
         data[offset] = centerTimePx;

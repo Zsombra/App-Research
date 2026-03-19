@@ -228,7 +228,7 @@ export class GridRenderer extends BaseRenderer {
  * Find the smallest candidate interval >= rawInterval.
  * Falls back to the largest candidate if none match.
  */
-function findNiceInterval(rawInterval: number, candidates: number[]): number {
+function findNiceInterval(rawInterval: number, candidates: readonly number[]): number {
   for (const c of candidates) {
     if (c >= rawInterval) return c;
   }

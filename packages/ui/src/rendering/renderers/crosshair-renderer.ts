@@ -3,6 +3,12 @@ import { BaseRenderer } from '../base-renderer.js';
 import type { RenderingContext } from '../rendering-context.js';
 import type { ViewportTransform } from '../viewport-transform.js';
 
+/** Default crosshair line width in physical pixels. */
+const CROSSHAIR_LINE_WIDTH = 1.0;
+
+/** Default crosshair color (white with alpha). */
+const CROSSHAIR_COLOR: readonly [number, number, number, number] = [1.0, 1.0, 1.0, 0.4];
+
 /**
  * Renders a crosshair (horizontal + vertical lines) at the cursor position.
  * Uses a fullscreen quad with a fragment shader that discards non-crosshair pixels.
@@ -70,8 +76,8 @@ export class CrosshairRenderer extends BaseRenderer {
           this.cursorY * this.ctx.pixelRatio,
         ],
         u_resolution: () => [this.viewport.canvasWidth, this.viewport.canvasHeight],
-        u_lineWidth: 1.0,
-        u_color: [1.0, 1.0, 1.0, 0.4],
+        u_lineWidth: CROSSHAIR_LINE_WIDTH,
+        u_color: [...CROSSHAIR_COLOR],
       },
       count: 6,
       depth: { enable: false },

@@ -1,5 +1,8 @@
 import Fastify from 'fastify';
 
+/** Default server port when PORT env is not set. */
+const DEFAULT_PORT = 3001;
+
 /**
  * Creates and configures the Fastify server instance.
  * Phase 0: Only a health endpoint is registered.
@@ -24,7 +27,7 @@ export function buildServer() {
 async function main() {
   const server = buildServer();
   const parsed = Number(process.env['PORT']);
-  const port = Number.isFinite(parsed) ? parsed : 3001;
+  const port = Number.isFinite(parsed) ? parsed : DEFAULT_PORT;
   const host = process.env['HOST'] || '127.0.0.1';
 
   const shutdown = async (signal: string) => {

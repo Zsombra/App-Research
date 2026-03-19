@@ -13,6 +13,19 @@ const FLOATS_PER_INSTANCE = 8;
 /** Maximum number of heatmap cells to render per frame. */
 const MAX_CELLS = 200_000;
 
+/** Minimum intensity threshold to render a cell. */
+const MIN_INTENSITY_THRESHOLD = 0.01;
+
+// --- Bid color gradient (blue-cyan): base + intensity * range ---
+const BID_COLOR = { r: 0.0, gBase: 0.2, gRange: 0.5, bBase: 0.4, bRange: 0.6 } as const;
+// --- Ask color gradient (orange-yellow): base + intensity * range ---
+const ASK_COLOR = { rBase: 0.5, rRange: 0.5, gBase: 0.2, gRange: 0.3, b: 0.0 } as const;
+
+/** Base alpha for heatmap cells (at zero intensity). */
+const HEATMAP_ALPHA_BASE = 0.1;
+/** Alpha range added proportionally to intensity. */
+const HEATMAP_ALPHA_RANGE = 0.5;
+
 /**
  * Renders orderbook heatmap behind candlesticks.
  * Each cell represents liquidity at a specific (time, price) position.
@@ -176,7 +189,7 @@ export class HeatmapRenderer extends BaseRenderer {
         if (cellCount >= MAX_CELLS) break;
 
         const intensity = Math.min(1, size / this.maxLiquidity);
-        if (intensity < 0.01) continue;
+        if (intensity < MIN_INTENSITY_THRESHOLD) continue;
 
         const centerPricePx = this.viewport.dataToPixelY(price + halfBucket);
 
@@ -185,11 +198,10 @@ export class HeatmapRenderer extends BaseRenderer {
         data[offset + 1] = centerPricePx;
         data[offset + 2] = cellWidthPx;
         data[offset + 3] = cellHeightPx;
-        // Bid color: blue-cyan gradient based on intensity
-        data[offset + 4] = 0.0;
-        data[offset + 5] = 0.2 + intensity * 0.5;
-        data[offset + 6] = 0.4 + intensity * 0.6;
-        data[offset + 7] = 0.1 + intensity * 0.5;
+        data[offset + 4] = BID_COLOR.r;
+        data[offset + 5] = BID_COLOR.gBase + intensity * BID_COLOR.gRange;
+        data[offset + 6] = BID_COLOR.bBase + intensity * BID_COLOR.bRange;
+        data[offset + 7] = HEATMAP_ALPHA_BASE + intensity * HEATMAP_ALPHA_RANGE;
 
         cellCount++;
       }
@@ -199,7 +211,7 @@ export class HeatmapRenderer extends BaseRenderer {
         if (cellCount >= MAX_CELLS) break;
 
         const intensity = Math.min(1, size / this.maxLiquidity);
-        if (intensity < 0.01) continue;
+        if (intensity < MIN_INTENSITY_THRESHOLD) continue;
 
         const centerPricePx = this.viewport.dataToPixelY(price + halfBucket);
 
@@ -208,11 +220,10 @@ export class HeatmapRenderer extends BaseRenderer {
         data[offset + 1] = centerPricePx;
         data[offset + 2] = cellWidthPx;
         data[offset + 3] = cellHeightPx;
-        // Ask color: orange-yellow gradient based on intensity
-        data[offset + 4] = 0.5 + intensity * 0.5;
-        data[offset + 5] = 0.2 + intensity * 0.3;
-        data[offset + 6] = 0.0;
-        data[offset + 7] = 0.1 + intensity * 0.5;
+        data[offset + 4] = ASK_COLOR.rBase + intensity * ASK_COLOR.rRange;
+        data[offset + 5] = ASK_COLOR.gBase + intensity * ASK_COLOR.gRange;
+        data[offset + 6] = ASK_COLOR.b;
+        data[offset + 7] = HEATMAP_ALPHA_BASE + intensity * HEATMAP_ALPHA_RANGE;
 
         cellCount++;
       }

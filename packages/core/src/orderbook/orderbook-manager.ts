@@ -62,7 +62,7 @@ export class OrderbookManager {
   /**
    * Replaces the entire orderbook state with the given snapshot.
    */
-  applySnapshot(snapshot: OrderbookSnapshot): void {
+  applySnapshot(snapshot: Readonly<OrderbookSnapshot>): void {
     this.bidsMap.clear();
     this.asksMap.clear();
 
@@ -86,7 +86,7 @@ export class OrderbookManager {
    * Applies an incremental delta to the current orderbook state.
    * Levels with size 0 are removed; levels with size > 0 are set/updated.
    */
-  applyDelta(delta: OrderbookDelta): void {
+  applyDelta(delta: Readonly<OrderbookDelta>): void {
     // Validate sequence continuity if we have a previous sequence ID
     if (
       this.lastSequenceId !== 0 &&
