@@ -53,6 +53,27 @@ describe('normalizeSymbol', () => {
   it('should uppercase symbols', () => {
     expect(normalizeSymbol('btcusdt')).toBe('BTC/USDT');
   });
+
+  it('should handle BTC-quoted pairs', () => {
+    expect(normalizeSymbol('ETHBTC')).toBe('ETH/BTC');
+  });
+
+  it('should handle ETH-quoted pairs', () => {
+    expect(normalizeSymbol('SOLETH')).toBe('SOL/ETH');
+  });
+
+  it('should handle BUSD and TUSD pairs', () => {
+    expect(normalizeSymbol('BTCBUSD')).toBe('BTC/BUSD');
+    expect(normalizeSymbol('BTCTUSD')).toBe('BTC/TUSD');
+  });
+
+  it('should return unrecognized symbol as-is uppercased', () => {
+    expect(normalizeSymbol('xyz')).toBe('XYZ');
+  });
+
+  it('should handle mixed case with slash', () => {
+    expect(normalizeSymbol('btc/usdt')).toBe('BTC/USDT');
+  });
 });
 
 describe('parseExchangeSymbol', () => {
@@ -64,6 +85,14 @@ describe('parseExchangeSymbol', () => {
 
   it('should throw on invalid format', () => {
     expect(() => parseExchangeSymbol('BTCUSDT')).toThrow('Invalid symbol format');
+  });
+
+  it('should throw on empty string', () => {
+    expect(() => parseExchangeSymbol('')).toThrow('Invalid symbol format');
+  });
+
+  it('should throw on symbol with multiple slashes', () => {
+    expect(() => parseExchangeSymbol('BTC/USD/T')).toThrow('Invalid symbol format');
   });
 });
 
@@ -93,6 +122,16 @@ describe('formatPrice', () => {
     expect(result).toContain('45');
     expect(result).toContain('123');
   });
+
+  it('should show significant digits for small prices', () => {
+    const result = formatPrice(0.00001234);
+    expect(result).toContain('1234');
+  });
+
+  it('should handle exactly 1.00', () => {
+    const result = formatPrice(1.0);
+    expect(result).toContain('1');
+  });
 });
 
 describe('formatVolume', () => {
@@ -102,5 +141,19 @@ describe('formatVolume', () => {
 
   it('should abbreviate billions', () => {
     expect(formatVolume(1_234_567_890)).toBe('1.23B');
+  });
+
+  it('should format thousands with commas', () => {
+    const result = formatVolume(5_432);
+    expect(result).toContain('5');
+    expect(result).toContain('432');
+  });
+
+  it('should format small values with 2 decimals', () => {
+    expect(formatVolume(42.567)).toBe('42.57');
+  });
+
+  it('should handle zero', () => {
+    expect(formatVolume(0)).toBe('0.00');
   });
 });

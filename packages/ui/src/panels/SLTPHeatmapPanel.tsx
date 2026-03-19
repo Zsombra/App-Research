@@ -37,7 +37,7 @@ interface SLTPHeatmapPanelProps {
  * Exchange-agnostic: works with any OHLCV data.
  */
 export function SLTPHeatmapPanel({ mode = 'both' }: SLTPHeatmapPanelProps): React.JSX.Element {
-  const activeSymbol = useActiveSymbol() ?? 'BTC/USDT';
+  const activeSymbol = useActiveSymbol();
   const candles = useCandles(activeSymbol);
   const recompute = useSLTPHeatmapStore((s) => s.recompute);
   const enabled = useSLTPHeatmapStore((s) => s.enabled);

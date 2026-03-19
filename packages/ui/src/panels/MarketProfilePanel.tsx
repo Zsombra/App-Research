@@ -10,7 +10,7 @@ import { useActiveSymbol } from '../stores/symbol-store.js';
  * Displays a horizontal histogram of time-at-price with POC, VAH, VAL markers.
  */
 export function MarketProfilePanel(): React.JSX.Element {
-  const activeSymbol = useActiveSymbol() ?? 'BTC/USDT';
+  const activeSymbol = useActiveSymbol();
   const candles = useCandles(activeSymbol);
 
   const profile: MarketProfile | null = useMemo(() => {
