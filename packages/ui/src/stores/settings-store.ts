@@ -33,7 +33,13 @@ function loadSettings(): AppSettings {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return DEFAULT_SETTINGS;
-    return { ...DEFAULT_SETTINGS, ...JSON.parse(raw) as Partial<AppSettings> };
+    const parsed = JSON.parse(raw) as Partial<AppSettings>;
+    // Validate numeric fields to prevent corrupt localStorage data
+    if (parsed.maxTradesDisplay !== undefined) {
+      const n = Number(parsed.maxTradesDisplay);
+      parsed.maxTradesDisplay = isFinite(n) && n > 0 ? Math.floor(n) : DEFAULT_SETTINGS.maxTradesDisplay;
+    }
+    return { ...DEFAULT_SETTINGS, ...parsed };
   } catch (err) {
     console.warn('[settings-store] Failed to load settings:', err);
     return DEFAULT_SETTINGS;

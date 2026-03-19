@@ -67,12 +67,12 @@ export class OrderbookManager {
     this.asksMap.clear();
 
     for (const level of snapshot.bids) {
-      if (level.size > 0) {
+      if (level.size > 0 && level.price > 0) {
         this.bidsMap.set(level.price, level.size);
       }
     }
     for (const level of snapshot.asks) {
-      if (level.size > 0) {
+      if (level.size > 0 && level.price > 0) {
         this.asksMap.set(level.price, level.size);
       }
     }

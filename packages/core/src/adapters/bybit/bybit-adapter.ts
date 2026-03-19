@@ -183,8 +183,9 @@ export class BybitAdapter extends BaseExchangeAdapter {
     if (symbol === null) return;
 
     for (const t of trades) {
-      const price = parseFloat(t['p'] as string);
-      const amount = parseFloat(t['v'] as string);
+      if (typeof t['p'] !== 'string' || typeof t['v'] !== 'string') continue;
+      const price = parseFloat(t['p']);
+      const amount = parseFloat(t['v']);
       const rawSide = t['S'] as string;
       const timestamp = t['T'] as number;
       const id = String(t['i']);
@@ -275,21 +276,24 @@ export class BybitAdapter extends BaseExchangeAdapter {
     const symbol = this.toNormalizedSymbol(exchangeSymbol);
     if (symbol === null) return;
 
+    const lastPrice = parseFloat(data['lastPrice'] as string);
+    if (isNaN(lastPrice)) return;
+
     const ticker: Ticker = {
       exchange: 'bybit',
       symbol,
       timestamp: Date.now(),
-      lastPrice: parseFloat(data['lastPrice'] as string),
-      changePercent24h: parseFloat(data['price24hPcnt'] as string) * 100,
-      high24h: parseFloat(data['highPrice24h'] as string),
-      low24h: parseFloat(data['lowPrice24h'] as string),
-      volume24h: parseFloat(data['volume24h'] as string),
-      quoteVolume24h: parseFloat(data['turnover24h'] as string),
+      lastPrice,
+      changePercent24h: parseFloat(data['price24hPcnt'] as string) * 100 || 0,
+      high24h: parseFloat(data['highPrice24h'] as string) || lastPrice,
+      low24h: parseFloat(data['lowPrice24h'] as string) || lastPrice,
+      volume24h: parseFloat(data['volume24h'] as string) || 0,
+      quoteVolume24h: parseFloat(data['turnover24h'] as string) || 0,
       bbo: {
-        bidPrice: parseFloat(data['bid1Price'] as string),
-        bidSize: parseFloat(data['bid1Size'] as string),
-        askPrice: parseFloat(data['ask1Price'] as string),
-        askSize: parseFloat(data['ask1Size'] as string),
+        bidPrice: parseFloat(data['bid1Price'] as string) || lastPrice,
+        bidSize: parseFloat(data['bid1Size'] as string) || 0,
+        askPrice: parseFloat(data['ask1Price'] as string) || lastPrice,
+        askSize: parseFloat(data['ask1Size'] as string) || 0,
       },
     };
 

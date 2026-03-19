@@ -55,7 +55,7 @@ export function TickerBar({ symbol, exchange }: TickerBarProps): React.JSX.Eleme
             L: {ticker.low24h.toFixed(2)}
           </span>
           <span style={{ color: '#666' }}>
-            Vol: {(ticker.volume24h).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+            Vol: {isFinite(ticker.volume24h) ? ticker.volume24h.toLocaleString(undefined, { maximumFractionDigits: 0 }) : '—'}
           </span>
         </>
       ) : (

@@ -69,7 +69,7 @@ function renderDepthChart(
   const maxCum = Math.max(bids[bids.length - 1]!.cumSize, asks[asks.length - 1]!.cumSize);
   const priceMin = bids[bids.length - 1]!.price;
   const priceMax = asks[asks.length - 1]!.price;
-  const priceRange = priceMax - priceMin;
+  const priceRange = priceMax - priceMin || 1;
 
   const pad = { top: 20, bottom: 24, left: 8, right: 8 };
   const cw = width - pad.left - pad.right;

@@ -11,6 +11,9 @@ export function computeBollinger(
   period: number,
   stdDev: number
 ): IndicatorPoint<BollingerOutput>[] {
+  if (period < 1) {
+    throw new RangeError(`Bollinger period must be >= 1, got ${period}`);
+  }
   const len = candles.length;
   const result: IndicatorPoint<BollingerOutput>[] = new Array(len);
 

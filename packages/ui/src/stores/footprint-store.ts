@@ -71,9 +71,10 @@ export const useFootprintStore = create<FootprintState>((set, get) => ({
     if (!state.enabled || candles.length === 0) return;
 
     // Auto-detect tick size if not set or still default
-    const tickSize = state.config.tickSize > 0
+    let tickSize = state.config.tickSize > 0
       ? state.config.tickSize
       : autoTickSize(candles);
+    if (tickSize <= 0) tickSize = 0.01;
 
     let fpCandles = buildFootprintFromCandles(candles, tickSize);
 

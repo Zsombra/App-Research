@@ -12,6 +12,9 @@ export function computeMACD(
   slowPeriod: number,
   signalPeriod: number
 ): IndicatorPoint<MACDOutput>[] {
+  if (fastPeriod < 1 || slowPeriod < 1 || signalPeriod < 1) {
+    throw new RangeError(`MACD periods must be >= 1, got fast=${fastPeriod}, slow=${slowPeriod}, signal=${signalPeriod}`);
+  }
   const len = candles.length;
   const result: IndicatorPoint<MACDOutput>[] = new Array(len);
   const nullPoint: MACDOutput = { macd: null, signal: null, histogram: null };
