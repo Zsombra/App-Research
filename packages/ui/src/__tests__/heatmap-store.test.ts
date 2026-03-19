@@ -103,4 +103,27 @@ describe('heatmap-store', () => {
     store.setEnabled(true);
     expect(useHeatmapStore.getState().enabled).toBe(true);
   });
+
+  describe('clearSymbol', () => {
+    it('should remove columns and maxLiquidity for the given symbol', () => {
+      const store = useHeatmapStore.getState();
+      store.setEnabled(true);
+      store.captureSnapshot('BTC/USDT', makeSnapshot({ timestamp: 1000 }));
+      store.captureSnapshot('ETH/USDT', makeSnapshot({ symbol: 'ETH/USDT', timestamp: 2000 }));
+
+      expect(useHeatmapStore.getState().columns.get('BTC/USDT')).toBeDefined();
+      expect(useHeatmapStore.getState().maxLiquidity.get('BTC/USDT')).toBeDefined();
+
+      useHeatmapStore.getState().clearSymbol('BTC/USDT');
+
+      expect(useHeatmapStore.getState().columns.get('BTC/USDT')).toBeUndefined();
+      expect(useHeatmapStore.getState().maxLiquidity.get('BTC/USDT')).toBeUndefined();
+      // ETH should be untouched
+      expect(useHeatmapStore.getState().columns.get('ETH/USDT')).toBeDefined();
+    });
+
+    it('should be idempotent for non-existent symbols', () => {
+      expect(() => useHeatmapStore.getState().clearSymbol('UNKNOWN/USDT')).not.toThrow();
+    });
+  });
 });

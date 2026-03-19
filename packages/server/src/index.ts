@@ -26,6 +26,20 @@ async function main() {
   const port = Number(process.env['PORT']) || 3001;
   const host = process.env['HOST'] || '127.0.0.1';
 
+  const shutdown = async (signal: string) => {
+    server.log.info(`Received ${signal}, shutting down gracefully…`);
+    try {
+      await server.close();
+      process.exit(0);
+    } catch (err) {
+      server.log.error(err);
+      process.exit(1);
+    }
+  };
+
+  process.on('SIGTERM', () => void shutdown('SIGTERM'));
+  process.on('SIGINT', () => void shutdown('SIGINT'));
+
   try {
     await server.listen({ port, host });
   } catch (err) {

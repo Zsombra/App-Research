@@ -364,4 +364,29 @@ describe('useLiquidationHeatmapStore', () => {
       expect(cell.count).toBe(2);
     });
   });
+
+  describe('clearSymbol', () => {
+    it('should remove both events and heatmaps for the given symbol', () => {
+      const store = useLiquidationHeatmapStore.getState();
+      store.setEnabled(true);
+      store.addLiquidation(makeEvent({ symbol: 'BTC/USDT' }));
+      store.addLiquidation(makeEvent({ symbol: 'ETH/USDT' }));
+      store.recompute('BTC/USDT');
+      store.recompute('ETH/USDT');
+
+      expect(useLiquidationHeatmapStore.getState().events.get('BTC/USDT')).toBeDefined();
+      expect(useLiquidationHeatmapStore.getState().heatmaps.get('BTC/USDT')).toBeDefined();
+
+      useLiquidationHeatmapStore.getState().clearSymbol('BTC/USDT');
+
+      expect(useLiquidationHeatmapStore.getState().events.get('BTC/USDT')).toBeUndefined();
+      expect(useLiquidationHeatmapStore.getState().heatmaps.get('BTC/USDT')).toBeUndefined();
+      // ETH should be untouched
+      expect(useLiquidationHeatmapStore.getState().events.get('ETH/USDT')).toBeDefined();
+    });
+
+    it('should be idempotent for non-existent symbols', () => {
+      expect(() => useLiquidationHeatmapStore.getState().clearSymbol('UNKNOWN/USDT')).not.toThrow();
+    });
+  });
 });

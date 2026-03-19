@@ -374,4 +374,21 @@ describe('footprint-store', () => {
       expect(useFootprintStore.getState().footprints.get('ETH/USDT')).toBeDefined();
     });
   });
+
+  describe('clearSymbol', () => {
+    it('should remove footprint data for the given symbol only', () => {
+      useFootprintStore.setState({ enabled: true });
+      useFootprintStore.getState().recompute('BTC/USDT', [makeCandle()]);
+      useFootprintStore.getState().recompute('ETH/USDT', [makeCandle({ symbol: 'ETH/USDT' })]);
+
+      useFootprintStore.getState().clearSymbol('BTC/USDT');
+
+      expect(useFootprintStore.getState().footprints.get('BTC/USDT')).toBeUndefined();
+      expect(useFootprintStore.getState().footprints.get('ETH/USDT')).toBeDefined();
+    });
+
+    it('should be idempotent for non-existent symbols', () => {
+      expect(() => useFootprintStore.getState().clearSymbol('UNKNOWN/USDT')).not.toThrow();
+    });
+  });
 });

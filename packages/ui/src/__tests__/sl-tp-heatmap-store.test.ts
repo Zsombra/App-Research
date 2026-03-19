@@ -151,4 +151,30 @@ describe('useSLTPHeatmapStore', () => {
       expect(heatmap).toBeDefined();
     });
   });
+
+  describe('clearSymbol', () => {
+    it('should remove both heatmaps and positions for the given symbol', () => {
+      useSLTPHeatmapStore.getState().setEnabled(true);
+      useSLTPHeatmapStore.getState().setPositions('BTC/USDT', [
+        { side: 'long', entryPrice: 60000, size: 1, leverage: 50 },
+      ]);
+      useSLTPHeatmapStore.getState().recompute('BTC/USDT', makeCandles(20));
+      useSLTPHeatmapStore.getState().setPositions('ETH/USDT', [
+        { side: 'short', entryPrice: 3000, size: 5, leverage: 10 },
+      ]);
+      useSLTPHeatmapStore.getState().recompute('ETH/USDT', makeCandles(20));
+
+      useSLTPHeatmapStore.getState().clearSymbol('BTC/USDT');
+
+      expect(useSLTPHeatmapStore.getState().heatmaps.get('BTC/USDT')).toBeUndefined();
+      expect(useSLTPHeatmapStore.getState().positions.get('BTC/USDT')).toBeUndefined();
+      // ETH should be untouched
+      expect(useSLTPHeatmapStore.getState().heatmaps.get('ETH/USDT')).toBeDefined();
+      expect(useSLTPHeatmapStore.getState().positions.get('ETH/USDT')).toBeDefined();
+    });
+
+    it('should be idempotent for non-existent symbols', () => {
+      expect(() => useSLTPHeatmapStore.getState().clearSymbol('UNKNOWN/USDT')).not.toThrow();
+    });
+  });
 });
