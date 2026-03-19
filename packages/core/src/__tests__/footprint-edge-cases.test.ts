@@ -75,6 +75,18 @@ describe('autoTickSize', () => {
     const tick = autoTickSize(candles);
     expect(tick).toBeGreaterThan(0);
   });
+
+  it('returns 1 when avgRange/30 would be zero (Math.log10 guard)', () => {
+    // All candles with high === low → totalRange = 0 → raw = 0
+    // Without the guard, Math.log10(0) = -Infinity
+    const candles = [
+      makeCandle(1, 100, 100, 100, 100),
+      makeCandle(2, 100, 100, 100, 100),
+    ];
+    const tick = autoTickSize(candles);
+    expect(tick).toBe(1);
+    expect(Number.isFinite(tick)).toBe(true);
+  });
 });
 
 describe('buildFootprintFromTrades', () => {

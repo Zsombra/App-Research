@@ -66,6 +66,9 @@ export function autoTickSize(candles: OHLCVCandle[]): number {
   // Target ~30 levels per candle
   const raw = avgRange / 30;
 
+  // Guard against log10(0) or log10(negative) → -Infinity
+  if (raw <= 0) return 1;
+
   // Round to a "nice" number
   const magnitude = Math.pow(10, Math.floor(Math.log10(raw)));
   const normalized = raw / magnitude;

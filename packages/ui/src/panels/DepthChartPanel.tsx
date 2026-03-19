@@ -66,7 +66,7 @@ function renderDepthChart(
   if (bids.length === 0 || asks.length === 0) return;
 
   const midPrice = (bids[0]!.price + asks[0]!.price) / 2;
-  const maxCum = Math.max(bids[bids.length - 1]!.cumSize, asks[asks.length - 1]!.cumSize);
+  const maxCum = Math.max(bids[bids.length - 1]!.cumSize, asks[asks.length - 1]!.cumSize) || 1;
   const priceMin = bids[bids.length - 1]!.price;
   const priceMax = asks[asks.length - 1]!.price;
   const priceRange = priceMax - priceMin || 1;
