@@ -104,7 +104,7 @@ export function AlertsPanel(): React.JSX.Element {
   );
 }
 
-function AlertRow({ alert, onRemove }: { alert: { id: string; symbol: string; condition: AlertCondition; targetPrice: number; triggered: boolean }; onRemove: (id: string) => void }): React.JSX.Element {
+const AlertRow = React.memo(function AlertRow({ alert, onRemove }: { alert: { id: string; symbol: string; condition: AlertCondition; targetPrice: number; triggered: boolean }; onRemove: (id: string) => void }): React.JSX.Element {
   const color = alert.triggered ? '#ffb300' : alert.condition === 'above' ? '#26a69a' : '#ef5350';
   return (
     <div style={{ display: 'flex', alignItems: 'center', padding: '3px 8px', gap: 6, opacity: alert.triggered ? 0.6 : 1 }}>
@@ -119,4 +119,4 @@ function AlertRow({ alert, onRemove }: { alert: { id: string; symbol: string; co
       </button>
     </div>
   );
-}
+});

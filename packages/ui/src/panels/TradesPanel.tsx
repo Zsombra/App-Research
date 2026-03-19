@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useEffect } from 'react';
+import React, { useMemo, useRef, useEffect, useCallback } from 'react';
 import type { PanelConfig, NormalizedTrade } from '@terminal/types';
 import { useTrades } from '../stores/market-store.js';
 
@@ -61,11 +61,11 @@ export function TradesPanel({ config }: TradesPanelProps): React.JSX.Element {
     }
   }, [displayTrades]);
 
-  const handleScroll = () => {
+  const handleScroll = useCallback(() => {
     if (scrollRef.current) {
       wasAtTopRef.current = scrollRef.current.scrollTop < 10;
     }
-  };
+  }, []);
 
   return (
     <div style={{ height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column', background: '#0a0a0e', color: '#ccc', fontSize: 12 }}>

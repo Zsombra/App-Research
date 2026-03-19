@@ -206,8 +206,8 @@ export class VolumeProfileRenderer extends BaseRenderer {
       const midPrice = (candle.high + candle.low) / 2;
       const binIdx = Math.floor((midPrice - priceLow) / binSize);
       if (binIdx >= 0 && binIdx < this.numBins) {
-        buyVolumes[binIdx] += candle.buyVolume;
-        sellVolumes[binIdx] += candle.sellVolume;
+        buyVolumes[binIdx] = (buyVolumes[binIdx] ?? 0) + candle.buyVolume;
+        sellVolumes[binIdx] = (sellVolumes[binIdx] ?? 0) + candle.sellVolume;
       }
     }
 

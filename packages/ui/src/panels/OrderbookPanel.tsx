@@ -8,7 +8,7 @@ interface OrderbookPanelProps {
 
 const MAX_LEVELS = 20;
 
-function LevelRow({
+const LevelRow = React.memo(function LevelRow({
   level,
   side,
   depthPercent,
@@ -49,7 +49,7 @@ function LevelRow({
       </span>
     </div>
   );
-}
+});
 
 /**
  * Displays bid/ask price levels with depth visualization bars.
@@ -97,9 +97,9 @@ export function OrderbookPanel({ config }: OrderbookPanelProps): React.JSX.Eleme
       <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
         {/* Asks (reversed so lowest ask is at bottom) */}
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
-          {asks.map((level, i) => (
+          {asks.map((level) => (
             <LevelRow
-              key={`ask-${i}`}
+              key={`ask-${level.price}`}
               level={level}
               side="ask"
               depthPercent={maxSize > 0 ? (level.size / maxSize) * 100 : 0}
@@ -113,9 +113,9 @@ export function OrderbookPanel({ config }: OrderbookPanelProps): React.JSX.Eleme
         </div>
         {/* Bids */}
         <div style={{ flex: 1 }}>
-          {bids.map((level, i) => (
+          {bids.map((level) => (
             <LevelRow
-              key={`bid-${i}`}
+              key={`bid-${level.price}`}
               level={level}
               side="bid"
               depthPercent={maxSize > 0 ? (level.size / maxSize) * 100 : 0}

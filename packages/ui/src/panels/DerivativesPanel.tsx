@@ -22,7 +22,7 @@ function formatRate(rate: number): string {
  * Derivatives info panel showing Open Interest, Funding Rate, and Liquidations.
  */
 export function DerivativesPanel(): React.JSX.Element {
-  const activeSymbol = useActiveSymbol() ?? 'BTC/USDT';
+  const activeSymbol = useActiveSymbol();
   const liquidations = useLiquidations(activeSymbol);
   const currentOI = useCurrentOI(activeSymbol);
   const fundingRate = useFundingRate(activeSymbol);

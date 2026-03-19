@@ -1,11 +1,11 @@
 import { create } from 'zustand';
+import { ConnectionStatus } from '@terminal/types';
 import type {
   NormalizedTrade,
   OrderbookSnapshot,
   Ticker,
   OHLCVCandle,
   ExchangeId,
-  ConnectionStatus,
   CandleTimeframe,
   SubscriptionTopic,
   WorkerOutboundMessage,
@@ -250,7 +250,13 @@ export const useMarketStore = create<MarketState>((set) => ({
       tickers.delete(symbol);
       const candles = new Map(state.candles);
       candles.delete(symbol);
-      return { subscriptions, trades, orderbooks, tickers, candles };
+      const timeframes = new Map(state.timeframes);
+      timeframes.delete(symbol);
+      const barTypes = new Map(state.barTypes);
+      barTypes.delete(symbol);
+      const customBarConfigs = new Map(state.customBarConfigs);
+      customBarConfigs.delete(symbol);
+      return { subscriptions, trades, orderbooks, tickers, candles, timeframes, barTypes, customBarConfigs };
     });
 
     // Clean up derived data stores to prevent unbounded Map growth
@@ -320,6 +326,6 @@ export function useBarType(symbol: string): BarType {
 
 export function useConnectionStatus(exchange: ExchangeId): ConnectionStatus {
   return useMarketStore(
-    (state) => state.connectionStatuses.get(exchange) ?? 'disconnected'
+    (state) => state.connectionStatuses.get(exchange) ?? ConnectionStatus.Disconnected
   );
 }

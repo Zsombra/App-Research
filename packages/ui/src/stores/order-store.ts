@@ -50,7 +50,7 @@ export const useOrderStore = create<OrderState>((set, get) => ({
       side: params.side,
       type: params.type,
       quantity: params.quantity,
-      price: params.price,
+      ...(params.price !== undefined ? { price: params.price } : {}),
       status: 'pending',
       filledQuantity: 0,
       averageFillPrice: 0,

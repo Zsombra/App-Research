@@ -20,17 +20,17 @@ export function OrderEntryPanel({ config }: OrderEntryPanelProps): React.JSX.Ele
   const placeOrder = useOrderStore((s) => s.placeOrder);
 
   const [orderType, setOrderType] = useState<OrderType>('market');
-  const [side, setSide] = useState<OrderSide>('buy');
+  const [_side, setSide] = useState<OrderSide>('buy');
   const [quantity, setQuantity] = useState('0.01');
   const [limitPrice, setLimitPrice] = useState('');
 
-  const handleSubmit = useCallback(() => {
+  const handleSubmitWithSide = useCallback((submitSide: OrderSide) => {
     const qty = parseFloat(quantity);
     if (isNaN(qty) || qty <= 0) return;
 
     const params: Parameters<typeof placeOrder>[0] = {
       symbol,
-      side,
+      side: submitSide,
       type: orderType,
       quantity: qty,
     };
@@ -41,8 +41,9 @@ export function OrderEntryPanel({ config }: OrderEntryPanelProps): React.JSX.Ele
       params.price = price;
     }
 
+    setSide(submitSide);
     placeOrder(params);
-  }, [symbol, side, orderType, quantity, limitPrice, placeOrder]);
+  }, [symbol, orderType, quantity, limitPrice, placeOrder]);
 
   const handleSetMarketPrice = useCallback(() => {
     if (ticker) {
@@ -174,7 +175,7 @@ export function OrderEntryPanel({ config }: OrderEntryPanelProps): React.JSX.Ele
       {/* Buy / Sell buttons */}
       <div style={{ display: 'flex', gap: 4, marginBottom: 12 }}>
         <button
-          onClick={() => { setSide('buy'); handleSubmit(); }}
+          onClick={() => handleSubmitWithSide('buy')}
           style={{
             flex: 1,
             padding: '8px 0',
@@ -190,7 +191,7 @@ export function OrderEntryPanel({ config }: OrderEntryPanelProps): React.JSX.Ele
           BUY
         </button>
         <button
-          onClick={() => { setSide('sell'); handleSubmit(); }}
+          onClick={() => handleSubmitWithSide('sell')}
           style={{
             flex: 1,
             padding: '8px 0',
