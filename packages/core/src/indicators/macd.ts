@@ -7,7 +7,7 @@ import type { OHLCVCandle, IndicatorPoint, MACDOutput } from '@terminal/types';
  * Histogram = MACD Line - Signal Line
  */
 export function computeMACD(
-  candles: OHLCVCandle[],
+  candles: readonly OHLCVCandle[],
   fastPeriod: number,
   slowPeriod: number,
   signalPeriod: number

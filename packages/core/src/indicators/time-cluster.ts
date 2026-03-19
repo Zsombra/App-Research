@@ -43,7 +43,7 @@ export function clusterByTime(
   return clusters;
 }
 
-function buildCluster(trades: NormalizedTrade[]): TimeCluster {
+function buildCluster(trades: readonly NormalizedTrade[]): TimeCluster {
   let totalCost = 0;
   let totalAmount = 0;
   let buyCost = 0;
@@ -76,6 +76,6 @@ function buildCluster(trades: NormalizedTrade[]): TimeCluster {
   };
 }
 
-function meetsThreshold(cluster: TimeCluster, config: TimeClusterConfig): boolean {
+function meetsThreshold(cluster: Readonly<TimeCluster>, config: Readonly<TimeClusterConfig>): boolean {
   return cluster.tradeCount >= config.minTrades && cluster.totalCost >= config.minCost;
 }

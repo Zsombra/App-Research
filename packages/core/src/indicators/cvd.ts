@@ -6,7 +6,7 @@ import type { OHLCVCandle, IndicatorPoint, CVDOutput } from '@terminal/types';
  * CVD is the running cumulative sum of per-candle deltas.
  */
 export function computeCVD(
-  candles: OHLCVCandle[]
+  candles: readonly OHLCVCandle[]
 ): IndicatorPoint<CVDOutput>[] {
   const len = candles.length;
   const result: IndicatorPoint<CVDOutput>[] = new Array(len);

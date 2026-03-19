@@ -7,7 +7,7 @@ import type { OHLCVCandle, IndicatorPoint, BollingerOutput } from '@terminal/typ
  * Lower band = Middle - stdDev * rolling standard deviation
  */
 export function computeBollinger(
-  candles: OHLCVCandle[],
+  candles: readonly OHLCVCandle[],
   period: number,
   stdDev: number
 ): IndicatorPoint<BollingerOutput>[] {

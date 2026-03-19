@@ -56,8 +56,8 @@ export interface Absorption {
  * @param minConsecutive - Minimum consecutive imbalanced levels (default 3)
  */
 export function detectStackedImbalances(
-  bids: PriceLevel[],
-  asks: PriceLevel[],
+  bids: readonly PriceLevel[],
+  asks: readonly PriceLevel[],
   threshold: number = 3,
   minConsecutive: number = 3,
 ): StackedImbalance[] {
@@ -127,7 +127,7 @@ export function detectStackedImbalances(
  * @param depthLevels - Number of levels to analyze (default 20)
  */
 export function computeOrderbookImbalance(
-  snapshot: OrderbookSnapshot,
+  snapshot: Readonly<OrderbookSnapshot>,
   depthLevels: number = 20,
 ): ImbalanceResult {
   const topBids = snapshot.bids.slice(0, depthLevels);

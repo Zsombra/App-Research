@@ -73,8 +73,8 @@ export const DEFAULT_MBO_PROFILE_CONFIG: MBOProfileConfig = {
  * Aggregates individual orders into per-level statistics.
  */
 export function buildMBOProfile(
-  snapshot: MBOSnapshot,
-  config: MBOProfileConfig,
+  snapshot: Readonly<MBOSnapshot>,
+  config: Readonly<MBOProfileConfig>,
   now: number = Date.now(),
 ): MBOProfileLevel[] {
   const levels: MBOProfileLevel[] = [];

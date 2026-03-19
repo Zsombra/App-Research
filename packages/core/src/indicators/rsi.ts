@@ -1,12 +1,15 @@
 import type { OHLCVCandle, IndicatorPoint, RSIOutput } from '@terminal/types';
 
+/** Maximum RSI value (used when average loss is zero). */
+const RSI_MAX_VALUE = 100;
+
 /**
  * Compute Relative Strength Index using the Wilder smoothing method.
  * Requires at least `period + 1` candles for the first valid value.
  * Returns null for points with insufficient data.
  */
 export function computeRSI(
-  candles: OHLCVCandle[],
+  candles: readonly OHLCVCandle[],
   period: number
 ): IndicatorPoint<RSIOutput>[] {
   if (period < 1) {
@@ -42,8 +45,8 @@ export function computeRSI(
   avgLoss /= period;
 
   // First RSI value
-  const rs = avgLoss === 0 ? 100 : avgGain / avgLoss;
-  const rsi = avgLoss === 0 ? 100 : 100 - 100 / (1 + rs);
+  const rs = avgLoss === 0 ? RSI_MAX_VALUE : avgGain / avgLoss;
+  const rsi = avgLoss === 0 ? RSI_MAX_VALUE : RSI_MAX_VALUE - RSI_MAX_VALUE / (1 + rs);
   result[period] = { timestamp: (candles[period] as OHLCVCandle).timestamp, data: { value: rsi } };
 
   // Subsequent values using Wilder smoothing
@@ -55,8 +58,8 @@ export function computeRSI(
     avgGain = (avgGain * (period - 1) + gain) / period;
     avgLoss = (avgLoss * (period - 1) + loss) / period;
 
-    const currentRs = avgLoss === 0 ? 100 : avgGain / avgLoss;
-    const currentRsi = avgLoss === 0 ? 100 : 100 - 100 / (1 + currentRs);
+    const currentRs = avgLoss === 0 ? RSI_MAX_VALUE : avgGain / avgLoss;
+    const currentRsi = avgLoss === 0 ? RSI_MAX_VALUE : RSI_MAX_VALUE - RSI_MAX_VALUE / (1 + currentRs);
 
     result[i] = { timestamp: (candles[i] as OHLCVCandle).timestamp, data: { value: currentRsi } };
   }

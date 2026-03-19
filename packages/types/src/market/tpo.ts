@@ -54,6 +54,7 @@ export interface MarketProfileConfig {
   ibPeriodMinutes: number;
 }
 
+/** Default Market Profile config: auto tick size, 70% value area, 60-min initial balance. */
 export const DEFAULT_MARKET_PROFILE_CONFIG: MarketProfileConfig = {
   tickSize: 0,
   valueAreaPercent: 0.70,

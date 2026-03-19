@@ -15,7 +15,7 @@ const MS_PER_DAY = 86_400_000;
  * Resets at each new trading day (UTC midnight boundary).
  */
 export function computeVWAP(
-  candles: OHLCVCandle[]
+  candles: readonly OHLCVCandle[]
 ): IndicatorPoint<VWAPOutput>[] {
   const len = candles.length;
   const result: IndicatorPoint<VWAPOutput>[] = new Array(len);

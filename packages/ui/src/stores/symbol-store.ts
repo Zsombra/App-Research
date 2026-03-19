@@ -3,7 +3,7 @@ import type { ExchangeId, SubscriptionTopic } from '@terminal/types';
 import { getWorkerBridge } from '../worker/worker-bridge.js';
 
 /** Default symbols shown in the watchlist. */
-export const DEFAULT_WATCHLIST: string[] = [
+export const DEFAULT_WATCHLIST: readonly string[] = [
   'BTC/USDT',
   'ETH/USDT',
   'SOL/USDT',
@@ -22,7 +22,7 @@ export interface SymbolState {
   setActiveSymbol: (symbol: string) => void;
   addToWatchlist: (symbol: string) => void;
   removeFromWatchlist: (symbol: string) => void;
-  subscribeSymbol: (symbol: string, exchanges: ExchangeId[], topics: SubscriptionTopic[]) => void;
+  subscribeSymbol: (symbol: string, exchanges: readonly ExchangeId[], topics: readonly SubscriptionTopic[]) => void;
   unsubscribeSymbol: (symbol: string) => void;
 }
 

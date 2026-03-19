@@ -1,7 +1,10 @@
 import type { OHLCVCandle, MarketProfile, TPORow } from '@terminal/types';
 import { bucketPrice } from './footprint.js';
 
+/** Fraction of total volume that defines the Value Area (industry standard 70%). */
 const DEFAULT_VALUE_AREA_PERCENT = 0.70;
+
+/** Initial Balance period in minutes (first hour of session). */
 const DEFAULT_IB_PERIOD_MINUTES = 60;
 
 /**
@@ -18,7 +21,7 @@ const DEFAULT_IB_PERIOD_MINUTES = 60;
  * @returns Computed MarketProfile
  */
 export function computeMarketProfile(
-  candles: OHLCVCandle[],
+  candles: readonly OHLCVCandle[],
   tickSize: number,
   valueAreaPercent: number = DEFAULT_VALUE_AREA_PERCENT,
   ibPeriodMinutes: number = DEFAULT_IB_PERIOD_MINUTES,

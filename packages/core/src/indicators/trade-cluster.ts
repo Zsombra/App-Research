@@ -7,7 +7,7 @@ import type {
   TradeClusterConfig,
 } from '@terminal/types';
 
-const BUCKET_LABELS: TradeSizeBucket[] = ['small', 'medium', 'large', 'whale'];
+const BUCKET_LABELS = ['small', 'medium', 'large', 'whale'] as const;
 
 /**
  * Classify trades into size buckets using K-Means clustering.

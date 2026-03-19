@@ -5,7 +5,7 @@ import type { OHLCVCandle, IndicatorPoint, SMAOutput } from '@terminal/types';
  * Returns null for points with insufficient data (first period-1 candles).
  */
 export function computeSMA(
-  candles: OHLCVCandle[],
+  candles: readonly OHLCVCandle[],
   period: number
 ): IndicatorPoint<SMAOutput>[] {
   if (period < 1) {

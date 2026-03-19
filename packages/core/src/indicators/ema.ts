@@ -6,7 +6,7 @@ import type { OHLCVCandle, IndicatorPoint, EMAOutput } from '@terminal/types';
  * Returns null for points with insufficient data.
  */
 export function computeEMA(
-  candles: OHLCVCandle[],
+  candles: readonly OHLCVCandle[],
   period: number
 ): IndicatorPoint<EMAOutput>[] {
   if (period < 1) {
