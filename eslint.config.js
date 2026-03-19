@@ -2,7 +2,16 @@ import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   {
-    ignores: ['**/dist/**', '**/node_modules/**', '**/coverage/**'],
+    ignores: [
+      '**/dist/**',
+      '**/node_modules/**',
+      '**/coverage/**',
+      '**/__tests__/**',
+      'eslint.config.js',
+      '**/vite.config.ts',
+      '**/vitest.config.ts',
+      'vitest.workspace.ts',
+    ],
   },
   ...tseslint.configs.recommended,
   {
