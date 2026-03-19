@@ -19,6 +19,8 @@ export interface LiquidationHeatmapState {
   setEnabled: (enabled: boolean) => void;
   addLiquidation: (event: LiquidationEvent) => void;
   recompute: (symbol: string) => void;
+  /** Clear all liquidation data for a symbol (e.g. on unsubscribe) */
+  clearSymbol: (symbol: string) => void;
 }
 
 export const useLiquidationHeatmapStore = create<LiquidationHeatmapState>((set, get) => ({
@@ -57,6 +59,16 @@ export const useLiquidationHeatmapStore = create<LiquidationHeatmapState>((set, 
       const heatmaps = new Map(prev.heatmaps);
       heatmaps.set(symbol, heatmap);
       return { heatmaps };
+    });
+  },
+
+  clearSymbol: (symbol) => {
+    set((state) => {
+      const events = new Map(state.events);
+      const heatmaps = new Map(state.heatmaps);
+      events.delete(symbol);
+      heatmaps.delete(symbol);
+      return { events, heatmaps };
     });
   },
 }));

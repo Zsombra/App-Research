@@ -25,6 +25,8 @@ export interface FootprintState {
   setDisplayMode: (mode: FootprintDisplayMode) => void;
   /** Recompute footprints from candles (called when candles update) */
   recompute: (symbol: string, candles: OHLCVCandle[]) => void;
+  /** Clear footprint data for a symbol (e.g. on unsubscribe) */
+  clearSymbol: (symbol: string) => void;
 }
 
 export const useFootprintStore = create<FootprintState>((set, get) => ({
@@ -83,6 +85,14 @@ export const useFootprintStore = create<FootprintState>((set, get) => ({
     set((prev) => {
       const footprints = new Map(prev.footprints);
       footprints.set(symbol, fpCandles);
+      return { footprints };
+    });
+  },
+
+  clearSymbol: (symbol) => {
+    set((state) => {
+      const footprints = new Map(state.footprints);
+      footprints.delete(symbol);
       return { footprints };
     });
   },

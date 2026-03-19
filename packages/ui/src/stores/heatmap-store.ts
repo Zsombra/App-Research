@@ -18,6 +18,8 @@ export interface HeatmapState {
   captureSnapshot: (symbol: string, snapshot: OrderbookSnapshot) => void;
   /** Update config */
   updateConfig: <K extends keyof HeatmapConfig>(key: K, value: HeatmapConfig[K]) => void;
+  /** Clear all heatmap data for a symbol (e.g. on unsubscribe) */
+  clearSymbol: (symbol: string) => void;
 }
 
 export const useHeatmapStore = create<HeatmapState>((set, get) => ({
@@ -92,6 +94,16 @@ export const useHeatmapStore = create<HeatmapState>((set, get) => ({
     set((state) => ({
       config: { ...state.config, [key]: value },
     }));
+  },
+
+  clearSymbol: (symbol) => {
+    set((state) => {
+      const columns = new Map(state.columns);
+      const maxLiquidity = new Map(state.maxLiquidity);
+      columns.delete(symbol);
+      maxLiquidity.delete(symbol);
+      return { columns, maxLiquidity };
+    });
   },
 }));
 

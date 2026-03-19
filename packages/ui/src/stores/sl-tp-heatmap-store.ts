@@ -22,6 +22,8 @@ export interface SLTPHeatmapState {
   updateConfig: <K extends keyof SLTPConfig>(key: K, value: SLTPConfig[K]) => void;
   setPositions: (symbol: string, positions: EstimatedPosition[]) => void;
   recompute: (symbol: string, candles: OHLCVCandle[]) => void;
+  /** Clear all SL/TP data for a symbol (e.g. on unsubscribe) */
+  clearSymbol: (symbol: string) => void;
 }
 
 export const useSLTPHeatmapStore = create<SLTPHeatmapState>((set, get) => ({
@@ -57,6 +59,16 @@ export const useSLTPHeatmapStore = create<SLTPHeatmapState>((set, get) => ({
       const heatmaps = new Map(prev.heatmaps);
       heatmaps.set(symbol, heatmap);
       return { heatmaps };
+    });
+  },
+
+  clearSymbol: (symbol) => {
+    set((state) => {
+      const heatmaps = new Map(state.heatmaps);
+      const positions = new Map(state.positions);
+      heatmaps.delete(symbol);
+      positions.delete(symbol);
+      return { heatmaps, positions };
     });
   },
 }));

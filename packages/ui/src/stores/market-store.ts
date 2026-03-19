@@ -13,11 +13,13 @@ import type {
   CustomBarConfig,
 } from '@terminal/types';
 import { getWorkerBridge } from '../worker/worker-bridge.js';
+import { useHeatmapStore } from './heatmap-store.js';
+import { useFootprintStore } from './footprint-store.js';
+import { useLiquidationHeatmapStore } from './liquidation-heatmap-store.js';
+import { useSLTPHeatmapStore } from './sl-tp-heatmap-store.js';
 import { aggregateTrade } from './candle-aggregator.js';
 import { buildTickBars, buildVolumeBars, buildRangeBars } from '@terminal/core';
 import { useIndicatorStore } from './indicator-store.js';
-import { useFootprintStore } from './footprint-store.js';
-import { useHeatmapStore } from './heatmap-store.js';
 
 const MAX_TRADES = 500;
 const DEFAULT_TIMEFRAME: CandleTimeframe = '1m';
@@ -250,6 +252,12 @@ export const useMarketStore = create<MarketState>((set) => ({
       candles.delete(symbol);
       return { subscriptions, trades, orderbooks, tickers, candles };
     });
+
+    // Clean up derived data stores to prevent unbounded Map growth
+    useHeatmapStore.getState().clearSymbol(symbol);
+    useFootprintStore.getState().clearSymbol(symbol);
+    useLiquidationHeatmapStore.getState().clearSymbol(symbol);
+    useSLTPHeatmapStore.getState().clearSymbol(symbol);
   },
 }));
 
