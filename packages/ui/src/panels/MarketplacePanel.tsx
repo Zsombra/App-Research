@@ -5,12 +5,13 @@ import {
   useInstalledIndicators,
 } from '../stores/marketplace-store.js';
 import type { MarketplaceIndicator, MarketplaceSortBy } from '@terminal/types';
+import { COLOR_BULLISH_GL, COLOR_BEARISH_GL, COLOR_NEUTRAL } from '../theme-colors.js';
 
 export interface MarketplacePanelProps {
   panelId: string;
 }
 
-const SORT_OPTIONS: { value: MarketplaceSortBy; label: string }[] = [
+const SORT_OPTIONS: readonly { value: MarketplaceSortBy; label: string }[] = [
   { value: 'popular', label: 'Popular' },
   { value: 'recent', label: 'Recent' },
   { value: 'top-rated', label: 'Top Rated' },
@@ -135,7 +136,7 @@ export function MarketplacePanel({ panelId }: MarketplacePanelProps): React.JSX.
                     background: inst.enabled ? 'rgba(44, 183, 118, 0.2)' : 'transparent',
                     border: '1px solid #444',
                     borderRadius: 2,
-                    color: inst.enabled ? '#2CB776' : '#555',
+                    color: inst.enabled ? COLOR_BULLISH_GL : COLOR_NEUTRAL,
                     cursor: 'pointer',
                   }}
                 >
@@ -149,7 +150,7 @@ export function MarketplacePanel({ panelId }: MarketplacePanelProps): React.JSX.
                     background: 'transparent',
                     border: '1px solid #444',
                     borderRadius: 2,
-                    color: '#E94747',
+                    color: COLOR_BEARISH_GL,
                     cursor: 'pointer',
                   }}
                 >

@@ -1,7 +1,9 @@
 import React, { useState, useCallback } from 'react';
 import type { CustomScript } from '@terminal/types';
 import { useScriptStore, useScripts } from '../stores/script-store.js';
+import { COLOR_SUCCESS, COLOR_DANGER } from '../theme-colors.js';
 
+/** Template script shown when creating a new custom indicator. */
 const DEFAULT_SCRIPT = `// Custom Indicator Script
 // Available: candles.open[], candles.close[], candles.high[], candles.low[], candles.volume[]
 // Helpers: sma(values, period), ema(values, period), crossover(a, b), crossunder(a, b)
@@ -136,7 +138,7 @@ export function ScriptEditorPanel(): React.JSX.Element {
                 style={{
                   background: 'none',
                   border: 'none',
-                  color: script.enabled ? '#4CAF50' : '#666',
+                  color: script.enabled ? COLOR_SUCCESS : '#666',
                   fontSize: 10,
                   cursor: 'pointer',
                   padding: 0,
@@ -157,7 +159,7 @@ export function ScriptEditorPanel(): React.JSX.Element {
                 style={{
                   background: 'none',
                   border: 'none',
-                  color: '#F44336',
+                  color: COLOR_DANGER,
                   fontSize: 10,
                   cursor: 'pointer',
                   padding: 0,
@@ -235,7 +237,7 @@ export function ScriptEditorPanel(): React.JSX.Element {
             padding: '4px 8px',
             background: 'rgba(244, 67, 54, 0.1)',
             borderTop: '1px solid #F44336',
-            color: '#F44336',
+            color: COLOR_DANGER,
             fontSize: 10,
           }}>
             Error: {activeScript.lastError}

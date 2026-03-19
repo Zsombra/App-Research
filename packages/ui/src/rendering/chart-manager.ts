@@ -17,6 +17,11 @@ import { HDHeatmapRenderer } from './renderers/hd-heatmap-renderer.js';
 import { VolumeBubbleRenderer } from './renderers/volume-bubble-renderer.js';
 import type { FootprintCandle, FootprintDisplayMode, HeatmapColumn, NormalizedTrade } from '@terminal/types';
 
+/** Fallback canvas width when element has zero width. */
+const DEFAULT_CANVAS_WIDTH = 800;
+/** Fallback canvas height when element has zero height. */
+const DEFAULT_CANVAS_HEIGHT = 600;
+
 /**
  * Orchestrates all renderers for a single chart panel.
  * Render order: grid -> volume bars -> candles -> line overlay -> oscillator -> crosshair.
@@ -60,8 +65,8 @@ export class ChartManager {
     // Initialize canvas size
     const pixelRatio = typeof window !== 'undefined' ? window.devicePixelRatio : 1;
     const rect = canvas.getBoundingClientRect();
-    const width = Math.round(rect.width * pixelRatio) || 800;
-    const height = Math.round(rect.height * pixelRatio) || 600;
+    const width = Math.round(rect.width * pixelRatio) || DEFAULT_CANVAS_WIDTH;
+    const height = Math.round(rect.height * pixelRatio) || DEFAULT_CANVAS_HEIGHT;
     canvas.width = width;
     canvas.height = height;
 
@@ -133,7 +138,7 @@ export class ChartManager {
    * Only auto-fits if the user hasn't manually panned/zoomed.
    * @param candles - Array of OHLCV candles (should be sorted by timestamp)
    */
-  setCandles(candles: OHLCVCandle[]): void {
+  setCandles(candles: readonly OHLCVCandle[]): void {
     this.candles = candles;
     this.candlestickRenderer.setData(candles);
     this.volumeBarRenderer.setData(candles);

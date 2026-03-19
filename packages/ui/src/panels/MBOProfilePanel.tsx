@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import type { MBOSnapshot, MBOProfileLevel, MBOProfileConfig } from '@terminal/types';
 import { buildMBOProfile, DEFAULT_MBO_PROFILE_CONFIG } from '@terminal/types';
+import { COLOR_BULLISH_GL, COLOR_BEARISH_GL, COLOR_POC, COLOR_MUTED } from '../theme-colors.js';
 
 export interface MBOProfilePanelProps {
   panelId: string;
@@ -8,15 +9,20 @@ export interface MBOProfilePanelProps {
   config?: MBOProfileConfig;
 }
 
+const MS_PER_SECOND = 1_000;
+const MS_PER_MINUTE = 60_000;
+const MS_PER_HOUR = 3_600_000;
+const SIZE_THOUSANDS_THRESHOLD = 1_000;
+
 function formatAge(ms: number): string {
-  if (ms < 1000) return '<1s';
-  if (ms < 60_000) return `${Math.floor(ms / 1000)}s`;
-  if (ms < 3600_000) return `${Math.floor(ms / 60_000)}m`;
-  return `${Math.floor(ms / 3600_000)}h`;
+  if (ms < MS_PER_SECOND) return '<1s';
+  if (ms < MS_PER_MINUTE) return `${Math.floor(ms / MS_PER_SECOND)}s`;
+  if (ms < MS_PER_HOUR) return `${Math.floor(ms / MS_PER_MINUTE)}m`;
+  return `${Math.floor(ms / MS_PER_HOUR)}h`;
 }
 
 function formatSize(size: number): string {
-  if (size >= 1000) return `${(size / 1000).toFixed(1)}K`;
+  if (size >= SIZE_THOUSANDS_THRESHOLD) return `${(size / SIZE_THOUSANDS_THRESHOLD).toFixed(1)}K`;
   if (size >= 1) return size.toFixed(2);
   return size.toFixed(4);
 }
@@ -61,7 +67,7 @@ export function MBOProfilePanel({ panelId, snapshot, config }: MBOProfilePanelPr
         <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
           {/* Bid side */}
           <div style={{ flex: 1, overflow: 'auto', borderRight: '1px solid #222' }}>
-            <div style={{ padding: '2px 6px', color: '#2CB776', fontSize: 10 }}>BIDS</div>
+            <div style={{ padding: '2px 6px', color: COLOR_BULLISH_GL, fontSize: 10 }}>BIDS</div>
             {bidLevels.map((level) => (
               <LevelRow key={level.price} level={level} maxSize={maxSize} config={cfg} />
             ))}
@@ -69,7 +75,7 @@ export function MBOProfilePanel({ panelId, snapshot, config }: MBOProfilePanelPr
 
           {/* Ask side */}
           <div style={{ flex: 1, overflow: 'auto' }}>
-            <div style={{ padding: '2px 6px', color: '#E94747', fontSize: 10 }}>ASKS</div>
+            <div style={{ padding: '2px 6px', color: COLOR_BEARISH_GL, fontSize: 10 }}>ASKS</div>
             {askLevels.map((level) => (
               <LevelRow key={level.price} level={level} maxSize={maxSize} config={cfg} />
             ))}
@@ -92,7 +98,7 @@ function LevelRow({
   const barWidth = `${(level.totalSize / maxSize) * 100}%`;
   const isBid = level.side === 'bid';
   const barColor = isBid ? 'rgba(44, 183, 118, 0.15)' : 'rgba(233, 71, 71, 0.15)';
-  const textColor = isBid ? '#2CB776' : '#E94747';
+  const textColor = isBid ? COLOR_BULLISH_GL : COLOR_BEARISH_GL;
   const isLarge = level.maxOrderSize >= config.largeOrderThreshold;
 
   return (
@@ -120,7 +126,7 @@ function LevelRow({
         {level.price.toFixed(1)}
       </span>
       <span style={{ position: 'relative', display: 'flex', gap: 8 }}>
-        <span style={{ color: isLarge ? '#FFD700' : '#888' }}>
+        <span style={{ color: isLarge ? COLOR_POC : COLOR_MUTED }}>
           {level.orderCount}x
         </span>
         <span style={{ color: '#aaa', minWidth: 50, textAlign: 'right' }}>

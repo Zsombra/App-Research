@@ -10,7 +10,7 @@ export interface LayoutState {
   initialized: boolean;
 
   // Actions
-  addPanel: (config: PanelConfig) => void;
+  addPanel: (config: Readonly<PanelConfig>) => void;
   removePanel: (id: string) => void;
   setPanels: (panels: PanelConfig[]) => void;
   setInitialized: () => void;
@@ -117,7 +117,7 @@ export const useLayoutStore = create<LayoutState>((set) => ({
   setInitialized: () => set({ initialized: true }),
 }));
 
-function persistPanels(panels: PanelConfig[]): void {
+function persistPanels(panels: readonly PanelConfig[]): void {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(panels));
   } catch (err) {

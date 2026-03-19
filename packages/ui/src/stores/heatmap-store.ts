@@ -15,7 +15,7 @@ export interface HeatmapState {
   /** Toggle heatmap on/off */
   setEnabled: (enabled: boolean) => void;
   /** Capture an orderbook snapshot as a new heatmap column */
-  captureSnapshot: (symbol: string, snapshot: OrderbookSnapshot) => void;
+  captureSnapshot: (symbol: string, snapshot: Readonly<OrderbookSnapshot>) => void;
   /** Update config */
   updateConfig: <K extends keyof HeatmapConfig>(key: K, value: HeatmapConfig[K]) => void;
   /** Clear all heatmap data for a symbol (e.g. on unsubscribe) */

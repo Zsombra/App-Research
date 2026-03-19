@@ -6,16 +6,27 @@ import {
   useFundingRate,
   useOpenInterestHistory,
 } from '../stores/derivatives-store.js';
+import { COLOR_SUCCESS, COLOR_DANGER, COLOR_MUTED } from '../theme-colors.js';
+
+const FORMAT_BILLION = 1_000_000_000;
+const FORMAT_MILLION = 1_000_000;
+const FORMAT_THOUSAND = 1_000;
+
+/** Maximum recent liquidation events shown in the feed. */
+const MAX_RECENT_LIQUIDATIONS = 20;
+
+/** Multiplier to convert decimal rate to percentage. */
+const PERCENTAGE_MULTIPLIER = 100;
 
 function formatNumber(n: number): string {
-  if (n >= 1_000_000_000) return (n / 1_000_000_000).toFixed(2) + 'B';
-  if (n >= 1_000_000) return (n / 1_000_000).toFixed(2) + 'M';
-  if (n >= 1_000) return (n / 1_000).toFixed(2) + 'K';
+  if (n >= FORMAT_BILLION) return (n / FORMAT_BILLION).toFixed(2) + 'B';
+  if (n >= FORMAT_MILLION) return (n / FORMAT_MILLION).toFixed(2) + 'M';
+  if (n >= FORMAT_THOUSAND) return (n / FORMAT_THOUSAND).toFixed(2) + 'K';
   return n.toFixed(2);
 }
 
 function formatRate(rate: number): string {
-  return (rate * 100).toFixed(4) + '%';
+  return (rate * PERCENTAGE_MULTIPLIER).toFixed(4) + '%';
 }
 
 /**
@@ -54,7 +65,7 @@ export function DerivativesPanel(): React.JSX.Element {
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
           <span>Session Change</span>
-          <span style={{ color: oiChange >= 0 ? '#4CAF50' : '#F44336' }}>
+          <span style={{ color: oiChange >= 0 ? COLOR_SUCCESS : COLOR_DANGER }}>
             {oiChange !== 0 ? (oiChange > 0 ? '+' : '') + formatNumber(oiChange) : '—'}
           </span>
         </div>
@@ -65,7 +76,7 @@ export function DerivativesPanel(): React.JSX.Element {
         <div style={{ fontSize: 10, color: '#666', marginBottom: 4 }}>FUNDING RATE</div>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
           <span>Current Rate</span>
-          <span style={{ color: fundingRate >= 0 ? '#4CAF50' : '#F44336' }}>
+          <span style={{ color: fundingRate >= 0 ? COLOR_SUCCESS : COLOR_DANGER }}>
             {fundingRate !== 0 ? formatRate(fundingRate) : '—'}
           </span>
         </div>
@@ -79,13 +90,13 @@ export function DerivativesPanel(): React.JSX.Element {
         <div style={{ fontSize: 10, color: '#666', marginBottom: 4 }}>LIQUIDATIONS</div>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
           <span>Long Liqs</span>
-          <span style={{ color: '#F44336' }}>
+          <span style={{ color: COLOR_DANGER }}>
             {recentLongLiqs.length > 0 ? `${recentLongLiqs.length} ($${formatNumber(longLiqVol)})` : '—'}
           </span>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
           <span>Short Liqs</span>
-          <span style={{ color: '#4CAF50' }}>
+          <span style={{ color: COLOR_SUCCESS }}>
             {recentShortLiqs.length > 0 ? `${recentShortLiqs.length} ($${formatNumber(shortLiqVol)})` : '—'}
           </span>
         </div>
@@ -97,7 +108,7 @@ export function DerivativesPanel(): React.JSX.Element {
         {liquidations.length === 0 && (
           <div style={{ color: '#555', fontSize: 10 }}>No liquidations yet</div>
         )}
-        {liquidations.slice(0, 20).map((liq, i) => {
+        {liquidations.slice(0, MAX_RECENT_LIQUIDATIONS).map((liq, i) => {
           const isLong = liq.side === 'sell';
           const time = new Date(liq.timestamp);
           const timeStr = `${time.getHours().toString().padStart(2, '0')}:${time.getMinutes().toString().padStart(2, '0')}:${time.getSeconds().toString().padStart(2, '0')}`;
@@ -112,11 +123,11 @@ export function DerivativesPanel(): React.JSX.Element {
               }}
             >
               <span style={{ color: '#555' }}>{timeStr}</span>
-              <span style={{ color: isLong ? '#F44336' : '#4CAF50' }}>
+              <span style={{ color: isLong ? COLOR_DANGER : COLOR_SUCCESS }}>
                 {isLong ? 'LONG' : 'SHORT'}
               </span>
               <span>${formatNumber(liq.amount * liq.price)}</span>
-              <span style={{ color: '#888' }}>{liq.price.toFixed(2)}</span>
+              <span style={{ color: COLOR_MUTED }}>{liq.price.toFixed(2)}</span>
             </div>
           );
         })}

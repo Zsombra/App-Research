@@ -1,11 +1,13 @@
 import React, { useMemo } from 'react';
 import type { PanelConfig, PriceLevel } from '@terminal/types';
 import { useOrderbook } from '../stores/market-store.js';
+import { COLOR_BULLISH, COLOR_BEARISH, COLOR_BACKGROUND_DARK, COLOR_MUTED, COLOR_NEUTRAL, COLOR_DEPTH_BULLISH, COLOR_DEPTH_BEARISH } from '../theme-colors.js';
 
 interface OrderbookPanelProps {
   config: PanelConfig;
 }
 
+/** Maximum orderbook levels displayed on each side. */
 const MAX_LEVELS = 20;
 
 const LevelRow = React.memo(function LevelRow({
@@ -17,8 +19,8 @@ const LevelRow = React.memo(function LevelRow({
   side: 'bid' | 'ask';
   depthPercent: number;
 }): React.JSX.Element {
-  const color = side === 'bid' ? '#26a69a' : '#ef5350';
-  const bgColor = side === 'bid' ? 'rgba(38,166,154,0.12)' : 'rgba(239,83,80,0.12)';
+  const color = side === 'bid' ? COLOR_BULLISH : COLOR_BEARISH;
+  const bgColor = side === 'bid' ? COLOR_DEPTH_BULLISH : COLOR_DEPTH_BEARISH;
 
   return (
     <div
@@ -83,16 +85,16 @@ export function OrderbookPanel({ config }: OrderbookPanelProps): React.JSX.Eleme
 
   if (!orderbook) {
     return (
-      <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0a0a0e', color: '#555', fontSize: 12 }}>
+      <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: COLOR_BACKGROUND_DARK, color: COLOR_NEUTRAL, fontSize: 12 }}>
         No orderbook data for {config.symbol}
       </div>
     );
   }
 
   return (
-    <div style={{ height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column', background: '#0a0a0e', color: '#ccc', fontSize: 12 }}>
+    <div style={{ height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column', background: COLOR_BACKGROUND_DARK, color: '#ccc', fontSize: 12 }}>
       {/* Header */}
-      <div style={{ display: 'flex', padding: '4px 8px', borderBottom: '1px solid #222', fontWeight: 600, color: '#888' }}>
+      <div style={{ display: 'flex', padding: '4px 8px', borderBottom: '1px solid #222', fontWeight: 600, color: COLOR_MUTED }}>
         <span style={{ flex: 1 }}>Price</span>
         <span style={{ flex: 1, textAlign: 'right' }}>Size</span>
       </div>

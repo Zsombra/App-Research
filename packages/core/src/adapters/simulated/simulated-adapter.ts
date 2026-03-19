@@ -20,6 +20,11 @@ const SIM_TRADE_AMOUNT_MIN = 0.001;
 const SIM_TRADE_AMOUNT_RANGE = 2;
 const SIM_SPREAD_FACTOR = 0.0001;
 const SIM_ORDERBOOK_DEPTH = 20;
+const SIM_LEVEL_SIZE_MIN = 0.1;
+const SIM_LEVEL_SIZE_RANGE = 5;
+const SIM_TRADES_PER_TICK_MAX = 3;
+const SIM_BBO_BID_MULTIPLIER = 0.9999;
+const SIM_BBO_ASK_MULTIPLIER = 1.0001;
 
 /** Default base prices for common simulated symbols. */
 const SIM_BASE_PRICES: Record<string, { base: number; range: number }> = {
@@ -72,7 +77,7 @@ export class SimulatedAdapter extends BaseExchangeAdapter {
     this.initPrice(symbol);
 
     const interval = setInterval(() => {
-      const count = 1 + Math.floor(Math.random() * 3); // 1-3 trades per tick
+      const count = 1 + Math.floor(Math.random() * SIM_TRADES_PER_TICK_MAX);
       for (let i = 0; i < count; i++) {
         this.emitTrade(symbol);
       }
@@ -208,11 +213,11 @@ export class SimulatedAdapter extends BaseExchangeAdapter {
 
       bids.push({
         price: midPrice - bidOffset,
-        size: 0.1 + Math.random() * 5,
+        size: SIM_LEVEL_SIZE_MIN + Math.random() * SIM_LEVEL_SIZE_RANGE,
       });
       asks.push({
         price: midPrice + askOffset,
-        size: 0.1 + Math.random() * 5,
+        size: SIM_LEVEL_SIZE_MIN + Math.random() * SIM_LEVEL_SIZE_RANGE,
       });
     }
 
@@ -249,9 +254,9 @@ export class SimulatedAdapter extends BaseExchangeAdapter {
       volume24h: d?.volume ?? 0,
       quoteVolume24h: (d?.volume ?? 0) * price,
       bbo: {
-        bidPrice: price * 0.9999,
+        bidPrice: price * SIM_BBO_BID_MULTIPLIER,
         bidSize: 1 + Math.random() * 10,
-        askPrice: price * 1.0001,
+        askPrice: price * SIM_BBO_ASK_MULTIPLIER,
         askSize: 1 + Math.random() * 10,
       },
     };

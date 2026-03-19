@@ -6,6 +6,13 @@ import {
   useSLClusters,
   useTPClusters,
 } from '../stores/sl-tp-heatmap-store.js';
+import { COLOR_DANGER, COLOR_SUCCESS, COLOR_MUTED } from '../theme-colors.js';
+
+/** Maximum clusters shown per section in the panel. */
+const MAX_CLUSTERS_DISPLAY = 15;
+
+/** Total number of SL/TP estimation algorithms. */
+const NUM_ALGORITHMS = 6;
 
 function formatPrice(price: number): string {
   if (!Number.isFinite(price)) return '—';
@@ -66,7 +73,7 @@ export function SLTPHeatmapPanel({ mode = 'both' }: SLTPHeatmapPanelProps): Reac
 
   if (candles.length === 0) {
     return (
-      <div style={{ padding: 12, color: '#888', fontSize: 12, textAlign: 'center' }}>
+      <div style={{ padding: 12, color: COLOR_MUTED, fontSize: 12, textAlign: 'center' }}>
         Waiting for data...
       </div>
     );
@@ -79,18 +86,18 @@ export function SLTPHeatmapPanel({ mode = 'both' }: SLTPHeatmapPanelProps): Reac
       </div>
 
       <div style={{ display: 'flex', gap: 12, marginBottom: 8, fontSize: 10 }}>
-        {showSL && <span style={{ color: '#F44336' }}>SL Zones: {slClusters.length}</span>}
-        {showTP && <span style={{ color: '#4CAF50' }}>TP Zones: {tpClusters.length}</span>}
-        <span style={{ color: '#666' }}>Algorithms: 6</span>
+        {showSL && <span style={{ color: COLOR_DANGER }}>SL Zones: {slClusters.length}</span>}
+        {showTP && <span style={{ color: COLOR_SUCCESS }}>TP Zones: {tpClusters.length}</span>}
+        <span style={{ color: '#666' }}>Algorithms: {NUM_ALGORITHMS}</span>
       </div>
 
       {/* SL Clusters */}
       {showSL && slClusters.length > 0 && (
         <div style={{ marginBottom: 12 }}>
-          <div style={{ fontSize: 10, color: '#F44336', marginBottom: 4, fontWeight: 600 }}>
+          <div style={{ fontSize: 10, color: COLOR_DANGER, marginBottom: 4, fontWeight: 600 }}>
             STOP-LOSS CLUSTERS
           </div>
-          {slClusters.slice(0, 15).map((cluster, i) => (
+          {slClusters.slice(0, MAX_CLUSTERS_DISPLAY).map((cluster, i) => (
             <div
               key={`sl-${i}`}
               style={{
@@ -101,14 +108,14 @@ export function SLTPHeatmapPanel({ mode = 'both' }: SLTPHeatmapPanelProps): Reac
                 fontSize: 10,
               }}
             >
-              <span style={{ width: 60, textAlign: 'right', color: '#888', flexShrink: 0 }}>
+              <span style={{ width: 60, textAlign: 'right', color: COLOR_MUTED, flexShrink: 0 }}>
                 {formatPrice(cluster.price)}
               </span>
-              <span style={{ width: 40, color: cluster.side === 'long' ? '#4CAF50' : '#F44336', flexShrink: 0 }}>
+              <span style={{ width: 40, color: cluster.side === 'long' ? COLOR_SUCCESS : COLOR_DANGER, flexShrink: 0 }}>
                 {cluster.side}
               </span>
               <div style={{ flex: 1 }}>
-                {intensityBar(cluster.intensity, '#F44336')}
+                {intensityBar(cluster.intensity, COLOR_DANGER)}
               </div>
               <span style={{ width: 60, fontSize: 9, color: '#555', flexShrink: 0 }}>
                 {cluster.sources.filter((s) => s !== 'composite').join(', ')}
@@ -121,10 +128,10 @@ export function SLTPHeatmapPanel({ mode = 'both' }: SLTPHeatmapPanelProps): Reac
       {/* TP Clusters */}
       {showTP && tpClusters.length > 0 && (
         <div>
-          <div style={{ fontSize: 10, color: '#4CAF50', marginBottom: 4, fontWeight: 600 }}>
+          <div style={{ fontSize: 10, color: COLOR_SUCCESS, marginBottom: 4, fontWeight: 600 }}>
             TAKE-PROFIT CLUSTERS
           </div>
-          {tpClusters.slice(0, 15).map((cluster, i) => (
+          {tpClusters.slice(0, MAX_CLUSTERS_DISPLAY).map((cluster, i) => (
             <div
               key={`tp-${i}`}
               style={{
@@ -135,14 +142,14 @@ export function SLTPHeatmapPanel({ mode = 'both' }: SLTPHeatmapPanelProps): Reac
                 fontSize: 10,
               }}
             >
-              <span style={{ width: 60, textAlign: 'right', color: '#888', flexShrink: 0 }}>
+              <span style={{ width: 60, textAlign: 'right', color: COLOR_MUTED, flexShrink: 0 }}>
                 {formatPrice(cluster.price)}
               </span>
-              <span style={{ width: 40, color: cluster.side === 'long' ? '#4CAF50' : '#F44336', flexShrink: 0 }}>
+              <span style={{ width: 40, color: cluster.side === 'long' ? COLOR_SUCCESS : COLOR_DANGER, flexShrink: 0 }}>
                 {cluster.side}
               </span>
               <div style={{ flex: 1 }}>
-                {intensityBar(cluster.intensity, '#4CAF50')}
+                {intensityBar(cluster.intensity, COLOR_SUCCESS)}
               </div>
               <span style={{ width: 60, fontSize: 9, color: '#555', flexShrink: 0 }}>
                 {cluster.sources.filter((s) => s !== 'composite').join(', ')}

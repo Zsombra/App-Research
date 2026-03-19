@@ -57,7 +57,7 @@ export interface TradeClusterConfig {
   useCost: boolean;
 }
 
-/** Default cluster config. */
+/** Default trade clustering config: 4 clusters (small/medium/large/whale), 50 iterations, cost-based. */
 export const DEFAULT_TRADE_CLUSTER_CONFIG: TradeClusterConfig = {
   k: 4,
   maxIterations: 50,

@@ -24,7 +24,7 @@ export interface HeatmapConfig {
   depthLevels: number;
 }
 
-/** Default heatmap configuration. */
+/** Default heatmap config: auto bucket size, 500 columns, 1s capture, 50 depth levels. */
 export const DEFAULT_HEATMAP_CONFIG: HeatmapConfig = {
   priceBucketSize: 0, // auto-detect
   maxColumns: 500,

@@ -4,6 +4,7 @@ import { computeMarketProfile } from '@terminal/core';
 import { autoTickSize } from '@terminal/core';
 import { useCandles } from '../stores/market-store.js';
 import { useActiveSymbol } from '../stores/symbol-store.js';
+import { COLOR_POC, COLOR_SUCCESS, COLOR_DANGER, COLOR_MUTED, COLOR_VALUE_AREA, COLOR_BAR_NEUTRAL } from '../theme-colors.js';
 
 /**
  * Market Profile / TPO Panel.
@@ -37,10 +38,10 @@ export function MarketProfilePanel(): React.JSX.Element {
 
       {/* Reference lines */}
       <div style={{ display: 'flex', gap: 12, marginBottom: 8, fontSize: 10 }}>
-        <span style={{ color: '#FFD700' }}>POC: {profile.poc.toFixed(2)}</span>
-        <span style={{ color: '#4CAF50' }}>VAH: {profile.vah.toFixed(2)}</span>
-        <span style={{ color: '#F44336' }}>VAL: {profile.val.toFixed(2)}</span>
-        <span style={{ color: '#888' }}>IB: {profile.ibLow.toFixed(2)}-{profile.ibHigh.toFixed(2)}</span>
+        <span style={{ color: COLOR_POC }}>POC: {profile.poc.toFixed(2)}</span>
+        <span style={{ color: COLOR_SUCCESS }}>VAH: {profile.vah.toFixed(2)}</span>
+        <span style={{ color: COLOR_DANGER }}>VAL: {profile.val.toFixed(2)}</span>
+        <span style={{ color: COLOR_MUTED }}>IB: {profile.ibLow.toFixed(2)}-{profile.ibHigh.toFixed(2)}</span>
       </div>
 
       {/* TPO histogram */}
@@ -51,9 +52,9 @@ export function MarketProfilePanel(): React.JSX.Element {
           const inValueArea = row.price >= profile.val && row.price <= profile.vah;
 
           let barColor = '#333';
-          if (isPoc) barColor = '#FFD700';
-          else if (inValueArea) barColor = '#5c6bc0';
-          else barColor = '#2a2a3a';
+          if (isPoc) barColor = COLOR_POC;
+          else if (inValueArea) barColor = COLOR_VALUE_AREA;
+          else barColor = COLOR_BAR_NEUTRAL;
 
           return (
             <div
@@ -69,7 +70,7 @@ export function MarketProfilePanel(): React.JSX.Element {
                 textAlign: 'right',
                 paddingRight: 6,
                 fontSize: 9,
-                color: isPoc ? '#FFD700' : '#666',
+                color: isPoc ? COLOR_POC : '#666',
                 flexShrink: 0,
               }}>
                 {row.price.toFixed(profile.tickSize < 1 ? 2 : 0)}
@@ -90,7 +91,7 @@ export function MarketProfilePanel(): React.JSX.Element {
                     right: -30,
                     top: 0,
                     fontSize: 8,
-                    color: '#FFD700',
+                    color: COLOR_POC,
                   }}>
                     POC
                   </span>

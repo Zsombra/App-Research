@@ -1,5 +1,8 @@
 import REGL from 'regl';
 
+/** Dark background clear color for the WebGL canvas [R, G, B, A]. */
+const CANVAS_CLEAR_COLOR: [number, number, number, number] = [0.06, 0.06, 0.08, 1];
+
 /**
  * Manages a regl instance and the render loop for a single chart panel.
  * Handles WebGL context creation, dirty-flag gated rendering, and context loss.
@@ -102,7 +105,7 @@ export class RenderingContext {
     this._dirty = false;
 
     this._regl.clear({
-      color: [0.06, 0.06, 0.08, 1],
+      color: CANVAS_CLEAR_COLOR,
       depth: 1,
     });
 

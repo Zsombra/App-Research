@@ -87,7 +87,7 @@ export interface FootprintConfig {
   filter: FootprintFilter;
 }
 
-/** Default footprint configuration. */
+/** Default footprint config: 1.0 tick size, delta enabled, no label overlay. */
 export const DEFAULT_FOOTPRINT_CONFIG: FootprintConfig = {
   tickSize: 1.0,
   showDelta: true,
